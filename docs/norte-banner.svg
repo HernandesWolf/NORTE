@@ -1,37 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
-  <title id="title">NORTE — Encontre clareza. Defina um destino. Construa o caminho.</title>
-  <desc id="desc">Banner do NORTE com bússola estilizada, horizonte e uma trilha luminosa em direção ao destino.</desc>
+  <title id="title">NORTE — Seu tempo. Sua história. Seu caminho.</title>
+  <desc id="desc">Banner NORTE Rose Edition com bússola delicada, horizonte suave e trilha em direção ao destino.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080b25"/><stop offset=".55" stop-color="#111044"/><stop offset="1" stop-color="#071b3d"/></linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6d5dfc"/><stop offset=".55" stop-color="#bd55ff"/><stop offset="1" stop-color="#37c8ff"/></linearGradient>
-    <radialGradient id="orb"><stop offset="0" stop-color="#7c4dff" stop-opacity=".34"/><stop offset="1" stop-color="#7c4dff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBF7F3"/><stop offset=".56" stop-color="#F3DDDF"/><stop offset="1" stop-color="#E9DCD3"/></linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#B87583"/><stop offset=".55" stop-color="#A96D7B"/><stop offset="1" stop-color="#76505D"/></linearGradient>
+    <radialGradient id="orb"><stop offset="0" stop-color="#D7AEB4" stop-opacity=".42"/><stop offset="1" stop-color="#D7AEB4" stop-opacity="0"/></radialGradient>
     <filter id="blur"><feGaussianBlur stdDeviation="24"/></filter>
   </defs>
   <rect width="1600" height="520" rx="28" fill="url(#bg)"/>
   <circle cx="1290" cy="120" r="260" fill="url(#orb)"/>
-  <circle cx="1290" cy="120" r="150" fill="none" stroke="#6257db" stroke-opacity=".15" stroke-width="1"/>
-  <circle cx="1290" cy="120" r="205" fill="none" stroke="#6257db" stroke-opacity=".12" stroke-width="1"/>
-  <path d="M0 390 Q260 330 470 395 T900 380 T1600 340 V520 H0Z" fill="#101b49" opacity=".65"/>
-  <path d="M0 440 Q270 365 520 430 T1000 410 T1600 365" fill="none" stroke="#263b83" stroke-width="2" opacity=".55"/>
-  <path d="M880 520 C980 450 1030 425 1110 390 S1260 315 1320 265 S1410 190 1500 155" fill="none" stroke="url(#glow)" stroke-width="5" stroke-linecap="round" opacity=".9"/>
-  <path d="M880 520 C980 450 1030 425 1110 390 S1260 315 1320 265 S1410 190 1500 155" fill="none" stroke="#9b69ff" stroke-width="18" stroke-linecap="round" opacity=".22" filter="url(#blur)"/>
+  <circle cx="1290" cy="120" r="150" fill="none" stroke="#B87583" stroke-opacity=".18" stroke-width="1"/>
+  <circle cx="1290" cy="120" r="205" fill="none" stroke="#B87583" stroke-opacity=".13" stroke-width="1"/>
+  <path d="M0 390 Q260 330 470 395 T900 380 T1600 340 V520 H0Z" fill="#E7CDD0" opacity=".62"/>
+  <path d="M0 440 Q270 365 520 430 T1000 410 T1600 365" fill="none" stroke="#C99AA3" stroke-width="2" opacity=".48"/>
+  <path d="M880 520 C980 450 1030 425 1110 390 S1260 315 1320 265 S1410 190 1500 155" fill="none" stroke="url(#glow)" stroke-width="5" stroke-linecap="round" opacity=".92"/>
+  <path d="M880 520 C980 450 1030 425 1110 390 S1260 315 1320 265 S1410 190 1500 155" fill="none" stroke="#B87583" stroke-width="18" stroke-linecap="round" opacity=".18" filter="url(#blur)"/>
   <g transform="translate(190 230)">
-    <circle r="104" fill="#11163e" stroke="url(#glow)" stroke-width="5"/>
-    <circle r="84" fill="none" stroke="#8e81ff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="5 10"/>
-    <path d="M0 -83 L22 0 L0 83 L-22 0Z" fill="#f4f1ff"/>
-    <path d="M0 -83 L0 83 L-22 0Z" fill="#8b5cf6"/>
-    <path d="M-83 0 L0 -22 L83 0 L0 22Z" fill="#293b91" opacity=".8"/>
-    <circle r="9" fill="#44d7ff"/>
-    <path d="M0 -128 V-111 M0 111 V128 M-128 0 H-111 M111 0 H128" stroke="#a99aff" stroke-width="4" stroke-linecap="round"/>
+    <circle r="104" fill="#FBF7F3" fill-opacity=".8" stroke="url(#glow)" stroke-width="5"/>
+    <circle r="84" fill="none" stroke="#B87583" stroke-opacity=".42" stroke-width="2" stroke-dasharray="5 10"/>
+    <path d="M0 -83 L22 0 L0 83 L-22 0Z" fill="#76505D"/>
+    <path d="M0 -83 L0 83 L-22 0Z" fill="#B87583"/>
+    <path d="M-83 0 L0 -22 L83 0 L0 22Z" fill="#D7AEB4" opacity=".9"/>
+    <circle r="9" fill="#76505D"/>
+    <path d="M0 -128 V-111 M0 111 V128 M-128 0 H-111 M111 0 H128" stroke="#A96D7B" stroke-width="4" stroke-linecap="round"/>
   </g>
-  <text x="360" y="205" fill="#fff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="112" font-weight="800" letter-spacing="7">NORTE</text>
+  <text x="360" y="205" fill="#533944" font-family="Fraunces,Georgia,serif" font-size="112" font-weight="700" letter-spacing="5">NORTE</text>
   <rect x="365" y="232" width="550" height="5" rx="3" fill="url(#glow)"/>
-  <text x="365" y="300" fill="#f5f4ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="31" font-weight="600">Encontre clareza. Defina um destino.</text>
-  <text x="365" y="350" fill="#c5b9ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="31" font-weight="600">Construa o caminho.</text>
-  <text x="365" y="415" fill="#aab4d8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20">Orientação pessoal com IA • objetivos possíveis • progresso no seu ritmo</text>
+  <text x="365" y="300" fill="#533944" font-family="DM Sans,Segoe UI,Arial,sans-serif" font-size="31" font-weight="600">Seu tempo. Sua história.</text>
+  <text x="365" y="350" fill="#76505D" font-family="DM Sans,Segoe UI,Arial,sans-serif" font-size="31" font-weight="600">Seu caminho.</text>
+  <text x="365" y="415" fill="#76505D" font-family="DM Sans,Segoe UI,Arial,sans-serif" font-size="20">Orientação pessoal com IA • objetivos possíveis • progresso no seu ritmo</text>
   <g transform="translate(1280 110)">
-    <circle r="7" fill="#42d6ff"/><circle r="22" fill="none" stroke="#42d6ff" stroke-opacity=".5"/>
-    <path d="M0 25 V55 M-14 42 L0 55 L14 42" fill="none" stroke="#42d6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle r="7" fill="#76505D"/><circle r="22" fill="none" stroke="#A96D7B" stroke-opacity=".65"/>
+    <path d="M0 25 V55 M-14 42 L0 55 L14 42" fill="none" stroke="#76505D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="1530" y="480" text-anchor="end" fill="#8290c4" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16" letter-spacing="2">PLATAFORMA EM DESENVOLVIMENTO</text>
+  <text x="1530" y="480" text-anchor="end" fill="#76505D" font-family="DM Sans,Segoe UI,Arial,sans-serif" font-size="16" letter-spacing="2">PLATAFORMA EM DESENVOLVIMENTO</text>
 </svg>
