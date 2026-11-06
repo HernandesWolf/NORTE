@@ -138,14 +138,23 @@ O repositório contém a fundação do backend e a primeira versão navegável d
 - Persistência com Spring Data JPA, PostgreSQL e Flyway.
 - Validação de dados e testes automatizados de backend.
 
+**Cliente Flutter — protótipo inicial disponível:**
+
+- Tela de entrada e criação de conta demonstrativas.
+- Visão inicial com check-in de estado e foco atual.
+- Tela de conversa com envio local de mensagens (sem IA conectada).
+- Objetivos e tarefas de demonstração com marcação de conclusão.
+- Área de perfil com atalhos ilustrativos de privacidade e gestão de dados.
+- Identidade Rose Edition aplicada à interface.
+
 **Próximas entregas planejadas:**
 
-1. Evoluir autenticação com refresh token, logout e proteção contra tentativas excessivas.
-2. Implementar perfil progressivo e objetivos.
-3. Criar a camada de integração com provedores de IA (AI Gateway), com limites de uso e acompanhamento de custos.
-4. Desenvolver a conversa orientada e o plano de ação.
-5. Construir o aplicativo Flutter e iniciar o piloto com usuários.
-6. Aplicar a Rose Edition ao frontend e documentar os componentes do design system.
+1. Validar o protótipo no Flutter SDK e refinar acessibilidade e responsividade.
+2. Evoluir autenticação do backend com refresh token, logout e proteção contra tentativas excessivas.
+3. Implementar perfil progressivo, objetivos e tarefas na API.
+4. Criar o AI Gateway, conversa orientada e plano de ação com limites de custo.
+5. Integrar o aplicativo à API com tratamento seguro de sessão, erros e estados de carregamento.
+6. Executar testes de autorização, isolamento e privacidade antes de qualquer piloto.
 
 Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e a ordem de construção.
 
