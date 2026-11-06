@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="790" viewBox="0 0 1200 790" role="img" aria-labelledby="title desc">
+<title id="title">NORTE Rose Edition — conceito visual das telas</title>
+<desc id="desc">Quatro telas conceituais do aplicativo NORTE: início, conversa, objetivos e perfil. Mockups ilustrativos, não funcionais.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FBF7F3"/><stop offset="1" stop-color="#F0DDE0"/></linearGradient>
+  <linearGradient id="rose" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#C98D98"/><stop offset="1" stop-color="#8F5264"/></linearGradient>
+  <filter id="shadow" x="-30%" y="-20%" width="160%" height="160%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#76505D" flood-opacity=".16"/></filter>
+</defs>
+<rect width="1200" height="790" rx="30" fill="url(#bg)"/>
+<circle cx="1080" cy="80" r="180" fill="#fff" opacity=".28"/>
+<text x="600" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="39" font-weight="bold" fill="#684451">Uma experiência que respeita seu ritmo</text>
+<text x="600" y="108" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#876773">NORTE Rose Edition · conceito visual de produto</text>
+<!-- phone 1 -->
+<g transform="translate(48 150)" filter="url(#shadow)">
+<rect width="250" height="540" rx="34" fill="#30252A"/>
+<rect x="8" y="8" width="234" height="524" rx="28" fill="#FFFDFB"/>
+<rect x="91" y="14" width="68" height="12" rx="6" fill="#30252A"/>
+<text x="24" y="47" font-family="Arial" font-size="10" fill="#76505D">9:41</text><text x="215" y="47" text-anchor="end" font-family="Arial" font-size="10" fill="#76505D">●●●</text>
+<circle cx="125" cy="111" r="31" fill="#F4E3E5"/><path d="M125 86 L133 111 L125 136 L117 111Z" fill="#A96778"/><circle cx="125" cy="111" r="5" fill="#76505D"/>
+<text x="125" y="166" text-anchor="middle" font-family="Georgia" font-size="24" fill="#684451">Olá, que bom ter</text><text x="125" y="193" text-anchor="middle" font-family="Georgia" font-size="24" fill="#684451">você por aqui.</text>
+<text x="125" y="226" text-anchor="middle" font-family="Arial" font-size="12" fill="#876773">Como você está chegando hoje?</text>
+<rect x="22" y="252" width="206" height="86" rx="16" fill="#F8ECEC"/>
+<text x="38" y="280" font-family="Arial" font-size="12" fill="#684451">Não precisa ter tudo resolvido.</text><text x="38" y="300" font-family="Arial" font-size="12" fill="#684451">Podemos começar pelo que</text><text x="38" y="320" font-family="Arial" font-size="12" fill="#684451">está pesando agora.</text>
+<text x="24" y="372" font-family="Arial" font-size="11" font-weight="bold" fill="#76505D">SEU MOMENTO</text>
+<rect x="22" y="388" width="62" height="48" rx="12" fill="#F4E3E5"/><rect x="94" y="388" width="62" height="48" rx="12" fill="#F4E3E5"/><rect x="166" y="388" width="62" height="48" rx="12" fill="#F4E3E5"/>
+<text x="53" y="417" text-anchor="middle" font-family="Arial" font-size="19" fill="#9B6372">♡</text><text x="125" y="417" text-anchor="middle" font-family="Arial" font-size="19" fill="#9B6372">☼</text><text x="197" y="417" text-anchor="middle" font-family="Arial" font-size="19" fill="#9B6372">✧</text>
+<rect x="22" y="458" width="206" height="43" rx="21" fill="url(#rose)"/><text x="125" y="485" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#fff">Começar por aqui</text>
+<text x="125" y="519" text-anchor="middle" font-family="Arial" font-size="9" fill="#A17F87">INÍCIO　　CONVERSA　　OBJETIVOS　　PERFIL</text>
+</g>
+<!-- phone 2 -->
+<g transform="translate(338 150)" filter="url(#shadow)">
+<rect width="250" height="540" rx="34" fill="#30252A"/><rect x="8" y="8" width="234" height="524" rx="28" fill="#FFFDFB"/><rect x="91" y="14" width="68" height="12" rx="6" fill="#30252A"/>
+<text x="24" y="47" font-family="Arial" font-size="10" fill="#76505D">9:41</text><text x="215" y="47" text-anchor="end" font-family="Arial" font-size="10" fill="#76505D">●●●</text>
+<text x="24" y="91" font-family="Georgia" font-size="24" fill="#684451">Conversa</text><text x="24" y="116" font-family="Arial" font-size="11" fill="#9B7A83">Um espaço para organizar ideias.</text>
+<rect x="20" y="145" width="190" height="93" rx="17" fill="#F7E9EA"/><text x="35" y="174" font-family="Arial" font-size="12" fill="#684451">Você não precisa resolver</text><text x="35" y="194" font-family="Arial" font-size="12" fill="#684451">tudo hoje. O que mais</text><text x="35" y="214" font-family="Arial" font-size="12" fill="#684451">precisa de atenção agora?</text>
+<rect x="66" y="257" width="164" height="76" rx="17" fill="#EED5D9"/><text x="82" y="286" font-family="Arial" font-size="12" fill="#684451">Estou com muita coisa</text><text x="82" y="306" font-family="Arial" font-size="12" fill="#684451">na cabeça e não sei</text><text x="82" y="326" font-family="Arial" font-size="12" fill="#684451">por onde começar.</text>
+<rect x="20" y="352" width="195" height="94" rx="17" fill="#F7E9EA"/><text x="35" y="381" font-family="Arial" font-size="12" fill="#684451">Entendi. Vamos separar</text><text x="35" y="401" font-family="Arial" font-size="12" fill="#684451">o que é urgente do que</text><text x="35" y="421" font-family="Arial" font-size="12" fill="#684451">pode esperar um pouco.</text>
+<rect x="20" y="466" width="210" height="42" rx="21" fill="#FBF3F1" stroke="#E6CDD1"/><text x="36" y="492" font-family="Arial" font-size="11" fill="#B18B93">Escreva no seu tempo...</text><circle cx="208" cy="487" r="14" fill="url(#rose)"/><path d="M202 487 L214 487 M209 482 L214 487 L209 492" stroke="#fff" fill="none" stroke-width="1.5"/>
+<text x="125" y="519" text-anchor="middle" font-family="Arial" font-size="9" fill="#A17F87">INÍCIO　　CONVERSA　　OBJETIVOS　　PERFIL</text>
+</g>
+<!-- phone 3 -->
+<g transform="translate(628 150)" filter="url(#shadow)">
+<rect width="250" height="540" rx="34" fill="#30252A"/><rect x="8" y="8" width="234" height="524" rx="28" fill="#FFFDFB"/><rect x="91" y="14" width="68" height="12" rx="6" fill="#30252A"/>
+<text x="24" y="47" font-family="Arial" font-size="10" fill="#76505D">9:41</text><text x="215" y="47" text-anchor="end" font-family="Arial" font-size="10" fill="#76505D">●●●</text>
+<text x="24" y="91" font-family="Georgia" font-size="24" fill="#684451">Seus próximos passos</text><text x="24" y="116" font-family="Arial" font-size="11" fill="#9B7A83">Pequeno o suficiente para começar.</text>
+<rect x="20" y="143" width="210" height="90" rx="16" fill="#F7E9EA"/><text x="36" y="172" font-family="Arial" font-size="11" font-weight="bold" fill="#76505D">FOCO DESTA SEMANA</text><text x="36" y="198" font-family="Georgia" font-size="17" fill="#684451">Retomar meus estudos</text><text x="36" y="217" font-family="Arial" font-size="10" fill="#9B7A83">No ritmo que cabe na minha rotina</text>
+<text x="24" y="267" font-family="Arial" font-size="11" font-weight="bold" fill="#76505D">UM PASSO DE CADA VEZ</text>
+<circle cx="39" cy="303" r="9" fill="#A96D7B"/><path d="M35 303 L38 306 L44 299" fill="none" stroke="#fff" stroke-width="1.5"/><text x="58" y="307" font-family="Arial" font-size="12" fill="#684451">Escolher um assunto (10 min)</text>
+<circle cx="39" cy="349" r="9" fill="#A96D7B"/><path d="M35 349 L38 352 L44 345" fill="none" stroke="#fff" stroke-width="1.5"/><text x="58" y="353" font-family="Arial" font-size="12" fill="#684451">Separar o material</text>
+<circle cx="39" cy="395" r="9" fill="none" stroke="#C89AA3" stroke-width="2"/><text x="58" y="399" font-family="Arial" font-size="12" fill="#684451">Estudar por 20 minutos</text>
+<circle cx="39" cy="441" r="9" fill="none" stroke="#C89AA3" stroke-width="2"/><text x="58" y="445" font-family="Arial" font-size="12" fill="#684451">Rever como foi</text>
+<rect x="20" y="468" width="210" height="38" rx="19" fill="url(#rose)"/><text x="125" y="492" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">Ajustar meu plano</text>
+<text x="125" y="519" text-anchor="middle" font-family="Arial" font-size="9" fill="#A17F87">INÍCIO　　CONVERSA　　OBJETIVOS　　PERFIL</text>
+</g>
+<!-- phone 4 -->
+<g transform="translate(918 150)" filter="url(#shadow)">
+<rect width="234" height="540" rx="34" fill="#30252A"/><rect x="8" y="8" width="218" height="524" rx="28" fill="#FFFDFB"/><rect x="83" y="14" width="68" height="12" rx="6" fill="#30252A"/>
+<text x="24" y="47" font-family="Arial" font-size="10" fill="#76505D">9:41</text><text x="207" y="47" text-anchor="end" font-family="Arial" font-size="10" fill="#76505D">●●●</text>
+<text x="24" y="91" font-family="Georgia" font-size="24" fill="#684451">Meu espaço</text><text x="24" y="116" font-family="Arial" font-size="11" fill="#9B7A83">Suas escolhas, sob seu controle.</text>
+<circle cx="117" cy="177" r="39" fill="#F2DDE0"/><circle cx="117" cy="164" r="13" fill="#B87583"/><path d="M92 200 Q117 170 142 200" fill="#B87583"/>
+<text x="117" y="237" text-anchor="middle" font-family="Georgia" font-size="18" fill="#684451">Seu perfil</text>
+<text x="24" y="281" font-family="Arial" font-size="11" font-weight="bold" fill="#76505D">PRIVACIDADE E CONTROLE</text>
+<rect x="20" y="297" width="194" height="48" rx="12" fill="#F8EEEE"/><text x="36" y="326" font-family="Arial" font-size="12" fill="#684451">Dados e preferências</text><text x="195" y="326" text-anchor="end" font-family="Arial" font-size="18" fill="#A96D7B">›</text>
+<rect x="20" y="355" width="194" height="48" rx="12" fill="#F8EEEE"/><text x="36" y="384" font-family="Arial" font-size="12" fill="#684451">Memória e contexto</text><text x="195" y="384" text-anchor="end" font-family="Arial" font-size="18" fill="#A96D7B">›</text>
+<rect x="20" y="413" width="194" height="48" rx="12" fill="#F8EEEE"/><text x="36" y="442" font-family="Arial" font-size="12" fill="#684451">Exportar ou excluir dados</text><text x="195" y="442" text-anchor="end" font-family="Arial" font-size="18" fill="#A96D7B">›</text>
+<text x="117" y="496" text-anchor="middle" font-family="Arial" font-size="10" fill="#A17F87">Você decide o que compartilhar.</text>
+<text x="117" y="519" text-anchor="middle" font-family="Arial" font-size="9" fill="#A17F87">INÍCIO　 CONVERSA　 OBJETIVOS　 PERFIL</text>
+</g>
+<text x="173" y="733" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#684451">01 · Acolher</text>
+<text x="463" y="733" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#684451">02 · Escutar</text>
+<text x="753" y="733" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#684451">03 · Orientar</text>
+<text x="1035" y="733" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#684451">04 · Respeitar</text>
+<text x="600" y="765" text-anchor="middle" font-family="Arial" font-size="11" fill="#987A82">PRÉVIA CONCEITUAL · AS TELAS NÃO REPRESENTAM FUNCIONALIDADES JÁ IMPLEMENTADAS</text>
+</svg>
