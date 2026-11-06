@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/norte-banner.svg" alt="NORTE — Encontre clareza. Defina um destino. Construa o caminho." width="100%" />
+  <img src="docs/norte-banner-rose.svg" alt="NORTE Rose Edition — Seu tempo. Sua história. Seu caminho." width="100%" />
 </p>
 
 # NORTE
