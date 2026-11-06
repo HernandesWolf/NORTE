@@ -87,7 +87,7 @@ As combinações finais de texto e fundo deverão respeitar contraste e acessibi
 - Acolhimento não significa infantilização nem concordância automática: a IA deve reconhecer limites e comunicar incertezas.
 - A interface deve ser responsiva, acessível e confortável em sessões curtas.
 
-> A Rose Edition é a direção visual aprovada para o produto. Sua aplicação completa no frontend, nos componentes e nos materiais gráficos ainda faz parte do desenvolvimento; esta documentação não representa funcionalidades ou telas já implementadas.
+> A Rose Edition já possui uma primeira implementação navegável no cliente Flutter. A interface ainda é um protótipo: não está conectada à API, não autentica usuários e não deve ser usada com dados reais.
 
 ## Visão de produto
 
@@ -126,7 +126,7 @@ Voz, aplicativo web em Next.js, pagamentos, gestão financeira, comunidade, gami
 <details>
 <summary><strong>Fase 1 — Fundação técnica</strong></summary>
 
-O repositório está na fase de construção do backend e da base de infraestrutura.
+O repositório contém a fundação do backend e a primeira versão navegável do cliente Flutter. A integração entre as duas partes ainda está pendente.
 
 **Já disponível no backend:**
 
@@ -165,14 +165,14 @@ Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e
 | Maven | Gerenciamento de dependências e build |
 | Docker Compose | Ambiente local do PostgreSQL |
 | Spring Boot Actuator | Monitoramento e health check |
-| Flutter | Aplicativo cliente planejado para o MVP |
+| Flutter | Aplicativo cliente; protótipo inicial em desenvolvimento |
 
 **Arquitetura atual:** monólito modular no backend, organizado para permitir evolução incremental sem antecipar complexidade desnecessária.
 
 ## Estrutura do repositório
 
     norte/
-    ├── backend/             # API Java + Spring Boot
+    ├── backend/             # API Java + Spring Boot\n    ├── frontend/            # Aplicativo Flutter (protótipo Rose Edition)
     ├── docs/                # Escopo, decisões e documentação
     ├── docker-compose.yml   # PostgreSQL para desenvolvimento local
     └── README.md
