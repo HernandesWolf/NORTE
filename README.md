@@ -5,20 +5,20 @@
 # NORTE
 
 <p align="center">
-  <strong>Encontre clareza. Defina um destino. Construa o caminho.</strong>
+  <strong>Seu tempo. Sua história. Seu caminho.</strong>
 </p>
 
 <p align="center">
-  Uma plataforma de orientação pessoal com inteligência artificial, pensada para ajudar pessoas a compreender sua situação atual, reconhecer possibilidades e transformar objetivos em próximos passos possíveis.
+  Uma plataforma de orientação pessoal com inteligência artificial, pensada para ajudar pessoas a compreender sua situação atual, reconhecer possibilidades e transformar objetivos em próximos passos possíveis — respeitando sua realidade, energia e circunstâncias.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21" />
   <img src="https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.5.7" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
+  <img src="https://img.shields.io/badge/Identidade-Rose_Edition-B87583" alt="Identidade Rose Edition" />
   <img src="https://img.shields.io/badge/Status-Em_desenvolvimento-8957e5" alt="Em desenvolvimento" />
 </p>
-
 
 ## Sobre o projeto
 
@@ -38,6 +38,56 @@ A experiência planejada combina conversa orientada por IA, compreensão progres
 - **Descontinuidade:** planos rígidos não acompanham mudanças de energia, rotina e circunstâncias.
 
 O NORTE pretende transformar esse cenário em um processo progressivo: compreender, organizar, escolher uma prioridade, agir e revisar o caminho.
+
+## Identidade visual e experiência
+
+A direção visual oficial do projeto é a **Rose Edition**: uma identidade delicada, acolhedora e sofisticada, construída para transmitir cuidado, tranquilidade e confiança sem infantilizar a experiência.
+
+A linguagem visual combina rose queimado, blush, nude, creme e vinho suave. O objetivo não é decorar uma ferramenta de produtividade, mas criar um ambiente digital confortável para pessoas que podem chegar cansadas, sobrecarregadas ou sem saber por onde começar.
+
+### Conceito da marca
+
+**Seu tempo. Sua história. Seu caminho.**
+
+A experiência deve comunicar quatro princípios:
+
+- **Acolhimento:** a pessoa pode começar de onde está, sem julgamento.
+- **Delicadeza:** hierarquia visual leve, espaços generosos e detalhes discretos.
+- **Direção:** orientação clara, sem impor um ritmo ou uma fórmula única.
+- **Esperança realista:** reconhecer possibilidades sem prometer resultados mágicos.
+
+### Paleta de cores
+
+| Cor | Código | Aplicação prevista |
+|---|---|---|
+| Rose | `#B87583` | Cor de identidade e elementos de destaque |
+| Blush | `#F3DDDF` | Superfícies suaves e realces |
+| Creme | `#F9F4EF` | Fundo principal |
+| Nude | `#E9DCD3` | Cartões e áreas de apoio |
+| Vinho suave | `#76505D` | Textos de destaque e elementos de contraste |
+| Champagne | `#D7C4B8` | Bordas e detalhes |
+| Verde suave | `#638875` | Estados positivos |
+| Âmbar | `#C18B52` | Alertas e atenção |
+
+As combinações finais de texto e fundo deverão respeitar contraste e acessibilidade. O rose é uma cor de identidade; elementos interativos poderão usar tons mais escuros quando necessário para garantir legibilidade.
+
+### Tipografia e componentes
+
+- **Fraunces:** títulos e chamadas pontuais, com personalidade editorial.
+- **DM Sans:** textos, formulários, navegação e conteúdo de leitura.
+- **Formas:** cartões com cantos suaves, espaços generosos e organização visual simples.
+- **Ícones:** traços leves e consistentes.
+- **Movimento:** animações discretas, sem efeitos que distraiam ou dificultem o uso.
+
+### Princípios de experiência
+
+- Uma tela não deve despejar uma lista de obrigações sobre a pessoa.
+- Planos e tarefas devem considerar energia, tempo e responsabilidades.
+- Mensagens devem ser humanas, respeitosas e honestas, sem culpa ou pressão.
+- Acolhimento não significa infantilização nem concordância automática: a IA deve reconhecer limites e comunicar incertezas.
+- A interface deve ser responsiva, acessível e confortável em sessões curtas.
+
+> A Rose Edition é a direção visual aprovada para o produto. Sua aplicação completa no frontend, nos componentes e nos materiais gráficos ainda faz parte do desenvolvimento; esta documentação não representa funcionalidades ou telas já implementadas.
 
 ## Visão de produto
 
@@ -95,6 +145,7 @@ O repositório está na fase de construção do backend e da base de infraestrut
 3. Criar a camada de integração com provedores de IA (AI Gateway), com limites de uso e acompanhamento de custos.
 4. Desenvolver a conversa orientada e o plano de ação.
 5. Construir o aplicativo Flutter e iniciar o piloto com usuários.
+6. Aplicar a Rose Edition ao frontend e documentar os componentes do design system.
 
 Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e a ordem de construção.
 
@@ -114,6 +165,7 @@ Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e
 | Maven | Gerenciamento de dependências e build |
 | Docker Compose | Ambiente local do PostgreSQL |
 | Spring Boot Actuator | Monitoramento e health check |
+| Flutter | Aplicativo cliente planejado para o MVP |
 
 **Arquitetura atual:** monólito modular no backend, organizado para permitir evolução incremental sem antecipar complexidade desnecessária.
 
@@ -159,7 +211,7 @@ A API ficará disponível em http://localhost:8080.
 | Método | Endpoint | Resultado esperado |
 |---|---|---|
 | GET | /api/v1/status | Status da aplicação NORTE |
-| GET | /actuator/health | {"status":"UP"} |
+| GET | /actuator/health | `{"status":"UP"}` |
 
 ## Endpoints disponíveis
 
@@ -225,5 +277,5 @@ GitHub: [@HernandesWolf](https://github.com/HernandesWolf)
 ---
 
 <p align="center">
-  <strong>NORTE — Clareza para escolher. Estrutura para avançar.</strong>
+  <strong>NORTE — Seu tempo. Sua história. Seu caminho.</strong>
 </p>
