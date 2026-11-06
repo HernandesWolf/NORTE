@@ -1,69 +1,226 @@
 # NORTE
 
-Plataforma de orientação pessoal com IA: ajuda a pessoa a entender onde está, descobrir para onde pode ir e construir o caminho.
+<p align="center">
+  <strong>Encontre clareza. Defina um destino. Construa o caminho.</strong>
+</p>
 
-> Estado atual: **Fase 1 — Fundação técnica**. Escopo fechado do MVP em `docs/MVP-ESCOPO.md`.
+<p align="center">
+  Uma plataforma de orientação pessoal com inteligência artificial, pensada para ajudar pessoas a compreender sua situação atual, reconhecer possibilidades e transformar objetivos em próximos passos possíveis.
+</p>
 
-## Estrutura
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.5.7" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
+  <img src="https://img.shields.io/badge/Status-Em_desenvolvimento-orange" alt="Em desenvolvimento" />
+</p>
 
-```
-norte/
-├── backend/            Java 21 + Spring Boot 3.5.x (monólito modular)
-├── docs/               Escopo do MVP, decisões e roadmap
-├── docker-compose.yml  PostgreSQL 16 para desenvolvimento local (porta 5433)
-└── README.md
-```
+---
 
-## Como rodar
+## Sobre o projeto
 
-Pré-requisitos: JDK 21+, Maven 3.9+, Docker Desktop (com WSL2 no Windows).
+Nem sempre falta capacidade ou vontade para mudar. Muitas vezes, falta clareza sobre por onde começar, energia para dar o primeiro passo ou um caminho que respeite a realidade de cada pessoa.
 
-```bash
-docker compose up -d      # banco em localhost:5433
-cd backend
-mvn test                  # testes (não precisam do banco)
-mvn spring-boot:run       # API em http://localhost:8080
-```
+O **NORTE** nasce com essa proposta: ser uma plataforma de orientação pessoal que ajude o usuário a sair da sensação de estar perdido e avançar com mais clareza, contexto e ações realistas.
 
-Verificação:
+A experiência planejada combina conversa orientada por IA, compreensão progressiva do contexto do usuário, definição de objetivos e planos de ação adaptáveis. A tecnologia deve apoiar a pessoa — não tratá-la como uma máquina de produtividade.
 
-- `GET /api/v1/status` → `{"app":"NORTE","status":"ok",...}`
-- `GET /actuator/health` → `{"status":"UP"}`
+> **Princípio do produto:** antes de indicar um caminho, é preciso entender a pessoa, o momento que ela vive e os recursos de que dispõe.
 
-## Autenticação (v0.2)
+## O problema que queremos resolver
 
-| Método | Rota | Acesso | Descrição |
+- **Falta de direção:** objetivos importantes parecem grandes ou difíceis demais para começar.
+- **Sobrecarga:** responsabilidades e imprevistos dificultam transformar intenção em ação.
+- **Orientação genérica:** conselhos que ignoram contexto, limitações e prioridades reais tendem a não funcionar.
+- **Descontinuidade:** planos rígidos não acompanham mudanças de energia, rotina e circunstâncias.
+
+O NORTE pretende transformar esse cenário em um processo progressivo: compreender, organizar, escolher uma prioridade, agir e revisar o caminho.
+
+## Visão de produto
+
+A experiência completa está sendo construída em etapas. A visão do produto inclui:
+
+1. **Compreensão:** conversa para conhecer o contexto, os desafios e as prioridades do usuário.
+2. **Clareza:** síntese do cenário e identificação de possibilidades, sempre sujeita à confirmação da pessoa.
+3. **Direção:** definição de objetivos e próximos passos compatíveis com a realidade apresentada.
+4. **Ação:** plano curto, tarefas e lembretes para facilitar o começo.
+5. **Adaptação:** revisão do progresso e ajuste do plano quando a vida não acontece como previsto.
+
+Esses itens representam a direção do produto; não significam que todas as funcionalidades já estejam implementadas.
+
+## Escopo do MVP
+
+O primeiro produto validável está concentrado em:
+
+- Cadastro, autenticação e gestão da conta.
+- Conversa com IA por texto.
+- Resumo do contexto, confirmável pelo usuário.
+- Perfil progressivo e memória básica sob controle do usuário.
+- Objetivos, plano de 7 dias, tarefas e lembretes.
+- Revisão do progresso e adaptação do plano.
+- Limites de uso e controle de custos da IA.
+
+O piloto terá como público inicial pessoas no Brasil que desejam entrar ou migrar para a área de tecnologia. Essa escolha reduz o escopo de validação sem limitar a visão futura do produto.
+
+### Fora do MVP inicial
+
+Voz, aplicativo web em Next.js, pagamentos, gestão financeira, comunidade, gamificação e integrações externas ficam para etapas posteriores.
+
+---
+
+## Estado atual do desenvolvimento
+
+<details>
+<summary><strong>Fase 1 — Fundação técnica</strong></summary>
+
+O repositório está na fase de construção do backend e da base de infraestrutura.
+
+**Já disponível no backend:**
+
+- API REST com Spring Boot.
+- Endpoint de status da aplicação.
+- Health check com Spring Boot Actuator.
+- Cadastro e login com autenticação baseada em JWT.
+- Consulta do perfil associado ao token autenticado.
+- Persistência com Spring Data JPA, PostgreSQL e Flyway.
+- Validação de dados e testes automatizados de backend.
+
+**Próximas entregas planejadas:**
+
+1. Evoluir autenticação com refresh token, logout e proteção contra tentativas excessivas.
+2. Implementar perfil progressivo e objetivos.
+3. Criar a camada de integração com provedores de IA (AI Gateway), com limites de uso e acompanhamento de custos.
+4. Desenvolver a conversa orientada e o plano de ação.
+5. Construir o aplicativo Flutter e iniciar o piloto com usuários.
+
+Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e a ordem de construção.
+
+</details>
+
+## Tecnologias
+
+| Tecnologia | Papel no projeto |
+|---|---|
+| Java 21 | Linguagem do backend |
+| Spring Boot 3.5.7 | Estrutura da aplicação e API REST |
+| Spring Security | Segurança e autenticação |
+| JWT | Autenticação stateless |
+| Spring Data JPA | Persistência e acesso a dados |
+| PostgreSQL 16 | Banco de dados relacional |
+| Flyway | Versionamento e migração do banco |
+| Maven | Gerenciamento de dependências e build |
+| Docker Compose | Ambiente local do PostgreSQL |
+| Spring Boot Actuator | Monitoramento e health check |
+
+**Arquitetura atual:** monólito modular no backend, organizado para permitir evolução incremental sem antecipar complexidade desnecessária.
+
+## Estrutura do repositório
+
+    norte/
+    ├── backend/             # API Java + Spring Boot
+    ├── docs/                # Escopo, decisões e documentação
+    ├── docker-compose.yml   # PostgreSQL para desenvolvimento local
+    └── README.md
+
+## Como executar localmente
+
+### Pré-requisitos
+
+- JDK 21 ou superior.
+- Maven 3.9 ou superior.
+- Docker Desktop com WSL2 no Windows (ou Docker Engine em Linux/macOS).
+
+### 1. Inicie o banco de dados
+
+Na raiz do projeto:
+
+    docker compose up -d
+
+O PostgreSQL ficará disponível em localhost:5433.
+
+> As credenciais definidas no Docker Compose são exclusivas para desenvolvimento local. Não as utilize em produção.
+
+### 2. Execute os testes
+
+    cd backend
+    mvn test
+
+### 3. Inicie a API
+
+    mvn spring-boot:run
+
+A API ficará disponível em http://localhost:8080.
+
+### 4. Verifique a aplicação
+
+| Método | Endpoint | Resultado esperado |
+|---|---|---|
+| GET | /api/v1/status | Status da aplicação NORTE |
+| GET | /actuator/health | {"status":"UP"} |
+
+## Endpoints disponíveis
+
+| Método | Rota | Acesso | Finalidade |
 |---|---|---|---|
-| POST | `/api/v1/auth/registro` | público | Cria conta (e-mail + senha de 8 a 72 caracteres) |
-| POST | `/api/v1/auth/login` | público | Retorna `accessToken` (JWT, validade de 15 min) |
-| GET | `/api/v1/me` | token | Perfil do dono do token |
+| POST | /api/v1/auth/registro | Público | Criar uma conta |
+| POST | /api/v1/auth/login | Público | Autenticar e obter access token |
+| GET | /api/v1/me | Autenticado | Consultar o perfil do usuário autenticado |
+| GET | /api/v1/status | Conforme configuração da API | Verificar o status da aplicação |
+| GET | /actuator/health | Conforme configuração do Actuator | Verificar a saúde da aplicação |
 
-Decisões de segurança:
+### Exemplo de autenticação com PowerShell
 
-- Senha guardada só como hash **BCrypt** (custo 12). Nunca em texto puro, nunca devolvida pela API.
-- API **stateless**: JWT HS256 no cabeçalho `Authorization: Bearer <token>`.
-- `/me` usa o usuário do **token**, nunca de parâmetro da URL.
-- Login devolve a mesma mensagem para e-mail inexistente e senha errada, e gasta tempo equivalente nos dois casos.
-- Segredo do JWT vem de `NORTE_JWT_SECRET`. O valor padrão serve **só para desenvolvimento**; com o perfil `prod` ativo, a aplicação se recusa a iniciar com ele.
+Com a API em execução:
 
-Teste manual (PowerShell, com a API rodando):
+    $u = "http://localhost:8080/api/v1"
 
-```powershell
-$u = "http://localhost:8080/api/v1"
-$cred = @{ email = "ana@exemplo.com"; senha = "senhaforte123"; nomeExibicao = "Ana" } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri "$u/auth/registro" -ContentType "application/json" -Body $cred
-$t = Invoke-RestMethod -Method Post -Uri "$u/auth/login" -ContentType "application/json" -Body $cred
-Invoke-RestMethod -Uri "$u/me" -Headers @{ Authorization = "Bearer $($t.accessToken)" }
-```
+    $cred = @{
+        email = "ana@exemplo.com"
+        senha = "senhaforte123"
+        nomeExibicao = "Ana"
+    } | ConvertTo-Json
 
-## Limitações conhecidas
+    # Cadastro
+    Invoke-RestMethod -Method Post -Uri "$u/auth/registro" -ContentType "application/json" -Body $cred
 
-- Ainda **não há** refresh token, logout com revogação, limite de tentativas de login (rate limiting) nem recuperação de senha. São as próximas etapas.
-- Cadastro revela se um e-mail já existe (mensagem de conflito). Aceito no MVP; reavaliar quando houver verificação de e-mail.
-- Testes de integração com banco real (Testcontainers) ainda não foram adicionados.
+    # Login
+    $t = Invoke-RestMethod -Method Post -Uri "$u/auth/login" -ContentType "application/json" -Body $cred
 
-## Próximos passos
+    # Consulta do perfil autenticado
+    Invoke-RestMethod -Uri "$u/me" -Headers @{
+        Authorization = "Bearer $($t.accessToken)"
+    }
 
-1. Refresh token, logout e rate limiting no login.
-2. Perfil progressivo e objetivos.
-3. AI Gateway (interface independente de provedor) com limites de uso e custo.
+## Segurança e privacidade
+
+Segurança e privacidade fazem parte dos requisitos desde a fundação do projeto.
+
+- Senhas são armazenadas com hash BCrypt; nunca em texto puro.
+- A autenticação utiliza JWT no cabeçalho Authorization: Bearer <token>.
+- O endpoint de perfil identifica o usuário pelo token autenticado, não por um identificador informado na URL.
+- O segredo JWT é configurado por variável de ambiente (NORTE_JWT_SECRET).
+- O segredo padrão é destinado somente ao ambiente de desenvolvimento; com o perfil prod, a aplicação não deve iniciar usando esse valor padrão.
+- O escopo do MVP prevê consentimento claro para uso de IA, exportação e exclusão de conta e não utilização dos dados pessoais para treinamento de modelos.
+
+### Limitações conhecidas
+
+O projeto ainda está em desenvolvimento. Entre os itens pendentes estão refresh token, revogação de sessão no logout, rate limiting, recuperação de senha e testes de integração com banco real. Esses pontos devem ser tratados antes de uma disponibilização pública adequada.
+
+## Documentação
+
+- [Escopo fechado do MVP](docs/MVP-ESCOPO.md)
+
+## Contribuição
+
+O NORTE está em desenvolvimento ativo. Sugestões, críticas técnicas e ideias são bem-vindas. Para mudanças maiores, abra uma issue antes de iniciar uma implementação, para que o escopo e a direção do projeto possam ser alinhados.
+
+## Autor
+
+**Hernandes Zion**  
+GitHub: [@HernandesWolf](https://github.com/HernandesWolf)
+
+---
+
+<p align="center">
+  <strong>NORTE — Clareza para escolher. Estrutura para avançar.</strong>
+</p>
