@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/norte-banner.svg" alt="NORTE — Encontre clareza. Defina um destino. Construa o caminho." width="100%" />
+</p>
+
 # NORTE
 
 <p align="center">
@@ -12,10 +16,9 @@
   <img src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21" />
   <img src="https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.5.7" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
-  <img src="https://img.shields.io/badge/Status-Em_desenvolvimento-orange" alt="Em desenvolvimento" />
+  <img src="https://img.shields.io/badge/Status-Em_desenvolvimento-8957e5" alt="Em desenvolvimento" />
 </p>
 
----
 
 ## Sobre o projeto
 
