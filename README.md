@@ -1,189 +1,169 @@
 <p align="center">
-  <img src="docs/norte-banner-rose.svg" alt="NORTE Rose Edition — Seu tempo. Sua história. Seu caminho." width="100%" />
+  <img src="docs/norte-banner-rose.svg" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
 </p>
 
 <h1 align="center">NORTE</h1>
 
 <p align="center">
-  <strong>Seu tempo. Sua história. Seu caminho.</strong>
+  <strong>Seu tempo. Sua história. Seu caminho.</strong><br/>
+  <em>Uma tecnologia que começa escutando.</em>
 </p>
 
 <p align="center">
-  Uma plataforma de orientação pessoal com inteligência artificial para ajudar pessoas a compreender o momento que vivem, encontrar clareza e transformar possibilidades em próximos passos realistas.
+  O NORTE é uma plataforma de orientação pessoal em desenvolvimento. Sua proposta é ajudar pessoas a compreender o momento que vivem, organizar prioridades e construir próximos passos que respeitem sua realidade.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21" />
   <img src="https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.5.7" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
-  <img src="https://img.shields.io/badge/Flutter-Em_desenvolvimento-02569B?logo=flutter&logoColor=white" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Flutter-protótipo-02569B?logo=flutter&logoColor=white" alt="Flutter" />
   <img src="https://img.shields.io/badge/Identidade-Rose_Edition-B87583" alt="Rose Edition" />
   <img src="https://img.shields.io/badge/Status-Em_desenvolvimento-8957e5" alt="Em desenvolvimento" />
 </p>
 
 ---
 
-## Antes de qualquer plano, existe uma pessoa.
+## A ideia por trás do NORTE
 
-Nem sempre falta capacidade, vontade ou disciplina para mudar. Às vezes, a pessoa está cansada. Tem responsabilidades demais, não sabe por onde começar ou já tentou seguir planos que não cabiam na sua realidade.
+Nem sempre uma pessoa precisa de mais uma lista de tarefas, de uma cobrança ou de um conselho pronto.
 
-Ela não precisa necessariamente de mais uma lista de cobranças. Pode precisar de um espaço para organizar o que está acontecendo, reconhecer o que é possível agora e dar um primeiro passo sem se sentir julgada.
+Às vezes, ela precisa parar por um instante, entender o que está acontecendo e enxergar uma possibilidade de cada vez. Pode estar enfrentando uma mudança de carreira, responsabilidades acumuladas, insegurança, cansaço ou simplesmente a sensação de ter perdido a direção.
 
-O **NORTE** nasce dessa ideia.
+O NORTE nasce de uma convicção: **nenhum planejamento deveria ignorar a pessoa que terá de vivê-lo.**
 
-Queremos construir uma tecnologia que ajude pessoas a encontrar clareza e direção sem ignorar aquilo que as torna humanas: seus limites, sentimentos, responsabilidades, histórias e possibilidades.
-
-<p align="center">
-  <img src="docs/norte-momento-humano.svg" alt="Ilustração conceitual NORTE: uma pessoa fazendo uma pausa perto da janela. Você não precisa ter todas as respostas para começar." width="100%" />
-</p>
-
-> **Acreditamos que um caminho só faz sentido quando considera a pessoa que precisa percorrê-lo.**
-
-## Como imaginamos essa experiência
-
-O NORTE não deve tratar todo mundo como alguém que só precisa produzir mais. Uma pessoa pode chegar querendo mudar de carreira, reorganizar a rotina, recuperar a confiança para começar, lidar com muitas responsabilidades ou simplesmente entender o que está acontecendo.
-
-A experiência que estamos construindo procura seguir quatro movimentos:
-
-1. **Acolher:** receber a pessoa sem julgamento e entender como ela está chegando.
-2. **Escutar:** conhecer seu contexto antes de oferecer respostas prontas.
-3. **Orientar:** transformar o que foi compreendido em possibilidades e próximos passos.
-4. **Respeitar:** adaptar o caminho ao tempo, à energia e às circunstâncias de cada pessoa.
+Queremos construir uma experiência que escute antes de orientar, considere o contexto antes de sugerir e ajude a transformar intenção em passos possíveis — sem julgamentos, fórmulas mágicas ou promessas irreais.
 
 <p align="center">
-  <img src="docs/norte-experiencia-rose.svg" alt="Quatro telas conceituais do NORTE: início, conversa, objetivos e perfil." width="100%" />
+  <img src="docs/norte-momento-humano.svg" alt="Conceito NORTE: uma pausa para respirar, refletir e encontrar um próximo passo." width="100%" />
 </p>
+
+> **A vida não acontece em uma planilha perfeita. A tecnologia precisa aprender a respeitar isso.**
+
+## Como queremos que a experiência funcione
+
+O NORTE está sendo pensado como um processo de orientação contínua, não como um gerador automático de metas.
+
+1. **Acolher:** entender como a pessoa chega, sem julgamento.
+2. **Escutar:** conhecer sua história, seu contexto, suas responsabilidades e seus limites.
+3. **Organizar:** ajudar a separar preocupações, prioridades e possibilidades.
+4. **Orientar:** construir próximos passos claros e realistas, com participação da própria pessoa.
+5. **Adaptar:** rever o caminho quando a vida mudar — porque ela vai mudar.
 
 <p align="center">
-  <em>Prévia conceitual da experiência mobile — não representa funcionalidades já implementadas.</em>
+  <img src="docs/norte-experiencia-rose.svg" alt="Conceito visual das experiências Início, Conversa, Objetivos e Perfil do NORTE." width="100%" />
 </p>
 
-### O que essas telas representam
+<p align="center"><em>Conceito visual da experiência mobile. As telas não representam funcionalidades concluídas.</em></p>
 
-| Experiência | O que queremos transmitir |
-|---|---|
-| **Início** | Um primeiro contato acolhedor, sem pressão para resolver tudo de uma vez. |
-| **Conversa** | Um espaço para organizar pensamentos e compreender prioridades. |
-| **Objetivos** | Pequenos passos que façam sentido na rotina real da pessoa. |
-| **Meu espaço** | Clareza e controle sobre perfil, preferências e dados pessoais. |
+### Princípios de produto
 
-**Transparência:** as imagens acima são conceitos visuais criados para comunicar a direção do produto. O aplicativo Flutter já possui um protótipo navegável, mas as telas conceituais não são capturas de funcionalidades prontas. A conversa ainda não utiliza IA, os dados demonstrativos não são persistidos e o cliente ainda não está integrado à API.
+- **Humanidade antes da produtividade:** a pessoa não é uma máquina de cumprir metas.
+- **Contexto antes de conselho:** recomendações precisam considerar a realidade apresentada.
+- **Autonomia:** a pessoa participa das decisões e pode corrigir o que o sistema entendeu.
+- **Pequenos passos:** progresso sustentável vale mais do que planos grandiosos e impraticáveis.
+- **Transparência:** deixar claro o que é funcional, o que é protótipo e o que ainda é visão.
+- **Privacidade desde a concepção:** dados pessoais exigem cuidado, finalidade clara e controle.
 
-## O problema que queremos ajudar a resolver
+## O problema que queremos enfrentar
 
-- **Falta de direção:** objetivos importantes parecem grandes demais para começar.
-- **Sobrecarga:** responsabilidades e imprevistos dificultam transformar intenção em ação.
-- **Orientação genérica:** conselhos que ignoram contexto, limitações e prioridades reais tendem a não funcionar.
-- **Planos rígidos:** a vida muda, mas muitos planejamentos não mudam com ela.
-- **Dificuldade de recomeçar:** uma interrupção pode virar culpa, desânimo e abandono.
+Muitas ferramentas ajudam a registrar tarefas. Outras oferecem conteúdos motivacionais ou planos padronizados. Mas existe um espaço importante entre saber que algo precisa mudar e conseguir descobrir por onde começar.
 
-O NORTE pretende apoiar um processo contínuo: compreender, organizar, escolher uma prioridade, agir e revisar o caminho. Não promete resolver a vida de ninguém nem substitui acompanhamento profissional quando ele é necessário.
+O NORTE pretende trabalhar nesse espaço:
 
-<p align="center">
-  <img src="docs/norte-escuta.svg" alt="Ilustração conceitual: uma experiência que começa pela escuta e pelo acolhimento." width="100%" />
-</p>
+- quando tudo parece urgente e falta clareza sobre prioridades;
+- quando um objetivo é importante, mas parece grande demais;
+- quando a rotina real não combina com o planejamento ideal;
+- quando uma interrupção vira culpa e faz a pessoa abandonar o caminho;
+- quando orientações genéricas não consideram as circunstâncias individuais.
+
+O produto não promete resolver a vida de ninguém e não substitui psicólogos, médicos, consultores financeiros ou outros profissionais. Sua proposta é apoiar reflexão, organização e tomada de decisão cotidiana.
 
 ## Identidade visual — Rose Edition
 
-A direção visual oficial é delicada, acolhedora e sofisticada, sem infantilizar a experiência ou restringi-la a um único público.
+A Rose Edition é a direção visual escolhida para o NORTE: delicada, adulta, acolhedora e sofisticada. A intenção é transmitir proximidade e tranquilidade sem infantilizar a interface ou restringir o produto a um único público.
 
-### Paleta
-
-| Cor | Código | Uso previsto |
+| Cor | Código | Aplicação |
 |---|---|---|
-| Rose | `#B87583` | Identidade e destaques |
-| Blush | `#F3DDDF` | Superfícies e realces suaves |
-| Creme | `#F9F4EF` | Fundo principal |
-| Nude | `#E9DCD3` | Cartões e áreas de apoio |
-| Vinho suave | `#76505D` | Textos e elementos de contraste |
-| Champagne | `#D7C4B8` | Bordas e detalhes |
-| Verde suave | `#638875` | Estados positivos |
-| Âmbar | `#C18B52` | Atenção e alertas |
+| Rose | \`#B87583\` | Identidade e destaques |
+| Blush | \`#F3DDDF\` | Superfícies e realces suaves |
+| Creme | \`#F9F4EF\` | Fundo principal |
+| Nude | \`#E9DCD3\` | Cartões e áreas de apoio |
+| Vinho suave | \`#76505D\` | Textos e contraste |
+| Champagne | \`#D7C4B8\` | Bordas e detalhes |
+| Verde suave | \`#638875\` | Estados positivos |
+| Âmbar | \`#C18B52\` | Atenção e alertas |
 
-### Direção de interface
-
-- **Tipografia planejada:** Fraunces para títulos e DM Sans para interface e leitura.
-- **Componentes:** cartões com cantos suaves, hierarquia clara e espaços generosos.
-- **Ícones:** traços leves e consistentes.
-- **Movimento:** animações discretas e funcionais.
-- **Acessibilidade:** contraste, legibilidade e responsividade devem prevalecer sobre escolhas puramente estéticas.
-
-## Visão de produto
-
-A experiência completa está sendo construída em etapas:
-
-1. **Compreensão:** conversa para conhecer contexto, desafios e prioridades.
-2. **Clareza:** síntese do cenário, sujeita à confirmação da pessoa.
-3. **Direção:** objetivos e próximos passos compatíveis com a realidade apresentada.
-4. **Ação:** plano curto, tarefas e lembretes para facilitar o começo.
-5. **Adaptação:** revisão do progresso e ajuste do plano quando as circunstâncias mudarem.
-
-Esses itens representam a visão do produto, não funcionalidades já concluídas.
+**Direção de interface:** tipografia planejada com Fraunces em títulos e DM Sans na leitura; cartões com cantos suaves; espaços generosos; ícones consistentes; movimento discreto; acessibilidade e legibilidade acima de efeitos decorativos.
 
 <p align="center">
-  <img src="docs/norte-clareza.svg" alt="Ilustração conceitual: pensamentos se organizam em prioridades claras." width="100%" />
+  <img src="docs/norte-escuta.svg" alt="Conceito visual de escuta e acolhimento." width="100%" />
 </p>
 
-## Escopo do MVP
+## Visão de produto e escopo
 
-O primeiro produto validável está concentrado em:
+A visão de longo prazo inclui conversa contextual, organização de objetivos, planos adaptáveis, acompanhamento de progresso e lembretes. A construção será incremental: primeiro uma base segura e validável; depois, recursos que comprovem utilidade real.
+
+### Recorte inicial do MVP
 
 - Cadastro, autenticação e gestão da conta.
 - Conversa com IA por texto.
-- Resumo do contexto, confirmável pelo usuário.
+- Síntese do contexto compreendido, sujeita à confirmação da pessoa.
 - Perfil progressivo e memória básica sob controle do usuário.
 - Objetivos, plano de 7 dias, tarefas e lembretes.
 - Revisão do progresso e adaptação do plano.
 - Limites de uso e controle de custos da IA.
 
-O piloto inicial será direcionado a pessoas no Brasil que desejam entrar ou migrar para a área de tecnologia. Esse recorte reduz o escopo da validação sem limitar a visão futura do NORTE.
+O primeiro piloto está sendo recortado para pessoas no Brasil que desejam entrar ou migrar para a área de tecnologia. Esse foco serve para validar a experiência com um público definido; não limita a visão futura do produto.
 
 ### Fora do MVP inicial
 
-Voz, aplicativo web em Next.js, pagamentos, gestão financeira, comunidade, gamificação e integrações externas ficam para etapas posteriores.
+Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, comunidade, gamificação e integrações externas ficam para etapas posteriores.
 
 <p align="center">
-  <img src="docs/norte-passos.svg" alt="Ilustração conceitual: progresso em pequenos passos que podem ser ajustados." width="100%" />
+  <img src="docs/norte-clareza.svg" alt="Conceito visual de organização de pensamentos e prioridades." width="100%" />
 </p>
 
 ---
 
-## Estado atual do desenvolvimento
+## Estado real do desenvolvimento
 
-O repositório contém a fundação do backend e a primeira versão navegável do cliente Flutter. A integração entre as duas partes ainda está pendente.
+O NORTE já possui uma fundação de backend e um protótipo Flutter navegável. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
 
-### Backend — disponível
+### Backend — fundação implementada
 
-- API REST com Spring Boot.
+- API REST com Java 21 e Spring Boot 3.5.7.
 - Cadastro e login com autenticação baseada em JWT.
 - Consulta do perfil associado ao token autenticado.
-- Persistência com Spring Data JPA, PostgreSQL e Flyway.
-- Endpoint de status e health check com Spring Boot Actuator.
+- Persistência com Spring Data JPA e PostgreSQL 16.
+- Migrações de banco com Flyway.
 - Validação de dados e testes automatizados.
+- Status da aplicação e health check com Spring Boot Actuator.
 
-### Flutter — protótipo navegável
+### Aplicativo Flutter — protótipo navegável
 
-- Tela de entrada e criação de conta demonstrativas.
+- Fluxos demonstrativos de entrada e criação de conta.
 - Visão inicial com check-in de estado e foco atual.
-- Tela de conversa com envio local de mensagens, sem IA conectada.
-- Objetivos e tarefas de demonstração com marcação local.
+- Conversa com envio local de mensagens, ainda sem IA conectada.
+- Objetivos e tarefas demonstrativos, com marcação local.
 - Área de perfil com opções ilustrativas de privacidade e gestão de dados.
 - Primeira aplicação da identidade Rose Edition.
 
-### Próximas entregas planejadas
+### O que ainda falta
 
 1. Refinar estrutura, acessibilidade e responsividade do Flutter.
 2. Evoluir autenticação com refresh token, logout e proteção contra tentativas excessivas.
-3. Implementar perfil progressivo, objetivos e tarefas na API.
-4. Criar o AI Gateway, conversa orientada e plano de ação com limites de custo.
-5. Integrar o aplicativo à API com tratamento seguro de sessão, erros e carregamento.
-6. Executar testes de autorização, isolamento e privacidade antes de qualquer piloto.
+3. Implementar perfil progressivo, objetivos e tarefas persistidos na API.
+4. Criar o AI Gateway e a conversa orientada, com limites de custo.
+5. Integrar o aplicativo Flutter à API, incluindo sessão, erros e estados de carregamento.
+6. Implementar controles de privacidade e gestão de dados.
+7. Ampliar testes de integração, autorização e isolamento antes de qualquer piloto.
 
-Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e a ordem de construção.
+A interface atual não consome a API; mensagens, objetivos e tarefas do protótipo são demonstrativos e locais. Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para o recorte funcional e a ordem planejada de construção.
 
 ## Tecnologias
 
-| Tecnologia | Papel |
+| Tecnologia | Responsabilidade |
 |---|---|
 | Java 21 | Linguagem do backend |
 | Spring Boot 3.5.7 | Aplicação e API REST |
@@ -191,26 +171,26 @@ Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para ver o recorte funcional e
 | JWT | Autenticação stateless |
 | Spring Data JPA | Persistência e acesso a dados |
 | PostgreSQL 16 | Banco de dados relacional |
-| Flyway | Versionamento e migração do banco |
+| Flyway | Versionamento do banco |
 | Maven | Dependências e build |
 | Docker Compose | Ambiente local do PostgreSQL |
 | Spring Boot Actuator | Monitoramento e health check |
 | Flutter | Aplicativo cliente |
 
-**Arquitetura atual:** monólito modular no backend, organizado para permitir evolução incremental sem antecipar complexidade desnecessária.
+**Arquitetura atual:** monólito modular no backend. A prioridade é manter uma base compreensível, testável e segura, evitando complexidade prematura.
 
 ## Estrutura do repositório
 
-```text
+\`\`\`text
 norte/
 ├── backend/             # API Java + Spring Boot
-├── frontend/            # Aplicativo Flutter (protótipo Rose Edition)
+├── frontend/            # Aplicativo Flutter (protótipo)
 ├── docs/                # Escopo, decisões e conceitos visuais
 ├── docker-compose.yml   # PostgreSQL para desenvolvimento local
 └── README.md
-```
+\`\`\`
 
-## Como executar localmente
+## Executar localmente
 
 ### Pré-requisitos
 
@@ -219,69 +199,69 @@ norte/
 - Docker Desktop com WSL2 no Windows (ou Docker Engine em Linux/macOS).
 - Flutter SDK para executar o cliente.
 
-### 1. Inicie o banco de dados
+### 1. Iniciar o banco de dados
 
 Na raiz do projeto:
 
-```bash
+\`\`\`bash
 docker compose up -d
-```
+\`\`\`
 
-O PostgreSQL ficará disponível em `localhost:5433`.
+O PostgreSQL ficará disponível em \`localhost:5433\`.
 
 > As credenciais do Docker Compose são exclusivas para desenvolvimento local. Não as utilize em produção.
 
-### 2. Execute os testes do backend
+### 2. Executar os testes do backend
 
-```bash
+\`\`\`bash
 cd backend
 mvn test
-```
+\`\`\`
 
-### 3. Inicie a API
+### 3. Iniciar a API
 
-Ainda na pasta `backend`:
+Ainda na pasta \`backend\`:
 
-```bash
+\`\`\`bash
 mvn spring-boot:run
-```
+\`\`\`
 
-A API ficará disponível em `http://localhost:8080`.
+A API ficará disponível em \`http://localhost:8080\`.
 
-### 4. Execute o aplicativo Flutter
+### 4. Executar o protótipo Flutter
 
 Em outro terminal:
 
-```bash
+\`\`\`bash
 cd frontend
 flutter pub get
 flutter run -d chrome
-```
+\`\`\`
 
-O comando acima executa a versão Web do protótipo. A interface ainda não consome a API.
+O comando executa a versão Web do protótipo. A interface ainda não consome a API.
 
-### 5. Verifique a API
+### 5. Verificar a API
 
-| Método | Endpoint | Resultado esperado |
+| Método | Endpoint | Finalidade |
 |---|---|---|
-| GET | `/api/v1/status` | Status da aplicação NORTE |
-| GET | `/actuator/health` | `{"status":"UP"}` |
+| GET | \`/api/v1/status\` | Status da aplicação |
+| GET | \`/actuator/health\` | Health check |
 
-## Endpoints disponíveis
+## Endpoints implementados
 
 | Método | Rota | Acesso | Finalidade |
 |---|---|---|---|
-| POST | `/api/v1/auth/registro` | Público | Criar uma conta |
-| POST | `/api/v1/auth/login` | Público | Autenticar e obter access token |
-| GET | `/api/v1/me` | Autenticado | Consultar o perfil do usuário autenticado |
-| GET | `/api/v1/status` | Conforme configuração | Verificar o status da aplicação |
-| GET | `/actuator/health` | Conforme configuração | Verificar a saúde da aplicação |
+| POST | \`/api/v1/auth/registro\` | Público | Criar uma conta |
+| POST | \`/api/v1/auth/login\` | Público | Autenticar e obter access token |
+| GET | \`/api/v1/me\` | Autenticado | Consultar o perfil do usuário autenticado |
+| GET | \`/api/v1/status\` | Conforme configuração | Verificar o status da aplicação |
+| GET | \`/actuator/health\` | Conforme configuração | Verificar a saúde da aplicação |
 
 ### Exemplo de autenticação com PowerShell
 
 Com a API em execução:
 
-```powershell
+\`\`\`powershell
 $u = "http://localhost:8080/api/v1"
 
 $cred = @{
@@ -300,42 +280,42 @@ $t = Invoke-RestMethod -Method Post -Uri "$u/auth/login" -ContentType "applicati
 Invoke-RestMethod -Uri "$u/me" -Headers @{
     Authorization = "Bearer $($t.accessToken)"
 }
-```
+\`\`\`
 
 Use apenas dados fictícios ao testar localmente.
 
-## Segurança e privacidade
+## Segurança, privacidade e limites atuais
 
-Segurança e privacidade fazem parte dos requisitos desde a fundação do projeto.
+Segurança e privacidade são requisitos de projeto, não itens cosméticos.
 
 - Senhas são armazenadas com hash BCrypt, nunca em texto puro.
-- A autenticação utiliza JWT no cabeçalho `Authorization: Bearer <token>`.
+- A autenticação utiliza JWT no cabeçalho \`Authorization: Bearer <token>\`.
 - O endpoint de perfil identifica o usuário pelo token autenticado, não por um identificador informado na URL.
-- O segredo JWT é configurado por variável de ambiente (`NORTE_JWT_SECRET`).
-- O segredo padrão é destinado somente ao ambiente de desenvolvimento; com o perfil `prod`, a aplicação deve rejeitar esse valor padrão.
-- O escopo do MVP prevê consentimento claro para uso de IA, exportação e exclusão de conta e não utilização dos dados pessoais para treinamento de modelos.
+- O segredo JWT é configurado por variável de ambiente (\`NORTE_JWT_SECRET\`).
+- O segredo padrão é destinado somente ao desenvolvimento; com o perfil \`prod\`, a aplicação deve rejeitar esse valor padrão.
+- O escopo prevê consentimento claro para uso de IA, exportação e exclusão de conta e não utilização de dados pessoais para treinamento de modelos.
+
+<p align="center">
+  <img src="docs/norte-privacidade.svg" alt="Conceito visual de privacidade e controle dos dados." width="100%" />
+</p>
 
 ### Limitações conhecidas
 
-<p align="center">
-  <img src="docs/norte-privacidade.svg" alt="Ilustração conceitual: privacidade e controle dos dados desde o início." width="100%" />
-</p>
-
-O projeto ainda está em desenvolvimento e não está pronto para uso com dados reais. Entre os itens pendentes estão refresh token, revogação de sessão no logout, rate limiting, recuperação de senha e testes de integração com banco real. A integração segura entre Flutter e API, além dos testes de autorização, isolamento e privacidade, também precisa ser concluída antes de um piloto.
+O projeto ainda não está pronto para uso com dados reais. Permanecem pendentes, entre outros itens, refresh token, revogação de sessão no logout, rate limiting, recuperação de senha, integração segura entre Flutter e API e testes de integração com banco real. Os controles de privacidade previstos também precisam ser implementados e validados antes de um piloto.
 
 ## Documentação
 
-- [Escopo fechado do MVP](docs/MVP-ESCOPO.md)
+- [Escopo do MVP](docs/MVP-ESCOPO.md)
 - [Conceito visual — experiência mobile Rose Edition](docs/norte-experiencia-rose.svg)
-- [Ilustração — momento humano](docs/norte-momento-humano.svg)
-- [Ilustração — escuta e acolhimento](docs/norte-escuta.svg)
-- [Ilustração — clareza e prioridades](docs/norte-clareza.svg)
-- [Ilustração — passos adaptáveis](docs/norte-passos.svg)
-- [Ilustração — privacidade](docs/norte-privacidade.svg)
+- [Momento humano](docs/norte-momento-humano.svg)
+- [Escuta e acolhimento](docs/norte-escuta.svg)
+- [Clareza e prioridades](docs/norte-clareza.svg)
+- [Passos adaptáveis](docs/norte-passos.svg)
+- [Privacidade](docs/norte-privacidade.svg)
 
 ## Contribuição
 
-O NORTE está em desenvolvimento ativo. Sugestões, críticas técnicas e ideias são bem-vindas. Para mudanças maiores, abra uma issue antes de iniciar uma implementação, para que o escopo e a direção do projeto possam ser alinhados.
+O NORTE está em desenvolvimento ativo. Sugestões, críticas técnicas e ideias são bem-vindas. Para mudanças maiores, abra uma issue antes de iniciar uma implementação, para que escopo e direção possam ser alinhados.
 
 ## Autor
 
