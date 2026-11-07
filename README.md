@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/norte-banner-rose.svg" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
+  <img src="docs/norte-banner-rose-v2.svg" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
 </p>
 
 <h1 align="center">NORTE</h1>
@@ -35,7 +35,7 @@ O NORTE nasce de uma convicção: **nenhum planejamento deveria ignorar a pessoa
 Queremos construir uma experiência que escute antes de orientar, considere o contexto antes de sugerir e ajude a transformar intenção em passos possíveis — sem julgamentos, fórmulas mágicas ou promessas irreais.
 
 <p align="center">
-  <img src="docs/norte-momento-humano.svg" alt="Conceito NORTE: uma pausa para respirar, refletir e encontrar um próximo passo." width="100%" />
+  <img src="docs/norte-momento-humano-v2.svg" alt="Conceito NORTE: uma pausa para respirar, refletir e encontrar um próximo passo." width="100%" />
 </p>
 
 > **A vida não acontece em uma planilha perfeita. A tecnologia precisa aprender a respeitar isso.**
@@ -51,7 +51,7 @@ O NORTE está sendo pensado como um processo de orientação contínua, não com
 5. **Adaptar:** rever o caminho quando a vida mudar — porque ela vai mudar.
 
 <p align="center">
-  <img src="docs/norte-experiencia-rose.svg" alt="Conceito visual das experiências Início, Conversa, Objetivos e Perfil do NORTE." width="100%" />
+  <img src="docs/norte-experiencia-rose-v2.svg" alt="Conceito visual das experiências Início, Conversa, Objetivos e Perfil do NORTE." width="100%" />
 </p>
 
 <p align="center"><em>Conceito visual da experiência mobile. As telas não representam funcionalidades concluídas.</em></p>
@@ -97,7 +97,7 @@ A Rose Edition é a direção visual escolhida para o NORTE: delicada, adulta, a
 **Direção de interface:** tipografia planejada com Fraunces em títulos e DM Sans na leitura; cartões com cantos suaves; espaços generosos; ícones consistentes; movimento discreto; acessibilidade e legibilidade acima de efeitos decorativos.
 
 <p align="center">
-  <img src="docs/norte-escuta.svg" alt="Conceito visual de escuta e acolhimento." width="100%" />
+  <img src="docs/norte-principios-rose.svg" alt="Conceito visual de escuta e acolhimento." width="100%" />
 </p>
 
 ## Visão de produto e escopo
@@ -296,7 +296,7 @@ Segurança e privacidade são requisitos de projeto, não itens cosméticos.
 - O escopo prevê consentimento claro para uso de IA, exportação e exclusão de conta e não utilização de dados pessoais para treinamento de modelos.
 
 <p align="center">
-  <img src="docs/norte-privacidade.svg" alt="Conceito visual de privacidade e controle dos dados." width="100%" />
+  <img src="docs/norte-privacidade-rose-v2.svg" alt="Conceito visual de privacidade e controle dos dados." width="100%" />
 </p>
 
 ### Limitações conhecidas
@@ -306,12 +306,12 @@ O projeto ainda não está pronto para uso com dados reais. Permanecem pendentes
 ## Documentação
 
 - [Escopo do MVP](docs/MVP-ESCOPO.md)
-- [Conceito visual — experiência mobile Rose Edition](docs/norte-experiencia-rose.svg)
-- [Momento humano](docs/norte-momento-humano.svg)
-- [Escuta e acolhimento](docs/norte-escuta.svg)
+- [Conceito visual — experiência mobile Rose Edition](docs/norte-experiencia-rose-v2.svg)
+- [Momento humano](docs/norte-momento-humano-v2.svg)
+- [Escuta e acolhimento](docs/norte-principios-rose.svg)
 - [Clareza e prioridades](docs/norte-clareza.svg)
 - [Passos adaptáveis](docs/norte-passos.svg)
-- [Privacidade](docs/norte-privacidade.svg)
+- [Privacidade](docs/norte-privacidade-rose-v2.svg)
 
 ## Contribuição
 
