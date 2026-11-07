@@ -79,6 +79,10 @@ A experiência que estamos construindo procura seguir quatro movimentos:
 
 O NORTE pretende apoiar um processo contínuo: compreender, organizar, escolher uma prioridade, agir e revisar o caminho. Não promete resolver a vida de ninguém nem substitui acompanhamento profissional quando ele é necessário.
 
+<p align="center">
+  <img src="docs/norte-escuta.svg" alt="Ilustração conceitual: uma experiência que começa pela escuta e pelo acolhimento." width="100%" />
+</p>
+
 ## Identidade visual — Rose Edition
 
 A direção visual oficial é delicada, acolhedora e sofisticada, sem infantilizar a experiência ou restringi-la a um único público.
@@ -116,6 +120,10 @@ A experiência completa está sendo construída em etapas:
 
 Esses itens representam a visão do produto, não funcionalidades já concluídas.
 
+<p align="center">
+  <img src="docs/norte-clareza.svg" alt="Ilustração conceitual: pensamentos se organizam em prioridades claras." width="100%" />
+</p>
+
 ## Escopo do MVP
 
 O primeiro produto validável está concentrado em:
@@ -133,6 +141,10 @@ O piloto inicial será direcionado a pessoas no Brasil que desejam entrar ou mig
 ### Fora do MVP inicial
 
 Voz, aplicativo web em Next.js, pagamentos, gestão financeira, comunidade, gamificação e integrações externas ficam para etapas posteriores.
+
+<p align="center">
+  <img src="docs/norte-passos.svg" alt="Ilustração conceitual: progresso em pequenos passos que podem ser ajustados." width="100%" />
+</p>
 
 ---
 
@@ -305,6 +317,10 @@ Segurança e privacidade fazem parte dos requisitos desde a fundação do projet
 
 ### Limitações conhecidas
 
+<p align="center">
+  <img src="docs/norte-privacidade.svg" alt="Ilustração conceitual: privacidade e controle dos dados desde o início." width="100%" />
+</p>
+
 O projeto ainda está em desenvolvimento e não está pronto para uso com dados reais. Entre os itens pendentes estão refresh token, revogação de sessão no logout, rate limiting, recuperação de senha e testes de integração com banco real. A integração segura entre Flutter e API, além dos testes de autorização, isolamento e privacidade, também precisa ser concluída antes de um piloto.
 
 ## Documentação
@@ -312,6 +328,10 @@ O projeto ainda está em desenvolvimento e não está pronto para uso com dados 
 - [Escopo fechado do MVP](docs/MVP-ESCOPO.md)
 - [Conceito visual — experiência mobile Rose Edition](docs/norte-experiencia-rose.svg)
 - [Ilustração — momento humano](docs/norte-momento-humano.svg)
+- [Ilustração — escuta e acolhimento](docs/norte-escuta.svg)
+- [Ilustração — clareza e prioridades](docs/norte-clareza.svg)
+- [Ilustração — passos adaptáveis](docs/norte-passos.svg)
+- [Ilustração — privacidade](docs/norte-privacidade.svg)
 
 ## Contribuição
 
