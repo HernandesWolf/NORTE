@@ -101,6 +101,7 @@ void main() {
     });
 
     test('cadastrar com e-mail repetido mostra a mensagem do servidor', () async {
+      await auth.iniciar(); // o AuthGate sempre restaura a sessão antes de mostrar a tela de cadastro
       final ok = await auth.cadastrar(email: FakeAuthApi.emailJaCadastrado, senha: FakeAuthApi.senhaCorreta);
 
       expect(ok, isFalse);
