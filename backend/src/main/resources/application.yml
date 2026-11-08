@@ -39,3 +39,5 @@ norte:
     # Origens permitidas para o app rodando no navegador (Flutter Web usa uma porta aleatória em dev).
     # Em produção, defina NORTE_CORS_ORIGINS com o domínio real, ex.: https://app.exemplo.com.br
     allowed-origin-patterns: ${NORTE_CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*}
+  # Fuso que define "hoje" para o check-in diário (padrão: horário de Brasília).
+  fuso-horario: ${NORTE_FUSO_HORARIO:America/Sao_Paulo}
