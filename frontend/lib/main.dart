@@ -84,9 +84,36 @@ class _NorteHomeState extends State<NorteHome> {
   final titles = const ['Seu espaço', 'Conversa', 'Seus caminhos', 'Seu perfil'];
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Row(children: [const Icon(Icons.explore_outlined, color: NorteColors.rose), const SizedBox(width: 9),
-      Text(titles[selected], style: const TextStyle(fontWeight: FontWeight.w700))]),
-      actions: [IconButton(tooltip: 'Notificações', onPressed: () {}, icon: const Icon(Icons.notifications_none_rounded)), const SizedBox(width: 8)]),
+    appBar: AppBar(
+      toolbarHeight: 76,
+      titleSpacing: 20,
+      title: Row(children: [
+        Container(
+          width: 42, height: 42,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(colors: [NorteColors.blush, NorteColors.nude]),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: const Icon(Icons.explore_rounded, color: NorteColors.wine, size: 25),
+        ),
+        const SizedBox(width: 12),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+          const Text('NORTE', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: 2, color: NorteColors.wine)),
+          Text(titles[selected], style: const TextStyle(fontSize: 12, color: NorteColors.muted, fontWeight: FontWeight.w500)),
+        ]),
+      ]),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: IconButton.filledTonal(
+            tooltip: 'Notificações',
+            onPressed: () {},
+            style: IconButton.styleFrom(backgroundColor: NorteColors.blush, foregroundColor: NorteColors.wine),
+            icon: const Icon(Icons.notifications_none_rounded),
+          ),
+        ),
+      ],
+    ),
     body: SafeArea(child: IndexedStack(index: selected, children: pages)),
     bottomNavigationBar: NavigationBar(selectedIndex: selected, onDestinationSelected: (v) => setState(() => selected = v),
       backgroundColor: NorteColors.surface, indicatorColor: NorteColors.blush,
@@ -171,16 +198,37 @@ class _OverviewPageState extends State<OverviewPage> {
 
   @override
   Widget build(BuildContext context) => ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 28), children: [
-    Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(
-      gradient: const LinearGradient(colors: [Color(0xFFF3DDDF), Color(0xFFFBF7F3)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-      borderRadius: BorderRadius.circular(26)),
-      child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('UM PASSO DE CADA VEZ', style: TextStyle(color: NorteColors.wine, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.6)),
-        SizedBox(height: 14),
-        Text('Você não precisa\nresolver tudo hoje.', style: TextStyle(color: NorteColors.ink, fontFamily: 'Georgia', fontSize: 29, height: 1.2)),
-        SizedBox(height: 12),
-        Text('Vamos entender o que importa agora e escolher um próximo passo que caiba na sua realidade.', style: TextStyle(color: NorteColors.wine, height: 1.5, fontSize: 14)),
-      ])),
+    Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF1DDE0), Color(0xFFFFFBF8), Color(0xFFEFE1DC)],
+          begin: Alignment.topLeft, end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: const Color(0xFFEAD8D8)),
+        boxShadow: const [BoxShadow(color: Color(0x18A96D7B), blurRadius: 24, offset: Offset(0, 10))],
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(
+            width: 38, height: 38,
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: .72), borderRadius: BorderRadius.circular(14)),
+            child: const Icon(Icons.explore_rounded, color: NorteColors.wine, size: 22),
+          ),
+          const SizedBox(width: 10),
+          const Text('UM PASSO DE CADA VEZ', style: TextStyle(color: NorteColors.wine, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+          const Spacer(),
+          const Icon(Icons.auto_awesome_rounded, color: NorteColors.rose, size: 19),
+        ]),
+        const SizedBox(height: 20),
+        const Text('Você não precisa\nresolver tudo hoje.', style: TextStyle(color: NorteColors.ink, fontFamily: 'Georgia', fontSize: 30, height: 1.16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 13),
+        const Text('Vamos entender o que importa agora e escolher um próximo passo que caiba na sua realidade.', style: TextStyle(color: NorteColors.wine, height: 1.55, fontSize: 14)),
+        const SizedBox(height: 18),
+        Container(height: 3, width: 58, decoration: BoxDecoration(color: NorteColors.rose, borderRadius: BorderRadius.circular(8))),
+      ]),
+    ),
     const SizedBox(height: 24),
     const SectionHeading('Como você está chegando hoje?', subtitle: 'Não existe resposta certa. É só um ponto de partida.'),
     const SizedBox(height: 12),
