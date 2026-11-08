@@ -2,8 +2,10 @@ package br.com.norte.shared.error;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,8 +16,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ProblemDetail aoLancarApiException(ApiException e) {
-        return ProblemDetail.forStatusAndDetail(e.getStatus(), e.getMessage());
+    public ResponseEntity<ProblemDetail> aoLancarApiException(ApiException e) {
+        ProblemDetail corpo = ProblemDetail.forStatusAndDetail(e.getStatus(), e.getMessage());
+        ResponseEntity.BodyBuilder resposta = ResponseEntity.status(e.getStatus());
+        if (e.getRetryAfterSegundos() != null) {
+            resposta.header(HttpHeaders.RETRY_AFTER, String.valueOf(e.getRetryAfterSegundos()));
+        }
+        return resposta.body(corpo);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

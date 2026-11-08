@@ -21,7 +21,8 @@ public class TokenService {
         this.props = props;
     }
 
-    public TokenResponse emitir(UUID usuarioId) {
+    /** Monta o access token (JWT) e o devolve junto do refresh token já criado por quem chamou. */
+    public TokenResponse emitir(UUID usuarioId, String refreshToken) {
         Instant agora = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(JwtConfig.ISSUER)
@@ -32,6 +33,6 @@ public class TokenService {
                 .build();
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
         String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
-        return new TokenResponse(token, "Bearer", props.accessTokenTtl().toSeconds());
+        return new TokenResponse(token, refreshToken, "Bearer", props.accessTokenTtl().toSeconds());
     }
 }

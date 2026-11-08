@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:norte_app/auth/auth_api.dart';
+import 'package:norte_app/auth/auth_controller.dart';
+import 'package:norte_app/auth/auth_gate.dart';
+import 'package:norte_app/core/api_config.dart';
+import 'package:norte_app/core/token_storage.dart';
 
-void main() => runApp(const NorteApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final auth = AuthController(
+    api: HttpAuthApi(baseUrl: apiBaseUrl),
+    storage: SecureTokenStorage(),
+  );
+  runApp(NorteApp(auth: auth));
+}
 
 class NorteColors {
   static const rose = Color(0xFFB87583);
@@ -14,7 +26,10 @@ class NorteColors {
 }
 
 class NorteApp extends StatelessWidget {
-  const NorteApp({super.key});
+  const NorteApp({required this.auth, super.key});
+
+  final AuthController auth;
+
   @override
   Widget build(BuildContext context) {
     final scheme = ColorScheme.fromSeed(seedColor: NorteColors.rose, brightness: Brightness.light);
@@ -38,66 +53,27 @@ class NorteApp extends StatelessWidget {
         cardTheme: CardThemeData(color: NorteColors.surface, elevation: 0, margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFFEFE5E1)))),
       ),
-      home: const WelcomeScreen(),
+      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth)),
     );
   }
 }
 
-class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key});
-  @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool registering = false;
-  bool obscure = true;
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(child: Center(child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 460), child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const SizedBox(height: 22),
-          Container(height: 76, width: 76, decoration: BoxDecoration(color: NorteColors.blush, borderRadius: BorderRadius.circular(26)),
-            child: const Icon(Icons.explore_outlined, color: NorteColors.wine, size: 42)),
-          const SizedBox(height: 24),
-          const Text('NORTE', style: TextStyle(color: NorteColors.wine, fontSize: 38, fontWeight: FontWeight.w800, letterSpacing: 4, fontFamily: 'Georgia')),
-          const SizedBox(height: 8),
-          const Text('Seu tempo. Sua história. Seu caminho.', style: TextStyle(color: NorteColors.wine, fontSize: 17, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          const Text('Um espaço para entender seu momento e encontrar um próximo passo possível.', style: TextStyle(color: NorteColors.muted, height: 1.5, fontSize: 15)),
-          const SizedBox(height: 34),
-          Text(registering ? 'Vamos começar com calma.' : 'Que bom ter você aqui.', style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w700, color: NorteColors.ink)),
-          const SizedBox(height: 8),
-          Text(registering ? 'Crie seu acesso. Você decide o ritmo.' : 'Entre para continuar de onde parou.', style: const TextStyle(color: NorteColors.muted)),
-          const SizedBox(height: 24),
-          if (registering) ...[const TextField(decoration: InputDecoration(labelText: 'Como podemos chamar você?')), const SizedBox(height: 14)],
-          const TextField(keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: 'E-mail')),
-          const SizedBox(height: 14),
-          TextField(obscureText: obscure, decoration: InputDecoration(labelText: 'Senha', suffixIcon: IconButton(
-            onPressed: () => setState(() => obscure = !obscure), icon: Icon(obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined)))),
-          const SizedBox(height: 22),
-          ElevatedButton(onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const NorteHome())),
-            child: Text(registering ? 'Criar minha conta' : 'Entrar')),
-          const SizedBox(height: 14),
-          TextButton(onPressed: () => setState(() => registering = !registering), child: Text(registering ? 'Já tenho uma conta · Entrar' : 'Quero criar minha conta')),
-          const SizedBox(height: 22),
-          const Text('Protótipo visual: ainda não envia dados nem autentica contas. A conexão segura com o backend será integrada e testada antes do piloto.',
-            textAlign: TextAlign.center, style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
-        ],
-      )),
-    ))),
-  );
-}
-
 class NorteHome extends StatefulWidget {
-  const NorteHome({super.key});
+  const NorteHome({required this.auth, super.key});
+
+  final AuthController auth;
+
   @override
   State<NorteHome> createState() => _NorteHomeState();
 }
 class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
-  final pages = const [OverviewPage(), ConversationPage(), GoalsPage(), ProfilePage()];
+  late final List<Widget> pages = [
+    const OverviewPage(),
+    const ConversationPage(),
+    const GoalsPage(),
+    ProfilePage(auth: widget.auth),
+  ];
   final titles = const ['Seu espaço', 'Conversa', 'Seus caminhos', 'Seu perfil'];
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -224,7 +200,7 @@ class _GoalsPageState extends State<GoalsPage> {
       Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Text('Plano de 7 dias', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
-        Text('$done de ' + tasks.length.toString() + ' passos marcados', style: const TextStyle(color: NorteColors.muted)),
+        Text('$done de ${tasks.length} passos marcados', style: const TextStyle(color: NorteColors.muted)),
         const SizedBox(height: 12),
         LinearProgressIndicator(value: done / tasks.length, minHeight: 7, borderRadius: BorderRadius.circular(10), backgroundColor: NorteColors.blush, color: NorteColors.rose),
       ]))),
@@ -243,25 +219,42 @@ class _GoalsPageState extends State<GoalsPage> {
 }
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({required this.auth, super.key});
+
+  final AuthController auth;
+
   @override
-  Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [
-    const Text('Seu espaço, suas escolhas', style: TextStyle(fontFamily: 'Georgia', fontSize: 27, color: NorteColors.ink)),
-    const SizedBox(height: 8),
-    const Text('Você terá controle sobre suas informações e sobre o que deseja compartilhar.', style: TextStyle(color: NorteColors.muted, height: 1.5)),
-    const SizedBox(height: 22),
-    const Card(child: ListTile(leading: Icon(Icons.person_outline, color: NorteColors.rose), title: Text('Dados pessoais'), subtitle: Text('Nome e informações da conta'))),
-    const SizedBox(height: 10),
-    const Card(child: ListTile(leading: Icon(Icons.psychology_outlined, color: NorteColors.rose), title: Text('Contexto e memória'), subtitle: Text('Consultar, corrigir ou excluir informações'))),
-    const SizedBox(height: 10),
-    const Card(child: ListTile(leading: Icon(Icons.privacy_tip_outlined, color: NorteColors.rose), title: Text('Privacidade e consentimentos'), subtitle: Text('Entenda como seus dados são utilizados'))),
-    const SizedBox(height: 10),
-    const Card(child: ListTile(leading: Icon(Icons.download_outlined, color: NorteColors.rose), title: Text('Exportar meus dados'))),
-    const SizedBox(height: 10),
-    const Card(child: ListTile(leading: Icon(Icons.delete_outline, color: NorteColors.rose), title: Text('Excluir minha conta'))),
-    const SizedBox(height: 20),
-    const Text('Controles ilustrativos. As ações serão habilitadas após integração segura com o backend.', style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
-  ]);
+  Widget build(BuildContext context) {
+    final usuario = auth.usuario;
+    return ListView(padding: const EdgeInsets.all(20), children: [
+      const Text('Seu espaço, suas escolhas', style: TextStyle(fontFamily: 'Georgia', fontSize: 27, color: NorteColors.ink)),
+      const SizedBox(height: 8),
+      const Text('Você terá controle sobre suas informações e sobre o que deseja compartilhar.', style: TextStyle(color: NorteColors.muted, height: 1.5)),
+      const SizedBox(height: 22),
+      Card(child: ListTile(
+        leading: const CircleAvatar(backgroundColor: NorteColors.blush, child: Icon(Icons.person_outline, color: NorteColors.wine)),
+        title: Text(usuario?.nomeOuEmail ?? '', style: const TextStyle(fontWeight: FontWeight.w700)),
+        subtitle: Text(usuario?.email ?? ''),
+      )),
+      const SizedBox(height: 10),
+      const Card(child: ListTile(leading: Icon(Icons.psychology_outlined, color: NorteColors.rose), title: Text('Contexto e memória'), subtitle: Text('Consultar, corrigir ou excluir informações'))),
+      const SizedBox(height: 10),
+      const Card(child: ListTile(leading: Icon(Icons.privacy_tip_outlined, color: NorteColors.rose), title: Text('Privacidade e consentimentos'), subtitle: Text('Entenda como seus dados são utilizados'))),
+      const SizedBox(height: 10),
+      const Card(child: ListTile(leading: Icon(Icons.download_outlined, color: NorteColors.rose), title: Text('Exportar meus dados'))),
+      const SizedBox(height: 10),
+      const Card(child: ListTile(leading: Icon(Icons.delete_outline, color: NorteColors.rose), title: Text('Excluir minha conta'))),
+      const SizedBox(height: 20),
+      const Text('Contexto e memória, privacidade, exportação e exclusão ainda são ilustrativos: serão habilitados em uma próxima etapa.', style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
+      const SizedBox(height: 24),
+      OutlinedButton.icon(
+        onPressed: auth.sair,
+        icon: const Icon(Icons.logout_rounded),
+        label: const Text('Sair da conta'),
+        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), foregroundColor: NorteColors.wine, side: const BorderSide(color: NorteColors.nude)),
+      ),
+    ]);
+  }
 }
 
 class SectionHeading extends StatelessWidget {
