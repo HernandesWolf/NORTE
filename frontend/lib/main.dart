@@ -9,6 +9,7 @@ import 'package:norte_app/checkin/checkin_api.dart';
 import 'package:norte_app/checkin/checkin_models.dart';
 import 'package:norte_app/core/api_config.dart';
 import 'package:norte_app/core/token_storage.dart';
+import 'package:norte_app/objetivos/objetivos_api.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,7 @@ void main() {
     api: HttpAuthApi(baseUrl: apiBaseUrl),
     storage: SecureTokenStorage(),
   );
-  runApp(NorteApp(auth: auth, checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl)));
+  runApp(NorteApp(auth: auth, checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl), objetivosApi: ObjetivosApi(baseUrl: apiBaseUrl)));
 }
 
 class NorteColors {
@@ -31,10 +32,11 @@ class NorteColors {
 }
 
 class NorteApp extends StatelessWidget {
-  const NorteApp({required this.auth, required this.checkinApi, super.key});
+  const NorteApp({required this.auth, required this.checkinApi, required this.objetivosApi, super.key});
 
   final AuthController auth;
   final CheckinApi checkinApi;
+  final ObjetivosApi objetivosApi;
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +61,17 @@ class NorteApp extends StatelessWidget {
         cardTheme: CardThemeData(color: NorteColors.surface, elevation: 0, margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFFEFE5E1)))),
       ),
-      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth, checkinApi: checkinApi)),
+      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi)),
     );
   }
 }
 
 class NorteHome extends StatefulWidget {
-  const NorteHome({required this.auth, required this.checkinApi, super.key});
+  const NorteHome({required this.auth, required this.checkinApi, required this.objetivosApi, super.key});
 
   final AuthController auth;
   final CheckinApi checkinApi;
+  final ObjetivosApi objetivosApi;
 
   @override
   State<NorteHome> createState() => _NorteHomeState();
@@ -78,7 +81,7 @@ class _NorteHomeState extends State<NorteHome> {
   late final List<Widget> pages = [
     OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
     const ConversationPage(),
-    const GoalsPage(),
+    GoalsPage(auth: widget.auth, api: widget.objetivosApi),
     ProfilePage(auth: widget.auth),
   ];
   final titles = const ['Seu espaço', 'Conversa', 'Seus caminhos', 'Seu perfil'];
@@ -302,41 +305,149 @@ class _ConversationPageState extends State<ConversationPage> {
 }
 
 class GoalsPage extends StatefulWidget {
-  const GoalsPage({super.key});
+  const GoalsPage({required this.auth, required this.api, super.key});
+  final AuthController auth;
+  final ObjetivosApi api;
   @override
   State<GoalsPage> createState() => _GoalsPageState();
 }
+
 class _GoalsPageState extends State<GoalsPage> {
-  final Map<String, bool> tasks = {
-    'Escolher uma prioridade para esta semana': false,
-    'Reservar 15 minutos para começar': false,
-    'Revisar como foi o primeiro passo': false,
-  };
+  final List<Objetivo> _objetivos = [];
+  bool _carregando = true;
+  bool _salvando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregar();
+  }
+
+  Future<void> _carregar() async {
+    try {
+      final itens = await widget.auth.comSessao(widget.api.listar);
+      if (!mounted) return;
+      setState(() {
+        _objetivos
+          ..clear()
+          ..addAll(itens);
+        _carregando = false;
+      });
+    } on ApiError catch (e) {
+      if (!mounted) return;
+      setState(() => _carregando = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+    }
+  }
+
+  Future<void> _adicionar() async {
+    final titulo = TextEditingController();
+    final descricao = TextEditingController();
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Novo objetivo'),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextField(controller: titulo, autofocus: true, maxLength: 120,
+            decoration: const InputDecoration(labelText: 'O que você deseja alcançar?')),
+          const SizedBox(height: 10),
+          TextField(controller: descricao, maxLength: 500, maxLines: 3,
+            decoration: const InputDecoration(labelText: 'Detalhes (opcional)')),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Salvar')),
+        ],
+      ),
+    );
+    final nome = titulo.text.trim();
+    final detalhe = descricao.text.trim();
+    titulo.dispose();
+    descricao.dispose();
+    if (confirmado != true || nome.isEmpty || _salvando) return;
+    setState(() => _salvando = true);
+    try {
+      final novo = await widget.auth.comSessao((token) => widget.api.criar(token, nome, detalhe.isEmpty ? null : detalhe));
+      if (!mounted) return;
+      setState(() => _objetivos.insert(0, novo));
+    } on ApiError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+    } finally {
+      if (mounted) setState(() => _salvando = false);
+    }
+  }
+
+  Future<void> _alternar(Objetivo item, bool concluido) async {
+    try {
+      final atualizado = await widget.auth.comSessao((token) => widget.api.concluir(token, item.id, concluido));
+      if (!mounted) return;
+      setState(() {
+        final index = _objetivos.indexWhere((o) => o.id == item.id);
+        if (index >= 0) _objetivos[index] = atualizado;
+      });
+    } on ApiError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+    }
+  }
+
+  Future<void> _excluir(Objetivo item) async {
+    try {
+      await widget.auth.comSessao((token) => widget.api.excluir(token, item.id));
+      if (mounted) setState(() => _objetivos.removeWhere((o) => o.id == item.id));
+    } on ApiError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final done = tasks.values.where((v) => v).length;
+    final concluidos = _objetivos.where((o) => o.concluido).length;
     return ListView(padding: const EdgeInsets.all(20), children: [
-      const Text('Seu caminho, no seu ritmo', style: TextStyle(fontFamily: 'Georgia', fontSize: 27, color: NorteColors.ink)),
-      const SizedBox(height: 8),
-      const Text('Um plano bom é aquele que conversa com a vida real.', style: TextStyle(color: NorteColors.muted)),
+      Row(children: [
+        const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('Seu caminho, no seu ritmo', style: TextStyle(fontFamily: 'Georgia', fontSize: 27, color: NorteColors.ink)),
+          SizedBox(height: 8),
+          Text('Objetivos reais, construídos por você.', style: TextStyle(color: NorteColors.muted)),
+        ])),
+        IconButton.filledTonal(onPressed: _salvando ? null : _adicionar,
+          icon: const Icon(Icons.add), tooltip: 'Adicionar objetivo'),
+      ]),
       const SizedBox(height: 22),
       Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Plano de 7 dias', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const Text('Seu progresso', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
-        Text('$done de ${tasks.length} passos marcados', style: const TextStyle(color: NorteColors.muted)),
+        Text('$concluidos de ${_objetivos.length} objetivos concluídos', style: const TextStyle(color: NorteColors.muted)),
         const SizedBox(height: 12),
-        LinearProgressIndicator(value: done / tasks.length, minHeight: 7, borderRadius: BorderRadius.circular(10), backgroundColor: NorteColors.blush, color: NorteColors.rose),
+        LinearProgressIndicator(value: _objetivos.isEmpty ? 0 : concluidos / _objetivos.length,
+          minHeight: 7, borderRadius: BorderRadius.circular(10), backgroundColor: NorteColors.blush, color: NorteColors.rose),
       ]))),
       const SizedBox(height: 20),
-      const SectionHeading('Passos possíveis'),
-      const SizedBox(height: 10),
-      ...tasks.entries.map((entry) => Card(child: CheckboxListTile(
-        value: entry.value, activeColor: NorteColors.rose, controlAffinity: ListTileControlAffinity.leading,
-        title: Text(entry.key, style: const TextStyle(height: 1.35)),
-        onChanged: (value) => setState(() => tasks[entry.key] = value ?? false),
-      ))),
+      if (_carregando) const Center(child: Padding(padding: EdgeInsets.all(28), child: CircularProgressIndicator()))
+      else if (_objetivos.isEmpty) Card(child: Padding(padding: const EdgeInsets.all(22), child: Column(children: [
+        const Icon(Icons.flag_outlined, size: 34, color: NorteColors.rose),
+        const SizedBox(height: 10),
+        const Text('Seu próximo passo começa aqui', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+        const SizedBox(height: 6),
+        const Text('Adicione um objetivo que faça sentido para sua realidade. Ele ficará salvo na sua conta.', textAlign: TextAlign.center,
+          style: TextStyle(color: NorteColors.muted, height: 1.4)),
+        const SizedBox(height: 14),
+        ElevatedButton.icon(onPressed: _adicionar, icon: const Icon(Icons.add), label: const Text('Criar meu primeiro objetivo')),
+      ])))
+      else ..._objetivos.map((item) => Card(
+        child: CheckboxListTile(
+          value: item.concluido,
+          activeColor: NorteColors.rose,
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Text(item.titulo, style: TextStyle(height: 1.3,
+            decoration: item.concluido ? TextDecoration.lineThrough : null)),
+          subtitle: item.descricao == null ? null : Text(item.descricao!),
+          secondary: IconButton(onPressed: () => _excluir(item), tooltip: 'Excluir objetivo',
+            icon: const Icon(Icons.delete_outline, color: NorteColors.muted)),
+          onChanged: (value) => _alternar(item, value ?? false),
+        ),
+      )),
       const SizedBox(height: 12),
-      const Text('Estes são exemplos demonstrativos. O plano real será criado e adaptado com você.', style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
+      const Text('Seus objetivos são privados e vinculados à sua conta.', style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
     ]);
   }
 }
