@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:norte_app/auth/auth_api.dart';
 import 'package:norte_app/auth/auth_controller.dart';
 import 'package:norte_app/auth/auth_gate.dart';
+import 'package:norte_app/auth/auth_models.dart';
+import 'package:norte_app/checkin/checkin_api.dart';
+import 'package:norte_app/checkin/checkin_models.dart';
 import 'package:norte_app/core/api_config.dart';
 import 'package:norte_app/core/token_storage.dart';
 
@@ -11,7 +16,7 @@ void main() {
     api: HttpAuthApi(baseUrl: apiBaseUrl),
     storage: SecureTokenStorage(),
   );
-  runApp(NorteApp(auth: auth));
+  runApp(NorteApp(auth: auth, checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl)));
 }
 
 class NorteColors {
@@ -26,9 +31,10 @@ class NorteColors {
 }
 
 class NorteApp extends StatelessWidget {
-  const NorteApp({required this.auth, super.key});
+  const NorteApp({required this.auth, required this.checkinApi, super.key});
 
   final AuthController auth;
+  final CheckinApi checkinApi;
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +59,16 @@ class NorteApp extends StatelessWidget {
         cardTheme: CardThemeData(color: NorteColors.surface, elevation: 0, margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFFEFE5E1)))),
       ),
-      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth)),
+      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth, checkinApi: checkinApi)),
     );
   }
 }
 
 class NorteHome extends StatefulWidget {
-  const NorteHome({required this.auth, super.key});
+  const NorteHome({required this.auth, required this.checkinApi, super.key});
 
   final AuthController auth;
+  final CheckinApi checkinApi;
 
   @override
   State<NorteHome> createState() => _NorteHomeState();
@@ -69,7 +76,7 @@ class NorteHome extends StatefulWidget {
 class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
   late final List<Widget> pages = [
-    const OverviewPage(),
+    OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
     const ConversationPage(),
     const GoalsPage(),
     ProfilePage(auth: widget.auth),
@@ -92,8 +99,76 @@ class _NorteHomeState extends State<NorteHome> {
   );
 }
 
-class OverviewPage extends StatelessWidget {
-  const OverviewPage({super.key});
+/// Opções do check-in, na ordem em que aparecem na tela.
+const _opcoesCheckin = <(EstadoCheckin, String, IconData)>[
+  (EstadoCheckin.comEnergia, 'Com energia', Icons.wb_sunny_outlined),
+  (EstadoCheckin.indoDevagar, 'Indo devagar', Icons.spa_outlined),
+  (EstadoCheckin.sobrecarregado, 'Sobrecarregado(a)', Icons.cloud_outlined),
+  (EstadoCheckin.aindaNaoSei, 'Ainda não sei', Icons.help_outline),
+];
+
+class OverviewPage extends StatefulWidget {
+  const OverviewPage({required this.auth, required this.checkinApi, super.key});
+
+  final AuthController auth;
+  final CheckinApi checkinApi;
+
+  @override
+  State<OverviewPage> createState() => _OverviewPageState();
+}
+
+class _OverviewPageState extends State<OverviewPage> {
+  EstadoCheckin? _estado;
+  bool _salvando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_carregar());
+  }
+
+  Future<void> _carregar() async {
+    try {
+      final atual = await widget.auth.comSessao(widget.checkinApi.deHoje);
+      if (!mounted) {
+        return;
+      }
+      // `??=`: se a pessoa já tocou em uma opção enquanto carregava, a escolha dela vale mais que o valor antigo.
+      setState(() => _estado ??= atual);
+    } on ApiError {
+      // Sem o check-in de hoje a tela continua útil: a pessoa pode escolher de novo.
+    }
+  }
+
+  /// Marca na hora e grava em seguida. Se a gravação falhar, desfaz a marcação e avisa.
+  Future<void> _escolher(EstadoCheckin novo) async {
+    if (_salvando || novo == _estado) {
+      return;
+    }
+    final anterior = _estado;
+    setState(() {
+      _estado = novo;
+      _salvando = true;
+    });
+    try {
+      final salvo = await widget.auth.comSessao((token) => widget.checkinApi.registrar(token, novo));
+      if (!mounted) {
+        return;
+      }
+      setState(() => _estado = salvo);
+    } on ApiError catch (e) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _estado = anterior);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+    } finally {
+      if (mounted) {
+        setState(() => _salvando = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 28), children: [
     Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(
@@ -109,9 +184,9 @@ class OverviewPage extends StatelessWidget {
     const SizedBox(height: 24),
     const SectionHeading('Como você está chegando hoje?', subtitle: 'Não existe resposta certa. É só um ponto de partida.'),
     const SizedBox(height: 12),
-    const Wrap(spacing: 9, runSpacing: 9, children: [
-      MoodChip(label: 'Com energia', icon: Icons.wb_sunny_outlined), MoodChip(label: 'Indo devagar', icon: Icons.spa_outlined),
-      MoodChip(label: 'Sobrecarregado(a)', icon: Icons.cloud_outlined), MoodChip(label: 'Ainda não sei', icon: Icons.help_outline),
+    Wrap(spacing: 9, runSpacing: 9, children: [
+      for (final (estado, rotulo, icone) in _opcoesCheckin)
+        MoodChip(label: rotulo, icon: icone, selected: _estado == estado, onTap: () => unawaited(_escolher(estado))),
     ]),
     const SizedBox(height: 24),
     const SectionHeading('Seu foco neste momento', subtitle: 'Pequenas ações também são progresso.'),
@@ -269,12 +344,14 @@ class SectionHeading extends StatelessWidget {
 }
 
 class MoodChip extends StatelessWidget {
-  final String label; final IconData icon;
-  const MoodChip({required this.label, required this.icon, super.key});
+  final String label; final IconData icon; final bool selected; final VoidCallback onTap;
+  const MoodChip({required this.label, required this.icon, required this.selected, required this.onTap, super.key});
   @override
-  Widget build(BuildContext context) => ActionChip(onPressed: () {},
-    avatar: Icon(icon, size: 17, color: NorteColors.wine), label: Text(label), backgroundColor: NorteColors.surface,
-    side: const BorderSide(color: NorteColors.nude), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)));
+  Widget build(BuildContext context) => ChoiceChip(selected: selected, onSelected: (_) => onTap(), showCheckmark: false,
+    avatar: Icon(icon, size: 17, color: NorteColors.wine), label: Text(label),
+    backgroundColor: NorteColors.surface, selectedColor: NorteColors.blush,
+    side: BorderSide(color: selected ? NorteColors.rose : NorteColors.nude, width: selected ? 1.5 : 1),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)));
 }
 class SuggestionChip extends StatelessWidget {
   final String label;

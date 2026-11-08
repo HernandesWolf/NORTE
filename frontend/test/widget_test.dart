@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:norte_app/auth/auth_controller.dart';
+import 'package:norte_app/checkin/checkin_models.dart';
 import 'package:norte_app/core/token_storage.dart';
 import 'package:norte_app/main.dart';
 
 import 'support/fake_auth_api.dart';
+import 'support/fake_checkin_api.dart';
 
 /// Monta o app com um servidor de mentira e armazenamento em memória.
-Future<({FakeAuthApi api, MemoryTokenStorage storage})> _abrirApp(
+Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> _abrirApp(
   WidgetTester tester, {
   bool comSessaoSalva = false,
+  FakeCheckinApi? checkinFalso,
 }) async {
   // Tela alta o bastante para o formulário de cadastro caber sem rolagem durante os toques.
   tester.view.physicalSize = const Size(800, 1600);
@@ -21,9 +24,16 @@ Future<({FakeAuthApi api, MemoryTokenStorage storage})> _abrirApp(
   final storage = MemoryTokenStorage(comSessaoSalva ? api.criarSessaoValida() : null);
   final auth = AuthController(api: api, storage: storage);
 
-  await tester.pumpWidget(NorteApp(auth: auth));
+  final checkin = checkinFalso ?? FakeCheckinApi();
+
+  await tester.pumpWidget(NorteApp(auth: auth, checkinApi: checkin));
   await tester.pumpAndSettle();
-  return (api: api, storage: storage);
+  return (api: api, storage: storage, checkin: checkin);
+}
+
+/// Se o chip do check-in com esse texto está marcado.
+bool _chipMarcado(WidgetTester tester, String texto) {
+  return tester.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, texto)).selected;
 }
 
 Future<void> _preencherEEnviar(WidgetTester tester, {required String email, required String senha}) async {
@@ -113,6 +123,39 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Este e-mail já está cadastrado.'), findsOneWidget);
+  });
+
+  testWidgets('check-in: mostra o estado que já foi escolhido hoje', (tester) async {
+    await _abrirApp(tester, comSessaoSalva: true, checkinFalso: FakeCheckinApi(atual: EstadoCheckin.indoDevagar));
+
+    expect(_chipMarcado(tester, 'Indo devagar'), isTrue);
+    expect(_chipMarcado(tester, 'Com energia'), isFalse);
+  });
+
+  testWidgets('check-in: tocar em uma opção grava no servidor e marca o chip', (tester) async {
+    final app = await _abrirApp(tester, comSessaoSalva: true);
+    expect(_chipMarcado(tester, 'Sobrecarregado(a)'), isFalse);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Sobrecarregado(a)'));
+    await tester.pumpAndSettle();
+
+    expect(_chipMarcado(tester, 'Sobrecarregado(a)'), isTrue);
+    expect(app.checkin.atual, EstadoCheckin.sobrecarregado);
+    expect(app.checkin.chamadasRegistrar, 1);
+  });
+
+  testWidgets('check-in: se gravar falhar, desfaz a marcação e avisa', (tester) async {
+    final falso = FakeCheckinApi(atual: EstadoCheckin.comEnergia)..falharAoRegistrar = true;
+    await _abrirApp(tester, comSessaoSalva: true, checkinFalso: falso);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Indo devagar'));
+    // Sem pumpAndSettle: ele esperaria o aviso sumir sozinho (4 s) e o teste não o encontraria mais.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(_chipMarcado(tester, 'Indo devagar'), isFalse);
+    expect(_chipMarcado(tester, 'Com energia'), isTrue); // voltou ao que estava
+    expect(find.textContaining('Não consegui falar com o servidor'), findsOneWidget);
   });
 
   testWidgets('sair da conta volta para a tela de entrada e apaga a sessão', (tester) async {
