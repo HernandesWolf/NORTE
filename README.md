@@ -1,3 +1,5 @@
+<!-- NORTE • README | atualizado em 08/11/2026 -->
+
 <p align="center">
   <img src="docs/norte-banner-rose.svg" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
 </p>
@@ -17,9 +19,9 @@
   <img src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21" />
   <img src="https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.5.7" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
-  <img src="https://img.shields.io/badge/Flutter-protótipo-02569B?logo=flutter&logoColor=white" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Flutter-Dart-02569B?logo=flutter&logoColor=white" alt="Flutter" />
   <img src="https://img.shields.io/badge/Identidade-Rose_Edition-B87583" alt="Rose Edition" />
-  <img src="https://img.shields.io/badge/Status-Em_desenvolvimento-8957e5" alt="Em desenvolvimento" />
+  <img src="https://img.shields.io/badge/Status-MVP_em_construção-8957e5" alt="MVP em construção" />
 </p>
 
 ---
@@ -54,7 +56,7 @@ O NORTE está sendo pensado como um processo de orientação contínua, não com
   <img src="docs/norte-experiencia-rose.svg" alt="Conceito visual das experiências Início, Conversa, Objetivos e Perfil do NORTE." width="100%" />
 </p>
 
-<p align="center"><em>Conceito visual da experiência mobile. As telas não representam funcionalidades concluídas.</em></p>
+<p align="center"><em>Direção visual do aplicativo. Parte das telas e interações ainda é demonstrativa.</em></p>
 
 ### Princípios de produto
 
@@ -65,36 +67,20 @@ O NORTE está sendo pensado como um processo de orientação contínua, não com
 - **Transparência:** deixar claro o que é funcional, o que é protótipo e o que ainda é visão.
 - **Privacidade desde a concepção:** dados pessoais exigem cuidado, finalidade clara e controle.
 
-## O problema que queremos enfrentar
-
-Muitas ferramentas ajudam a registrar tarefas. Outras oferecem conteúdos motivacionais ou planos padronizados. Mas existe um espaço importante entre saber que algo precisa mudar e conseguir descobrir por onde começar.
-
-O NORTE pretende trabalhar nesse espaço:
-
-- quando tudo parece urgente e falta clareza sobre prioridades;
-- quando um objetivo é importante, mas parece grande demais;
-- quando a rotina real não combina com o planejamento ideal;
-- quando uma interrupção vira culpa e faz a pessoa abandonar o caminho;
-- quando orientações genéricas não consideram as circunstâncias individuais.
-
-O produto não promete resolver a vida de ninguém e não substitui psicólogos, médicos, consultores financeiros ou outros profissionais. Sua proposta é apoiar reflexão, organização e tomada de decisão cotidiana.
-
 ## Identidade visual — Rose Edition
 
 A Rose Edition é a direção visual escolhida para o NORTE: delicada, adulta, acolhedora e sofisticada. A intenção é transmitir proximidade e tranquilidade sem infantilizar a interface ou restringir o produto a um único público.
 
 | Cor | Código | Aplicação |
 |---|---|---|
-| Rose | \`#B87583\` | Identidade e destaques |
-| Blush | \`#F3DDDF\` | Superfícies e realces suaves |
-| Creme | \`#F9F4EF\` | Fundo principal |
-| Nude | \`#E9DCD3\` | Cartões e áreas de apoio |
-| Vinho suave | \`#76505D\` | Textos e contraste |
-| Champagne | \`#D7C4B8\` | Bordas e detalhes |
-| Verde suave | \`#638875\` | Estados positivos |
-| Âmbar | \`#C18B52\` | Atenção e alertas |
+| Rose | `#B87583` | Identidade e destaques |
+| Blush | `#F3DDDF` | Superfícies e realces suaves |
+| Creme | `#FBF7F3` | Fundo principal |
+| Nude | `#E9DCD3` | Cartões e áreas de apoio |
+| Vinho suave | `#76505D` | Textos e contraste |
+| Champagne | `#D7C4B8` | Bordas e detalhes |
 
-**Direção de interface:** tipografia planejada com Fraunces em títulos e DM Sans na leitura; cartões com cantos suaves; espaços generosos; ícones consistentes; movimento discreto; acessibilidade e legibilidade acima de efeitos decorativos.
+**Direção de interface:** tipografia serena, cartões com cantos suaves, espaços generosos, ícones consistentes, movimento discreto, acessibilidade e legibilidade acima de efeitos decorativos.
 
 <p align="center">
   <img src="docs/norte-escuta.svg" alt="Conceito visual de escuta e acolhimento." width="100%" />
@@ -106,7 +92,7 @@ A visão de longo prazo inclui conversa contextual, organização de objetivos, 
 
 ### Recorte inicial do MVP
 
-- Cadastro, autenticação e gestão da conta.
+- Cadastro, autenticação e gestão da sessão.
 - Conversa com IA por texto.
 - Síntese do contexto compreendido, sujeita à confirmação da pessoa.
 - Perfil progressivo e memória básica sob controle do usuário.
@@ -128,38 +114,50 @@ Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, com
 
 ## Estado real do desenvolvimento
 
-O NORTE já possui uma fundação de backend e um protótipo Flutter navegável. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
+O NORTE já possui uma fundação de backend com autenticação funcional e um protótipo Flutter navegável. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
 
-### Backend — fundação implementada
+### Backend — implementado
 
 - API REST com Java 21 e Spring Boot 3.5.7.
-- Cadastro e login com autenticação baseada em JWT.
-- Consulta do perfil associado ao token autenticado.
+- Cadastro de usuário e login.
+- Senhas protegidas com BCrypt.
+- Access token JWT e refresh token com rotação.
+- Logout com revogação do refresh token.
+- Endpoint autenticado para consultar o próprio perfil.
 - Persistência com Spring Data JPA e PostgreSQL 16.
 - Migrações de banco com Flyway.
-- Validação de dados e testes automatizados.
-- Status da aplicação e health check com Spring Boot Actuator.
+- Validação de entrada e respostas de erro no formato Problem Details.
+- CORS configurável por variável de ambiente.
+- Limitação de tentativas de login em memória.
+- Health check com Spring Boot Actuator.
 
-### Aplicativo Flutter — protótipo navegável
+**Limite conhecido:** o limitador de tentativas é mantido em memória. É adequado apenas ao cenário simples de uma única instância e precisa ser substituído por uma solução compartilhada antes de escalar horizontalmente.
 
-- Fluxos demonstrativos de entrada e criação de conta.
-- Visão inicial com check-in de estado e foco atual.
-- Conversa com envio local de mensagens, ainda sem IA conectada.
-- Objetivos e tarefas demonstrativos, com marcação local.
-- Área de perfil com opções ilustrativas de privacidade e gestão de dados.
+### Aplicativo Flutter — implementado parcialmente
+
+- Fluxos de cadastro e login conectados à API.
+- Restauração da sessão ao abrir o aplicativo.
+- Armazenamento e renovação de tokens.
+- Renovação coordenada para evitar chamadas simultâneas com o mesmo refresh token.
+- Logout local e solicitação de revogação ao backend.
+- Consulta do perfil autenticado.
+- Tratamento de erros de conexão, validação e respostas HTTP.
+- Navegação pelas áreas Início, Conversa, Objetivos e Perfil.
 - Primeira aplicação da identidade Rose Edition.
 
-### O que ainda falta
+### Ainda demonstrativo ou pendente
 
-1. Refinar estrutura, acessibilidade e responsividade do Flutter.
-2. Evoluir autenticação com refresh token, logout e proteção contra tentativas excessivas.
-3. Implementar perfil progressivo, objetivos e tarefas persistidos na API.
-4. Criar o AI Gateway e a conversa orientada, com limites de custo.
-5. Integrar o aplicativo Flutter à API, incluindo sessão, erros e estados de carregamento.
-6. Implementar controles de privacidade e gestão de dados.
-7. Ampliar testes de integração, autorização e isolamento antes de qualquer piloto.
+- A conversa ainda não está conectada a um modelo de IA; as mensagens são locais.
+- Objetivos e tarefas ainda não são persistidos no backend.
+- Check-in de humor e atalhos da tela inicial ainda não executam fluxos completos.
+- Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
+- Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
+- O AI Gateway, limites de custo e proteção contra abuso ainda não existem.
+- Testes de integração e validação de segurança precisam ser ampliados antes de um piloto.
 
-A interface atual não consome a API; mensagens, objetivos e tarefas do protótipo são demonstrativos e locais. Consulte [docs/MVP-ESCOPO.md](docs/MVP-ESCOPO.md) para o recorte funcional e a ordem planejada de construção.
+### Atenção ao Flutter Web
+
+O projeto usa `flutter_secure_storage` para guardar tokens. Em Android e iOS, o pacote utiliza os mecanismos seguros da plataforma. No navegador, não existe um cofre equivalente: a própria documentação do código alerta que a proteção é mais fraca. Portanto, a versão Web atual deve ser tratada como ambiente de desenvolvimento/demonstração, não como uma solução validada para credenciais e dados reais.
 
 ## Tecnologias
 
@@ -168,149 +166,190 @@ A interface atual não consome a API; mensagens, objetivos e tarefas do protóti
 | Java 21 | Linguagem do backend |
 | Spring Boot 3.5.7 | Aplicação e API REST |
 | Spring Security | Segurança e autenticação |
-| JWT | Autenticação stateless |
+| JWT | Access token |
+| Refresh token | Renovação e continuidade da sessão |
 | Spring Data JPA | Persistência e acesso a dados |
 | PostgreSQL 16 | Banco de dados relacional |
 | Flyway | Versionamento do banco |
 | Maven | Dependências e build |
 | Docker Compose | Ambiente local do PostgreSQL |
-| Spring Boot Actuator | Monitoramento e health check |
-| Flutter | Aplicativo cliente |
+| Spring Boot Actuator | Health check |
+| Flutter / Dart | Aplicativo cliente |
 
 **Arquitetura atual:** monólito modular no backend. A prioridade é manter uma base compreensível, testável e segura, evitando complexidade prematura.
 
 ## Estrutura do repositório
 
-\`\`\`text
+```text
 norte/
 ├── backend/             # API Java + Spring Boot
-├── frontend/            # Aplicativo Flutter (protótipo)
+├── frontend/            # Aplicativo Flutter
 ├── docs/                # Escopo, decisões e conceitos visuais
 ├── docker-compose.yml   # PostgreSQL para desenvolvimento local
 └── README.md
-\`\`\`
+```
 
 ## Executar localmente
 
 ### Pré-requisitos
 
-- JDK 21 ou superior.
+- JDK 21.
 - Maven 3.9 ou superior.
 - Docker Desktop com WSL2 no Windows (ou Docker Engine em Linux/macOS).
-- Flutter SDK para executar o cliente.
+- Flutter SDK compatível com o `pubspec.yaml`.
 
 ### 1. Iniciar o banco de dados
 
-Na raiz do projeto:
+Na raiz do repositório:
 
-\`\`\`bash
+```bash
 docker compose up -d
-\`\`\`
+```
 
-O PostgreSQL ficará disponível em \`localhost:5433\`.
+O PostgreSQL ficará disponível em `localhost:5433`.
 
-> As credenciais do Docker Compose são exclusivas para desenvolvimento local. Não as utilize em produção.
+> As credenciais definidas no Docker Compose são exclusivas para desenvolvimento local. Não as utilize em produção.
 
 ### 2. Executar os testes do backend
 
-\`\`\`bash
+Em outro terminal, na raiz:
+
+```bash
 cd backend
 mvn test
-\`\`\`
+```
 
 ### 3. Iniciar a API
 
-Ainda na pasta \`backend\`:
+Ainda na pasta `backend`:
 
-\`\`\`bash
+```bash
 mvn spring-boot:run
-\`\`\`
+```
 
-A API ficará disponível em \`http://localhost:8080\`.
+A API ficará disponível em `http://localhost:8080`.
 
-### 4. Executar o protótipo Flutter
+### 4. Executar os testes e o aplicativo Flutter
 
-Em outro terminal:
+Em outro terminal, na raiz do repositório:
 
-\`\`\`bash
+```bash
 cd frontend
 flutter pub get
+flutter analyze
+flutter test
 flutter run -d chrome
-\`\`\`
+```
 
-O comando executa a versão Web do protótipo. A interface ainda não consome a API.
+Para apontar o aplicativo a outra URL de API:
+
+```bash
+flutter run -d chrome --dart-define=NORTE_API_URL=http://localhost:8080
+```
+
+No emulador Android padrão, o endereço do computador costuma ser `http://10.0.2.2:8080`, em vez de `localhost`.
 
 ### 5. Verificar a API
 
 | Método | Endpoint | Finalidade |
 |---|---|---|
-| GET | \`/api/v1/status\` | Status da aplicação |
-| GET | \`/actuator/health\` | Health check |
+| GET | `/api/v1/status` | Status da aplicação |
+| GET | `/actuator/health` | Health check |
 
-## Endpoints implementados
+## Endpoints de autenticação
 
 | Método | Rota | Acesso | Finalidade |
 |---|---|---|---|
-| POST | \`/api/v1/auth/registro\` | Público | Criar uma conta |
-| POST | \`/api/v1/auth/login\` | Público | Autenticar e obter access token |
-| GET | \`/api/v1/me\` | Autenticado | Consultar o perfil do usuário autenticado |
-| GET | \`/api/v1/status\` | Conforme configuração | Verificar o status da aplicação |
-| GET | \`/actuator/health\` | Conforme configuração | Verificar a saúde da aplicação |
+| POST | `/api/v1/auth/registro` | Público | Criar uma conta |
+| POST | `/api/v1/auth/login` | Público | Autenticar e receber tokens |
+| POST | `/api/v1/auth/refresh` | Público + refresh token | Rotacionar a sessão |
+| POST | `/api/v1/auth/logout` | Público + refresh token | Revogar o refresh token |
+| GET | `/api/v1/me` | Access token | Consultar o próprio perfil |
+| GET | `/api/v1/status` | Conforme configuração | Verificar status |
+| GET | `/actuator/health` | Conforme configuração | Verificar saúde da aplicação |
 
-### Exemplo de autenticação com PowerShell
+### Exemplo de uso com PowerShell
 
-Com a API em execução:
+Com a API em execução, use dados fictícios:
 
-\`\`\`powershell
+```powershell
 $u = "http://localhost:8080/api/v1"
 
-$cred = @{
+$cadastro = @{
     email = "ana@exemplo.com"
     senha = "senha-ficticia-123"
     nomeExibicao = "Ana"
 } | ConvertTo-Json
 
 # Cadastro
-Invoke-RestMethod -Method Post -Uri "$u/auth/registro" -ContentType "application/json" -Body $cred
+Invoke-RestMethod -Method Post -Uri "$u/auth/registro" -ContentType "application/json" -Body $cadastro
+
+$login = @{
+    email = "ana@exemplo.com"
+    senha = "senha-ficticia-123"
+} | ConvertTo-Json
 
 # Login
-$t = Invoke-RestMethod -Method Post -Uri "$u/auth/login" -ContentType "application/json" -Body $cred
+$sessao = Invoke-RestMethod -Method Post -Uri "$u/auth/login" -ContentType "application/json" -Body $login
 
-# Consulta do perfil autenticado
+# Perfil autenticado
 Invoke-RestMethod -Uri "$u/me" -Headers @{
-    Authorization = "Bearer $($t.accessToken)"
+    Authorization = "Bearer $($sessao.accessToken)"
 }
-\`\`\`
 
-Use apenas dados fictícios ao testar localmente.
+# Renovação: o refresh token anterior é rotacionado
+$renovacao = @{ refreshToken = $sessao.refreshToken } | ConvertTo-Json
+$novaSessao = Invoke-RestMethod -Method Post -Uri "$u/auth/refresh" -ContentType "application/json" -Body $renovacao
 
-## Segurança, privacidade e limites atuais
+# Logout: revoga o refresh token atual
+$logout = @{ refreshToken = $novaSessao.refreshToken } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri "$u/auth/logout" -ContentType "application/json" -Body $logout
+```
 
-Segurança e privacidade são requisitos de projeto, não itens cosméticos.
+## Configuração e segurança
 
-- Senhas são armazenadas com hash BCrypt, nunca em texto puro.
-- A autenticação utiliza JWT no cabeçalho \`Authorization: Bearer <token>\`.
-- O endpoint de perfil identifica o usuário pelo token autenticado, não por um identificador informado na URL.
-- O segredo JWT é configurado por variável de ambiente (\`NORTE_JWT_SECRET\`).
-- O segredo padrão é destinado somente ao desenvolvimento; com o perfil \`prod\`, a aplicação deve rejeitar esse valor padrão.
-- O escopo prevê consentimento claro para uso de IA, exportação e exclusão de conta e não utilização de dados pessoais para treinamento de modelos.
+As principais configurações podem ser fornecidas por variáveis de ambiente:
+
+| Variável | Finalidade |
+|---|---|
+| `NORTE_DB_URL` | URL JDBC do PostgreSQL |
+| `NORTE_DB_USER` | Usuário do banco |
+| `NORTE_DB_PASSWORD` | Senha do banco |
+| `NORTE_JWT_SECRET` | Segredo usado para assinar tokens |
+| `NORTE_CORS_ORIGINS` | Origens permitidas pelo CORS |
+| `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
+
+- O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
+- O segredo JWT padrão existe somente para desenvolvimento local. Em produção, configure um segredo forte e exclusivo.
+- O perfil `prod` deve ser usado com as configurações de produção devidamente definidas.
+- O endpoint de perfil identifica o usuário pelo token autenticado, não por um ID recebido livremente do cliente.
+- O refresh token é rotacionado a cada renovação e pode ser revogado no logout.
+- O limitador de login atual é local à instância; não substitui uma estratégia distribuída de proteção contra abuso.
+- Não inclua segredos, tokens, senhas reais ou dados pessoais em commits, issues ou logs.
 
 <p align="center">
   <img src="docs/norte-privacidade.svg" alt="Conceito visual de privacidade e controle dos dados." width="100%" />
 </p>
 
-### Limitações conhecidas
+**Privacidade ainda é uma frente de desenvolvimento:** consentimento, transparência sobre uso de IA, exportação e exclusão de dados precisam estar implementados e testados antes de qualquer piloto com usuários reais.
 
-O projeto ainda não está pronto para uso com dados reais. Permanecem pendentes, entre outros itens, refresh token, revogação de sessão no logout, rate limiting, recuperação de senha, integração segura entre Flutter e API e testes de integração com banco real. Os controles de privacidade previstos também precisam ser implementados e validados antes de um piloto.
+## Próximas etapas técnicas
+
+1. Executar e corrigir os testes automatizados localmente.
+2. Validar o ciclo completo de cadastro, login, perfil, refresh e logout.
+3. Persistir perfil, objetivos e tarefas pela API.
+4. Projetar e implementar o serviço de conversa com IA, com limites de uso e custo.
+5. Completar controles de privacidade, consentimento, exportação e exclusão.
+6. Reforçar testes de integração, autorização, CORS e segurança.
+7. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
 
 ## Documentação
 
 - [Escopo do MVP](docs/MVP-ESCOPO.md)
-- [Conceito visual — experiência mobile Rose Edition](docs/norte-experiencia-rose.svg)
+- [Experiência mobile — Rose Edition](docs/norte-experiencia-rose.svg)
 - [Momento humano](docs/norte-momento-humano.svg)
 - [Escuta e acolhimento](docs/norte-escuta.svg)
 - [Clareza e prioridades](docs/norte-clareza.svg)
-- [Passos adaptáveis](docs/norte-passos.svg)
 - [Privacidade](docs/norte-privacidade.svg)
 
 ## Contribuição
