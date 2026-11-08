@@ -1,7 +1,7 @@
 <!-- NORTE • README | atualizado em 08/11/2026 -->
 
 <p align="center">
-  <img src="docs/norte-banner-rose.svg" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
+  <img src="assets/images/NORTE_%20Seu%20Guia%20para%20uma%20Vida%20com%20Sentido.png" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
 </p>
 
 <h1 align="center">NORTE</h1>
@@ -37,7 +37,7 @@ O NORTE nasce de uma convicção: **nenhum planejamento deveria ignorar a pessoa
 Queremos construir uma experiência que escute antes de orientar, considere o contexto antes de sugerir e ajude a transformar intenção em passos possíveis — sem julgamentos, fórmulas mágicas ou promessas irreais.
 
 <p align="center">
-  <img src="docs/norte-momento-humano.svg" alt="Conceito NORTE: uma pausa para respirar, refletir e encontrar um próximo passo." width="100%" />
+  <img src="assets/images/NORTE_%20Seu%20Caminho%20para%20Recome%C3%A7ar.png" alt="Conceito NORTE: uma pausa para respirar, refletir e encontrar um próximo passo." width="100%" />
 </p>
 
 > **A vida não acontece em uma planilha perfeita. A tecnologia precisa aprender a respeitar isso.**
@@ -53,7 +53,7 @@ O NORTE está sendo pensado como um processo de orientação contínua, não com
 5. **Adaptar:** rever o caminho quando a vida mudar — porque ela vai mudar.
 
 <p align="center">
-  <img src="docs/norte-experiencia-rose.svg" alt="Conceito visual das experiências Início, Conversa, Objetivos e Perfil do NORTE." width="100%" />
+  <img src="assets/images/NORTE_%20Encontre%20Sua%20Dire%C3%A7%C3%A3o-1.png" alt="Conceito visual das experiências Início, Conversa, Objetivos e Perfil do NORTE." width="100%" />
 </p>
 
 <p align="center"><em>Direção visual do aplicativo. Parte das telas e interações ainda é demonstrativa.</em></p>
@@ -83,7 +83,7 @@ A Rose Edition é a direção visual escolhida para o NORTE: delicada, adulta, a
 **Direção de interface:** tipografia serena, cartões com cantos suaves, espaços generosos, ícones consistentes, movimento discreto, acessibilidade e legibilidade acima de efeitos decorativos.
 
 <p align="center">
-  <img src="docs/norte-escuta.svg" alt="Conceito visual de escuta e acolhimento." width="100%" />
+  <img src="assets/images/NORTE_%20Seu%20Guia%20de%20Equil%C3%ADbrio%20e%20Prop%C3%B3sito-2.png" alt="Conceito visual de escuta e acolhimento." width="100%" />
 </p>
 
 ## Visão de produto e escopo
@@ -105,10 +105,6 @@ O primeiro piloto está sendo recortado para pessoas no Brasil que desejam entra
 ### Fora do MVP inicial
 
 Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, comunidade, gamificação e integrações externas ficam para etapas posteriores.
-
-<p align="center">
-  <img src="docs/norte-clareza.svg" alt="Conceito visual de organização de pensamentos e prioridades." width="100%" />
-</p>
 
 ---
 
@@ -326,10 +322,6 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 - O refresh token é rotacionado a cada renovação e pode ser revogado no logout.
 - O limitador de login atual é local à instância; não substitui uma estratégia distribuída de proteção contra abuso.
 - Não inclua segredos, tokens, senhas reais ou dados pessoais em commits, issues ou logs.
-
-<p align="center">
-  <img src="docs/norte-privacidade.svg" alt="Conceito visual de privacidade e controle dos dados." width="100%" />
-</p>
 
 **Privacidade ainda é uma frente de desenvolvimento:** consentimento, transparência sobre uso de IA, exportação e exclusão de dados precisam estar implementados e testados antes de qualquer piloto com usuários reais.
 
