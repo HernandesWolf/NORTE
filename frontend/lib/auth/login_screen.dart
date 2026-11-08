@@ -130,10 +130,28 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const SizedBox(height: 22),
             Container(
-              height: 76,
-              width: 76,
-              decoration: BoxDecoration(color: _suave, borderRadius: BorderRadius.circular(26)),
-              child: const Icon(Icons.explore_outlined, color: _vinho, size: 42),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+              decoration: BoxDecoration(
+                color: _suave.withValues(alpha: .72),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: const Color(0xFFEAD8D8)),
+              ),
+              child: const Text(
+                'UM ESPAÇO PARA RECOMEÇAR',
+                style: TextStyle(color: _vinho, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.35),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Container(
+              height: 78,
+              width: 78,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [Color(0xFFF3DDDF), Color(0xFFE9DCD3)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(27),
+                border: Border.all(color: const Color(0xFFEAD8D8)),
+                boxShadow: const [BoxShadow(color: Color(0x20A96D7B), blurRadius: 18, offset: Offset(0, 7))],
+              ),
+              child: const Icon(Icons.explore_rounded, color: _vinho, size: 43),
             ),
             const SizedBox(height: 24),
             const Text(
