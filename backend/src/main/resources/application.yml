@@ -34,3 +34,8 @@ norte:
       # com o perfil "prod" ativo, a aplicação se recusa a iniciar com o valor de desenvolvimento.
       secret: ${NORTE_JWT_SECRET:dev-only-troque-em-producao-0123456789abcdef}
       access-token-ttl: 15m
+      refresh-token-ttl: 30d
+  cors:
+    # Origens permitidas para o app rodando no navegador (Flutter Web usa uma porta aleatória em dev).
+    # Em produção, defina NORTE_CORS_ORIGINS com o domínio real, ex.: https://app.exemplo.com.br
+    allowed-origin-patterns: ${NORTE_CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*}

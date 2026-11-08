@@ -27,13 +27,22 @@ public class AuthService {
     private final UsuarioRepository usuarios;
     private final PasswordEncoder encoder;
     private final TokenService tokens;
+    private final RefreshTokenService refreshTokens;
+    private final LimitadorDeLogin limitador;
     /** Hash descartável, usado para gastar o mesmo tempo quando o e-mail não existe. */
     private final String hashFalso;
 
-    public AuthService(UsuarioRepository usuarios, PasswordEncoder encoder, TokenService tokens) {
+    public AuthService(
+            UsuarioRepository usuarios,
+            PasswordEncoder encoder,
+            TokenService tokens,
+            RefreshTokenService refreshTokens,
+            LimitadorDeLogin limitador) {
         this.usuarios = usuarios;
         this.encoder = encoder;
         this.tokens = tokens;
+        this.refreshTokens = refreshTokens;
+        this.limitador = limitador;
         this.hashFalso = encoder.encode("senha-descartavel-para-igualar-tempo");
     }
 
@@ -56,18 +65,40 @@ public class AuthService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public TokenResponse login(LoginRequest req) {
-        Optional<Usuario> encontrado = usuarios.findByEmail(normalizarEmail(req.email()));
+    /**
+     * Confere as credenciais e abre uma sessão. O limitador é consultado antes do BCrypt (que é caro) e a falha é
+     * registrada em memória, fora da transação, então a contagem não se perde quando a exceção desfaz o resto.
+     */
+    @Transactional
+    public TokenResponse login(LoginRequest req, String ip) {
+        String email = normalizarEmail(req.email());
+        String chave = email + "|" + ip;
+        limitador.verificar(chave);
+
+        Optional<Usuario> encontrado = usuarios.findByEmail(email);
         if (excedeLimiteBcrypt(req.senha())) {
+            limitador.registrarFalha(chave);
             throw ApiException.naoAutorizado(MSG_CREDENCIAIS);
         }
         String hash = encontrado.map(Usuario::getSenhaHash).orElse(hashFalso);
         boolean senhaConfere = encoder.matches(req.senha(), hash);
         if (encontrado.isEmpty() || !senhaConfere) {
+            limitador.registrarFalha(chave);
             throw ApiException.naoAutorizado(MSG_CREDENCIAIS);
         }
-        return tokens.emitir(encontrado.get().getId());
+        limitador.limpar(chave);
+        UUID usuarioId = encontrado.get().getId();
+        return tokens.emitir(usuarioId, refreshTokens.criar(usuarioId));
+    }
+
+    /** Troca um refresh token válido por um par novo (o antigo deixa de valer). */
+    public TokenResponse renovar(String refreshToken) {
+        RefreshTokenService.Rotacao rotacao = refreshTokens.rotacionar(refreshToken);
+        return tokens.emitir(rotacao.usuarioId(), rotacao.novoToken());
+    }
+
+    public void sair(String refreshToken) {
+        refreshTokens.revogar(refreshToken);
     }
 
     @Transactional(readOnly = true)
