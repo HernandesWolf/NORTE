@@ -64,6 +64,32 @@ public class ConversaService {
         return MensagemConversaResponse.de(norte);
     }
 
+    public PropostaObjetivoResponse proporObjetivo(UUID usuarioId) {
+        boolean consentido = consentimentos.findById(usuarioId)
+                .map(ConsentimentoIa::isHabilitado)
+                .orElse(false);
+        if (!ia.habilitado() || !consentido) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN,
+                    "Autorize as respostas inteligentes antes de solicitar uma proposta.");
+        }
+
+        List<MensagemConversa> contexto = mensagens
+                .findTop12ByUsuarioIdOrderByCriadoEmDescIdDesc(usuarioId)
+                .stream()
+                .sorted(Comparator.comparing(MensagemConversa::getCriadoEm)
+                        .thenComparing(MensagemConversa::getId))
+                .toList();
+        if (contexto.isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Converse com o NORTE antes de solicitar uma proposta.");
+        }
+
+        controleUso.reservar(usuarioId);
+        return ia.proporObjetivo(contexto);
+    }
+
     @Transactional(readOnly = true)
     public ConversaIaStatusResponse statusIa(UUID usuarioId) {
         boolean consentido = consentimentos.findById(usuarioId)
