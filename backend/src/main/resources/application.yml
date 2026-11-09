@@ -41,3 +41,9 @@ norte:
     allowed-origin-patterns: ${NORTE_CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*}
   # Fuso que define "hoje" para o check-in diário (padrão: horário de Brasília).
   fuso-horario: ${NORTE_FUSO_HORARIO:America/Sao_Paulo}
+
+  ia:
+    openai:
+      # Opcional: sem chave, o histórico continua funcionando sem chamadas externas.
+      api-key: ${NORTE_OPENAI_API_KEY:}
+      model: ${NORTE_OPENAI_MODEL:gpt-4.1-mini}
