@@ -151,7 +151,7 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 
 ### Ainda demonstrativo ou pendente
 
-- A integração com a OpenAI está implementada no backend, mas permanece desativada até configurar `NORTE_OPENAI_API_KEY`. Sem essa variável, o NORTE apenas persiste as mensagens; com ela, gera e persiste respostas usando a Responses API.
+- A integração com a OpenAI está preparada no backend e permanece desativada por padrão. Para ativá-la, são necessárias duas configurações explícitas no ambiente do backend: `NORTE_OPENAI_ENABLED=true` e `NORTE_OPENAI_API_KEY`. Sem ambas, o NORTE apenas persiste as mensagens e não envia conteúdo para serviços externos.
 - Sugestões de conversa ainda não geram respostas da IA.
 - Conversão de uma conversa em objetivo ainda depende de um fluxo explícito de proposta e confirmação.
 - Check-in e objetivos já são persistidos; tarefas independentes ainda não possuem gestão própria.
@@ -330,6 +330,7 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_DB_PASSWORD` | Senha do banco |
 | `NORTE_JWT_SECRET` | Segredo usado para assinar tokens |
 | `NORTE_CORS_ORIGINS` | Origens permitidas pelo CORS |
+| `NORTE_OPENAI_ENABLED` | Habilitação explícita da integração (`false` por padrão) |
 | `NORTE_OPENAI_API_KEY` | Chave da OpenAI (opcional; somente no ambiente do backend) |
 | `NORTE_OPENAI_MODEL` | Modelo usado pela Responses API (padrão: `gpt-4.1-mini`) |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
@@ -341,6 +342,7 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 - O refresh token é rotacionado a cada renovação e pode ser revogado no logout.
 - O limitador de login atual é local à instância; não substitui uma estratégia distribuída de proteção contra abuso.
 - Não inclua segredos, tokens, senhas reais ou dados pessoais em commits, issues ou logs.
+- A integração só é ativada quando `NORTE_OPENAI_ENABLED=true` e `NORTE_OPENAI_API_KEY` estão configuradas no backend.
 - `NORTE_OPENAI_API_KEY` deve existir somente como segredo/variável de ambiente do backend; nunca use `--dart-define`, código Flutter, README ou arquivo versionado para armazená-la.
 - A integração envia à OpenAI somente as últimas 12 mensagens da conversa daquele usuário. O contexto de outras áreas do perfil ainda não é enviado.
 
