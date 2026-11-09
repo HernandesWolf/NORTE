@@ -41,6 +41,11 @@ public class ConversaController {
         return conversa.statusIa(usuarioId(jwt));
     }
 
+    @PostMapping("/objetivos/proposta")
+    public PropostaObjetivoResponse proporObjetivo(@AuthenticationPrincipal Jwt jwt) {
+        return conversa.proporObjetivo(usuarioId(jwt));
+    }
+
     @PutMapping("/ia/consentimento")
     public ConversaIaStatusResponse atualizarConsentimento(
             @AuthenticationPrincipal Jwt jwt,
