@@ -4,6 +4,7 @@ import 'package:norte_app/auth/auth_controller.dart';
 import 'package:norte_app/checkin/checkin_models.dart';
 import 'package:norte_app/core/token_storage.dart';
 import 'package:norte_app/main.dart';
+import 'package:norte_app/objetivos/objetivos_api.dart';
 
 import 'support/fake_auth_api.dart';
 import 'support/fake_checkin_api.dart';
@@ -26,7 +27,11 @@ Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> 
 
   final checkin = checkinFalso ?? FakeCheckinApi();
 
-  await tester.pumpWidget(NorteApp(auth: auth, checkinApi: checkin));
+  await tester.pumpWidget(NorteApp(
+    auth: auth,
+    checkinApi: checkin,
+    objetivosApi: ObjetivosApi(baseUrl: 'http://localhost'),
+  ));
   await tester.pumpAndSettle();
   return (api: api, storage: storage, checkin: checkin);
 }
