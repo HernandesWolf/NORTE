@@ -108,6 +108,8 @@ public class OpenAiResponsesClient {
         payload.put("instructions", instrucoes);
         payload.put("input", input);
         payload.put("max_output_tokens", maxOutputTokens);
+        // Evita persistência da resposta pela API; não substitui as regras de retenção da plataforma.
+        payload.put("store", false);
         if (jsonMode) {
             payload.put("text", Map.of("format", Map.of("type", "json_object")));
         }
