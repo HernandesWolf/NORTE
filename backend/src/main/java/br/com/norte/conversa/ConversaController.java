@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -36,8 +37,15 @@ public class ConversaController {
     }
 
     @GetMapping("/ia/status")
-    public ConversaIaStatusResponse statusIa() {
-        return conversa.statusIa();
+    public ConversaIaStatusResponse statusIa(@AuthenticationPrincipal Jwt jwt) {
+        return conversa.statusIa(usuarioId(jwt));
+    }
+
+    @PutMapping("/ia/consentimento")
+    public ConversaIaStatusResponse atualizarConsentimento(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody ConsentimentoIaRequest request) {
+        return conversa.atualizarConsentimento(usuarioId(jwt), request.consentido());
     }
 
     private static UUID usuarioId(Jwt jwt) {
