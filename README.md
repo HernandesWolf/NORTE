@@ -137,7 +137,7 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 - Fluxos de cadastro e login conectados à API.
 - Check-in diário conectado ao backend.
 - Listagem, criação, conclusão e exclusão de objetivos conectadas ao backend.
-- Tela Conversa conectada ao histórico persistido (entrega em revisão no PR #5).
+- Tela Conversa conectada ao histórico persistido; integração com IA ainda pendente.
 - Restauração da sessão ao abrir o aplicativo.
 - Armazenamento e renovação de tokens.
 - Renovação coordenada para evitar chamadas simultâneas com o mesmo refresh token.
