@@ -39,17 +39,22 @@ public class ConversaService {
      * à OpenAI sem habilitação global e consentimento individual vigente.
      */
     public MensagemConversaResponse registrar(UUID usuarioId, String conteudo) {
-        MensagemConversa usuario = mensagens.save(
-                new MensagemConversa(usuarioId, "USUARIO", conteudo.trim()));
-
         boolean consentido = consentimentos.findById(usuarioId)
                 .map(ConsentimentoIa::isHabilitado)
                 .orElse(false);
-        if (!ia.habilitado() || !consentido) {
-            return MensagemConversaResponse.de(usuario);
+        boolean usarIa = ia.habilitado() && consentido;
+        if (usarIa) {
+            // Reserva antes de persistir a mensagem para que um bloqueio por limite
+            // não deixe uma mensagem aparentemente enviada sem resposta.
+            controleUso.reservar(usuarioId);
         }
 
-        controleUso.reservar(usuarioId);
+        MensagemConversa usuario = mensagens.save(
+                new MensagemConversa(usuarioId, "USUARIO", conteudo.trim()));
+
+        if (!usarIa) {
+            return MensagemConversaResponse.de(usuario);
+        }
 
         List<MensagemConversa> contexto = mensagens
                 .findTop12ByUsuarioIdOrderByCriadoEmDescIdDesc(usuarioId)
