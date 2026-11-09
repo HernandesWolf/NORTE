@@ -81,14 +81,20 @@ class NorteHome extends StatefulWidget {
 }
 class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
+  final _goalsKey = GlobalKey<_GoalsPageState>();
   late final List<Widget> pages = [
     OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
     ConversationPage(
       auth: widget.auth,
       api: widget.conversaApi,
       objetivosApi: widget.objetivosApi,
+      onObjetivoCriado: () => unawaited(_goalsKey.currentState?._carregar()),
     ),
-    GoalsPage(auth: widget.auth, api: widget.objetivosApi),
+    GoalsPage(
+      key: _goalsKey,
+      auth: widget.auth,
+      api: widget.objetivosApi,
+    ),
     ProfilePage(auth: widget.auth),
   ];
   final titles = const ['Seu espaço', 'Conversa', 'Seus caminhos', 'Seu perfil'];
@@ -125,7 +131,10 @@ class _NorteHomeState extends State<NorteHome> {
       ],
     ),
     body: SafeArea(child: IndexedStack(index: selected, children: pages)),
-    bottomNavigationBar: NavigationBar(selectedIndex: selected, onDestinationSelected: (v) => setState(() => selected = v),
+    bottomNavigationBar: NavigationBar(selectedIndex: selected, onDestinationSelected: (v) {
+      setState(() => selected = v);
+      if (v == 2) unawaited(_goalsKey.currentState?._carregar());
+    },
       backgroundColor: NorteColors.surface, indicatorColor: NorteColors.blush,
       destinations: const [
         NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Início'),
@@ -280,12 +289,14 @@ class ConversationPage extends StatefulWidget {
     required this.auth,
     required this.api,
     required this.objetivosApi,
+    required this.onObjetivoCriado,
     super.key,
   });
 
   final AuthController auth;
   final ConversaApi api;
   final ObjetivosApi objetivosApi;
+  final VoidCallback onObjetivoCriado;
 
   @override
   State<ConversationPage> createState() => _ConversationPageState();
@@ -448,6 +459,7 @@ class _ConversationPageState extends State<ConversationPage> {
         ),
       );
       if (!mounted) return;
+      widget.onObjetivoCriado();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Objetivo "${objetivo.titulo}" salvo em Seus caminhos.')),
       );
