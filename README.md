@@ -1,4 +1,4 @@
-<!-- NORTE • README | atualizado em 08/11/2026 -->
+<!-- NORTE • README | atualizado em 09/11/2026 -->
 
 <p align="center">
   <img src="assets/images/NORTE_%20Seu%20Guia%20para%20uma%20Vida%20com%20Sentido.png" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
@@ -22,6 +22,7 @@
   <img src="https://img.shields.io/badge/Flutter-Dart-02569B?logo=flutter&logoColor=white" alt="Flutter" />
   <img src="https://img.shields.io/badge/Identidade-Rose_Edition-B87583" alt="Rose Edition" />
   <img src="https://img.shields.io/badge/Status-MVP_em_construção-8957e5" alt="MVP em construção" />
+  <a href="https://github.com/HernandesWolf/NORTE/actions/workflows/ci.yml"><img src="https://github.com/HernandesWolf/NORTE/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
 </p>
 
 ---
@@ -110,7 +111,7 @@ Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, com
 
 ## Estado real do desenvolvimento
 
-O NORTE já possui uma fundação de backend com autenticação funcional e um protótipo Flutter navegável. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
+O NORTE já possui uma fundação de backend com autenticação, check-in diário e objetivos persistidos, e um aplicativo Flutter conectado a esses três fluxos. A conversa com IA, o plano de 7 dias e a gestão de privacidade ainda não existem. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
 
 ### Backend — implementado
 
@@ -120,6 +121,8 @@ O NORTE já possui uma fundação de backend com autenticação funcional e um p
 - Access token JWT e refresh token com rotação.
 - Logout com revogação do refresh token.
 - Endpoint autenticado para consultar o próprio perfil.
+- Check-in diário de estado ("Como você está chegando hoje?"): um por pessoa por dia, com o "dia" calculado no servidor no fuso configurado.
+- Objetivos persistidos (listar, criar, editar, concluir e excluir). Toda operação é filtrada pelo dono do token: um objetivo de outra pessoa responde 404, igual a "não existe".
 - Persistência com Spring Data JPA e PostgreSQL 16.
 - Migrações de banco com Flyway.
 - Validação de entrada e respostas de erro no formato Problem Details.
@@ -137,6 +140,8 @@ O NORTE já possui uma fundação de backend com autenticação funcional e um p
 - Renovação coordenada para evitar chamadas simultâneas com o mesmo refresh token.
 - Logout local e solicitação de revogação ao backend.
 - Consulta do perfil autenticado.
+- Check-in diário gravado na API (a escolha do dia é restaurada ao abrir o app).
+- Tela de Objetivos conectada à API: listar, criar, concluir e excluir (a edição ainda não tem tela, embora a API já exista).
 - Tratamento de erros de conexão, validação e respostas HTTP.
 - Navegação pelas áreas Início, Conversa, Objetivos e Perfil.
 - Primeira aplicação da identidade Rose Edition.
@@ -144,8 +149,8 @@ O NORTE já possui uma fundação de backend com autenticação funcional e um p
 ### Ainda demonstrativo ou pendente
 
 - A conversa ainda não está conectada a um modelo de IA; as mensagens são locais.
-- Objetivos e tarefas ainda não são persistidos no backend.
-- Check-in de humor e atalhos da tela inicial ainda não executam fluxos completos.
+- Tarefas, plano de 7 dias e lembretes ainda não existem (os objetivos já são reais, mas ainda sem tarefas).
+- O card "Seu foco neste momento" da tela inicial e o atalho "Quer conversar um pouco?" ainda são demonstrativos.
 - Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
 - Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
 - O AI Gateway, limites de custo e proteção contra abuso ainda não existem.
@@ -171,6 +176,7 @@ O projeto usa `flutter_secure_storage` para guardar tokens. Em Android e iOS, o 
 | Docker Compose | Ambiente local do PostgreSQL |
 | Spring Boot Actuator | Health check |
 | Flutter / Dart | Aplicativo cliente |
+| GitHub Actions | Testes automáticos do backend e análise/testes do Flutter |
 
 **Arquitetura atual:** monólito modular no backend. A prioridade é manter uma base compreensível, testável e segura, evitando complexidade prematura.
 
@@ -178,6 +184,8 @@ O projeto usa `flutter_secure_storage` para guardar tokens. Em Android e iOS, o 
 
 ```text
 norte/
+├── .github/workflows/   # Integração contínua (testes e análise)
+├── assets/images/       # Imagens usadas no README
 ├── backend/             # API Java + Spring Boot
 ├── frontend/            # Aplicativo Flutter
 ├── docs/                # Escopo, decisões e conceitos visuais
@@ -264,6 +272,22 @@ No emulador Android padrão, o endereço do computador costuma ser `http://10.0.
 | GET | `/api/v1/status` | Conforme configuração | Verificar status |
 | GET | `/actuator/health` | Conforme configuração | Verificar saúde da aplicação |
 
+## Endpoints de check-in e objetivos
+
+Todos exigem o access token (`Authorization: Bearer ...`). O usuário é sempre o do token; nenhum ID de usuário é aceito no corpo ou na URL.
+
+| Método | Rota | Finalidade |
+|---|---|---|
+| GET | `/api/v1/checkins/hoje` | Consultar o check-in de hoje (204 se ainda não houver) |
+| PUT | `/api/v1/checkins/hoje` | Registrar ou trocar o estado de hoje |
+| GET | `/api/v1/objetivos` | Listar os próprios objetivos (mais recentes primeiro) |
+| POST | `/api/v1/objetivos` | Criar um objetivo (`titulo` até 120, `descricao` até 500 caracteres) |
+| PUT | `/api/v1/objetivos/{id}` | Editar título e descrição |
+| PATCH | `/api/v1/objetivos/{id}/conclusao` | Marcar ou desmarcar como concluído |
+| DELETE | `/api/v1/objetivos/{id}` | Excluir |
+
+Um objetivo de outra pessoa responde `404`, igual a um que não existe.
+
 ### Exemplo de uso com PowerShell
 
 Com a API em execução, use dados fictícios:
@@ -313,6 +337,7 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_DB_PASSWORD` | Senha do banco |
 | `NORTE_JWT_SECRET` | Segredo usado para assinar tokens |
 | `NORTE_CORS_ORIGINS` | Origens permitidas pelo CORS |
+| `NORTE_FUSO_HORARIO` | Fuso que define o "hoje" do check-in (padrão: `America/Sao_Paulo`) |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
 
 - O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
@@ -327,12 +352,12 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 
 ## Próximas etapas técnicas
 
-1. Executar e corrigir os testes automatizados localmente.
-2. Validar o ciclo completo de cadastro, login, perfil, refresh e logout.
-3. Persistir perfil, objetivos e tarefas pela API.
-4. Projetar e implementar o serviço de conversa com IA, com limites de uso e custo.
-5. Completar controles de privacidade, consentimento, exportação e exclusão.
-6. Reforçar testes de integração, autorização, CORS e segurança.
+1. Tarefas e plano de 7 dias ligados aos objetivos, com a edição de objetivos no app.
+2. Perfil progressivo e memória básica, sob controle da pessoa.
+3. Projetar e implementar o serviço de conversa com IA (AI Gateway), com limites de uso e custo.
+4. Completar controles de privacidade, consentimento, exportação e exclusão.
+5. Testes de integração com PostgreSQL real (por exemplo, Testcontainers) e reforço de testes de autorização e CORS.
+6. Configuração obrigatória de produção (senha do banco, CORS e segredo JWT exigidos no perfil `prod`).
 7. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
 
 ## Documentação

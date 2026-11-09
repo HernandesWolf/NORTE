@@ -36,7 +36,7 @@ Pessoas no Brasil que desejam entrar ou migrar para a área de tecnologia. Esse 
 
 Voz, aplicativo web independente em Next.js, pagamentos, Redis/filas, busca vetorial, oportunidades externas, gestão financeira, comunidade, gamificação e integrações externas.
 
-## 4. Estado de implementação em 08/11/2026
+## 4. Estado de implementação em 09/11/2026
 
 ### Entregue no repositório
 
@@ -51,16 +51,22 @@ Voz, aplicativo web independente em Next.js, pagamentos, Redis/filas, busca veto
 | Consulta autenticada do próprio perfil | Implementada |
 | Limitação de tentativas de login | Implementada em memória |
 | CORS configurável | Implementado |
-| Flutter com navegação Início, Conversa, Objetivos e Perfil | Implementado como protótipo |
+| Check-in diário de estado (um por pessoa por dia, fuso configurável) | Implementado (backend + Flutter) |
+| Objetivos: listar, criar, editar, concluir e excluir, sempre filtrados pelo dono do token | Implementado no backend, com testes de isolamento entre usuários |
+| Flutter com navegação Início, Conversa, Objetivos e Perfil | Implementado; Início (check-in), Objetivos e autenticação usam a API, Conversa e Perfil seguem demonstrativos |
 | Cadastro/login Flutter integrado à API | Implementado |
 | Restauração de sessão, renovação e logout no Flutter | Implementados |
+| Objetivos no Flutter | Listar, criar, concluir e excluir integrados à API; edição ainda sem tela |
+| Integração contínua (GitHub Actions) | Testes do backend e análise/testes do Flutter a cada push e pull request |
 
 ### Ainda não entregue
 
 | Área | Próximo trabalho |
 |---|---|
 | Perfil progressivo | Modelagem, API e telas |
-| Objetivos e tarefas | CRUD protegido e persistência |
+| Tarefas e plano de 7 dias | Tarefas ligadas aos objetivos, plano editável e edição de objetivos no app |
+| Testes de integração com banco real | Cobrir isolamento entre usuários e migrações com PostgreSQL (por exemplo, Testcontainers) |
+| Configuração de produção | Exigir senha do banco, CORS e segredo JWT no perfil `prod` (hoje só o segredo JWT é verificado) |
 | Conversa com IA | AI Gateway, provedor, contexto e avaliações |
 | Plano adaptável | Geração, edição, revisão e histórico |
 | Lembretes | Definir mecanismo e preferências |
@@ -68,7 +74,7 @@ Voz, aplicativo web independente em Next.js, pagamentos, Redis/filas, busca veto
 | Segurança operacional | Limite distribuído, observabilidade e revisão de produção |
 | Flutter Web | Rever estratégia de armazenamento de tokens antes de uso com dados reais |
 
-**Importante:** mensagens da conversa, objetivos e tarefas da interface atual são demonstrativos e locais. A tela de perfil também apresenta opções ilustrativas ainda sem operação de gestão de dados. A autenticação integrada não significa que todos os módulos do aplicativo já estejam conectados à API.
+**Importante:** as mensagens da conversa são demonstrativas e locais, e não há tarefas nem plano ainda. No Início, o card "Seu foco neste momento" também é ilustrativo. A tela de perfil apresenta opções ilustrativas ainda sem operação de gestão de dados. Estar autenticado e ter check-in e objetivos integrados não significa que todos os módulos do aplicativo já estejam conectados à API.
 
 O limitador de login atual mantém estado em memória e atende apenas a uma instância. Para múltiplas instâncias, será necessário armazenamento compartilhado.
 
@@ -80,7 +86,7 @@ No Flutter Web, o armazenamento de tokens tem proteção inferior à oferecida p
 |---|---|---|
 | 1 | Validar a fundação atual | Testes backend e Flutter executados; Postgres e Flyway validados localmente |
 | 2 | Validar autenticação ponta a ponta | Cadastro/login/perfil/refresh/logout testados, inclusive expiração e revogação |
-| 3 | Perfil e objetivos | CRUD protegido; um usuário nunca acessa dados de outro |
+| 3 | Perfil e objetivos | CRUD protegido; um usuário nunca acessa dados de outro (objetivos e check-in prontos e testados; perfil progressivo pendente) |
 | 4 | AI Gateway | Interface de provedor, limites, registro de consumo e tratamento de falhas |
 | 5 | Conversa orientada | Fluxo de compreensão → confirmação → próxima ação, com avaliação de segurança |
 | 6 | Plano e tarefas | Plano editável, persistido e adaptável |
