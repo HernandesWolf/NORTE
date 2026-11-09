@@ -287,6 +287,8 @@ class _ConversationPageState extends State<ConversationPage> {
   final messages = <MensagemConversa>[];
   bool carregando = true;
   bool enviando = false;
+  bool alterandoConsentimento = false;
+  ConversaIaStatus? statusIa;
   String? erro;
 
   @override
@@ -305,11 +307,13 @@ class _ConversationPageState extends State<ConversationPage> {
   Future<void> _carregar() async {
     try {
       final historico = await widget.auth.comSessao(widget.api.listar);
+      final estadoIa = await widget.auth.comSessao(widget.api.statusIa);
       if (!mounted) return;
       setState(() {
         messages
           ..clear()
           ..addAll(historico);
+        statusIa = estadoIa;
         carregando = false;
       });
       _irParaFim();
@@ -319,6 +323,46 @@ class _ConversationPageState extends State<ConversationPage> {
         erro = e.mensagem;
         carregando = false;
       });
+    }
+  }
+
+  Future<void> _alterarConsentimento(bool consentir) async {
+    if (alterandoConsentimento || statusIa == null) return;
+
+    if (consentir) {
+      final aceitou = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Permitir respostas inteligentes?'),
+          content: const Text(
+            'Quando a IA estiver habilitada neste ambiente, as 12 mensagens mais recentes desta conversa poderão ser enviadas à OpenAI para gerar respostas. Isso pode incluir informações pessoais que você escrever. Não compartilhe senhas, documentos ou dados altamente sensíveis. Você pode retirar sua autorização a qualquer momento.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Agora não'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Concordo e continuar'),
+            ),
+          ],
+        ),
+      );
+      if (aceitou != true) return;
+    }
+
+    setState(() => alterandoConsentimento = true);
+    try {
+      final atualizado = await widget.auth.comSessao(
+        (token) => widget.api.atualizarConsentimento(token, consentir),
+      );
+      if (!mounted) return;
+      setState(() => statusIa = atualizado);
+    } on ApiError catch (e) {
+      if (mounted) setState(() => erro = e.mensagem);
+    } finally {
+      if (mounted) setState(() => alterandoConsentimento = false);
     }
   }
 
@@ -396,6 +440,62 @@ class _ConversationPageState extends State<ConversationPage> {
             const Padding(
               padding: EdgeInsets.all(24),
               child: Center(child: CircularProgressIndicator()),
+            ),
+          if (!carregando && statusIa != null)
+            Card(
+              margin: const EdgeInsets.only(top: 14),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      statusIa!.habilitada
+                          ? (statusIa!.consentimentoUsuario
+                              ? 'Respostas inteligentes autorizadas'
+                              : 'Respostas inteligentes disponíveis')
+                          : 'Conversa e privacidade',
+                      style: const TextStyle(
+                        color: NorteColors.wine,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      !statusIa!.habilitada
+                          ? 'Seu histórico fica salvo. A IA ainda não foi ativada neste ambiente; nenhuma mensagem está sendo enviada à OpenAI.'
+                          : (statusIa!.consentimentoUsuario
+                              ? 'Você autorizou o uso das mensagens recentes para gerar respostas. É possível retirar essa autorização.'
+                              : 'As mensagens só serão compartilhadas com a OpenAI para gerar respostas se você autorizar.'),
+                      style: const TextStyle(
+                        color: NorteColors.muted,
+                        height: 1.4,
+                        fontSize: 13,
+                      ),
+                    ),
+                    if (statusIa!.habilitada || statusIa!.consentimentoUsuario) ...[
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          onPressed: alterandoConsentimento
+                              ? null
+                              : () => _alterarConsentimento(
+                                  !statusIa!.consentimentoUsuario,
+                                ),
+                          child: Text(
+                            alterandoConsentimento
+                                ? 'Salvando...'
+                                : (statusIa!.consentimentoUsuario
+                                    ? 'Retirar autorização'
+                                    : 'Autorizar respostas inteligentes'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
           for (final message in messages) ...[
             const SizedBox(height: 14),
