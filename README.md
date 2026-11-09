@@ -1,4 +1,4 @@
-<!-- NORTE • README | atualizado em 08/11/2026 -->
+<!-- NORTE • README | atualizado em 09/11/2026 -->
 
 <p align="center">
   <img src="assets/images/NORTE_%20Seu%20Guia%20para%20uma%20Vida%20com%20Sentido.png" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
@@ -93,7 +93,7 @@ A visão de longo prazo inclui conversa contextual, organização de objetivos, 
 ### Recorte inicial do MVP
 
 - Cadastro, autenticação e gestão da sessão.
-- Conversa com IA por texto.
+- Conversa com IA por texto (em desenvolvimento; ainda sem provedor conectado).
 - Síntese do contexto compreendido, sujeita à confirmação da pessoa.
 - Perfil progressivo e memória básica sob controle do usuário.
 - Objetivos, plano de 7 dias, tarefas e lembretes.
@@ -110,7 +110,7 @@ Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, com
 
 ## Estado real do desenvolvimento
 
-O NORTE já possui uma fundação de backend com autenticação funcional e um protótipo Flutter navegável. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
+O NORTE já possui autenticação, check-in diário e objetivos persistidos no backend, além de uma primeira etapa de histórico de conversa em desenvolvimento. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
 
 ### Backend — implementado
 
@@ -125,13 +125,19 @@ O NORTE já possui uma fundação de backend com autenticação funcional e um p
 - Validação de entrada e respostas de erro no formato Problem Details.
 - CORS configurável por variável de ambiente.
 - Limitação de tentativas de login em memória.
-- Health check com Spring Boot Actuator.
+- Health check com Spring Boot Actuator
+- Check-in diário persistido por usuário
+- CRUD de objetivos persistido e protegido por usuário
+- Histórico de mensagens da Conversa em implementação, com endpoints autenticados e limite de 100 mensagens.
 
 **Limite conhecido:** o limitador de tentativas é mantido em memória. É adequado apenas ao cenário simples de uma única instância e precisa ser substituído por uma solução compartilhada antes de escalar horizontalmente.
 
 ### Aplicativo Flutter — implementado parcialmente
 
 - Fluxos de cadastro e login conectados à API.
+- Check-in diário conectado ao backend.
+- Listagem, criação, conclusão e exclusão de objetivos conectadas ao backend.
+- Tela Conversa conectada ao histórico persistido (entrega em revisão no PR #5).
 - Restauração da sessão ao abrir o aplicativo.
 - Armazenamento e renovação de tokens.
 - Renovação coordenada para evitar chamadas simultâneas com o mesmo refresh token.
@@ -143,9 +149,10 @@ O NORTE já possui uma fundação de backend com autenticação funcional e um p
 
 ### Ainda demonstrativo ou pendente
 
-- A conversa ainda não está conectada a um modelo de IA; as mensagens são locais.
-- Objetivos e tarefas ainda não são persistidos no backend.
-- Check-in de humor e atalhos da tela inicial ainda não executam fluxos completos.
+- A conversa ainda não está conectada a um modelo de IA; nesta primeira etapa, o envio e o histórico de mensagens são persistidos, sem resposta inteligente.
+- Sugestões de conversa ainda não geram respostas da IA.
+- Conversão de uma conversa em objetivo ainda depende de um fluxo explícito de proposta e confirmação.
+- Check-in e objetivos já são persistidos; tarefas independentes ainda não possuem gestão própria.
 - Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
 - Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
 - O AI Gateway, limites de custo e proteção contra abuso ainda não existem.
@@ -261,6 +268,13 @@ No emulador Android padrão, o endereço do computador costuma ser `http://10.0.
 | POST | `/api/v1/auth/refresh` | Público + refresh token | Rotacionar a sessão |
 | POST | `/api/v1/auth/logout` | Público + refresh token | Revogar o refresh token |
 | GET | `/api/v1/me` | Access token | Consultar o próprio perfil |
+| GET | `/api/v1/conversa/mensagens` | Access token | Listar até 100 mensagens do usuário |
+| POST | `/api/v1/conversa/mensagens` | Access token | Registrar uma mensagem do usuário |
+| GET | `/api/v1/objetivos` | Access token | Listar objetivos do usuário |
+| POST | `/api/v1/objetivos` | Access token | Criar objetivo |
+| PUT | `/api/v1/objetivos/{id}` | Access token | Atualizar objetivo |
+| PATCH | `/api/v1/objetivos/{id}/conclusao` | Access token | Atualizar conclusão |
+| DELETE | `/api/v1/objetivos/{id}` | Access token | Excluir objetivo |
 | GET | `/api/v1/status` | Conforme configuração | Verificar status |
 | GET | `/actuator/health` | Conforme configuração | Verificar saúde da aplicação |
 
@@ -329,11 +343,12 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 
 1. Executar e corrigir os testes automatizados localmente.
 2. Validar o ciclo completo de cadastro, login, perfil, refresh e logout.
-3. Persistir perfil, objetivos e tarefas pela API.
-4. Projetar e implementar o serviço de conversa com IA, com limites de uso e custo.
-5. Completar controles de privacidade, consentimento, exportação e exclusão.
-6. Reforçar testes de integração, autorização, CORS e segurança.
-7. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
+3. Concluir a validação e integração do histórico da Conversa.
+4. Integrar o serviço de conversa com IA, com contexto consentido, limites de uso e custo.
+5. Permitir propor objetivos a partir da conversa e persistir somente após confirmação.
+6. Completar controles de privacidade, consentimento, exportação e exclusão.
+7. Reforçar testes de integração, autorização, CORS e segurança.
+8. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
 
 ## Documentação
 
