@@ -11,14 +11,17 @@ public class ConversaService {
     private final MensagemConversaRepository mensagens;
     private final OpenAiResponsesClient ia;
     private final ConsentimentoIaRepository consentimentos;
+    private final ControleUsoIaService controleUso;
 
     public ConversaService(
             MensagemConversaRepository mensagens,
             OpenAiResponsesClient ia,
-            ConsentimentoIaRepository consentimentos) {
+            ConsentimentoIaRepository consentimentos,
+            ControleUsoIaService controleUso) {
         this.mensagens = mensagens;
         this.ia = ia;
         this.consentimentos = consentimentos;
+        this.controleUso = controleUso;
     }
 
     @Transactional(readOnly = true)
@@ -45,6 +48,8 @@ public class ConversaService {
         if (!ia.habilitado() || !consentido) {
             return MensagemConversaResponse.de(usuario);
         }
+
+        controleUso.reservar(usuarioId);
 
         List<MensagemConversa> contexto = mensagens
                 .findTop12ByUsuarioIdOrderByCriadoEmDescIdDesc(usuarioId)
