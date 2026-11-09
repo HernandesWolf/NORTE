@@ -378,7 +378,9 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _proporObjetivo() async {
     if (enviando || statusIa?.habilitada != true ||
-        statusIa?.consentimentoUsuario != true) return;
+        statusIa?.consentimentoUsuario != true) {
+      return;
+    }
 
     setState(() {
       enviando = true;
