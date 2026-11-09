@@ -160,8 +160,8 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 - Consentimento cobre o envio das mensagens da conversa para a OpenAI; gestão completa de privacidade, exportação e exclusão de conta ainda está pendente.
 - Check-in e objetivos já são persistidos; tarefas independentes ainda não possuem gestão própria.
 - Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
-- Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
-- O AI Gateway, limites de custo e proteção contra abuso ainda não existem.
+- Recuperação de senha e gestão completa de dados precisam ser implementadas; o consentimento específico para envio à IA já está disponível na Conversa.
+- Ainda não existe um AI Gateway dedicado nem um teto financeiro integrado à plataforma OpenAI. Os limites de chamadas do MVP são uma proteção inicial, não substituem controles adicionais contra abuso.
 - Testes de integração e validação de segurança precisam ser ampliados antes de um piloto.
 
 ### Atenção ao Flutter Web
