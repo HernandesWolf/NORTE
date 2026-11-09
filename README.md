@@ -131,7 +131,7 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 - Histórico de mensagens da Conversa persistido por usuário, com endpoints autenticados e limite de 100 mensagens.
 - Integração server-side com OpenAI Responses API, desligada por padrão e dependente de chave no backend.
 - Consentimento individual versionado e revogável antes do envio de mensagens à OpenAI.
-- Limite de 10 chamadas por usuário/dia e 1.000 chamadas globais/mês por padrão; limites configuráveis no backend.
+- Limite de 5 chamadas por usuário/dia e 100 chamadas globais/mês por padrão; limites configuráveis no backend.
 - Contexto limitado às 12 mensagens mais recentes, com limite de 1.500 caracteres por mensagem e respostas de até 400 tokens.
 - Proposta de objetivo estruturada a partir da conversa, apresentada para revisão e confirmação antes de persistir.
 
@@ -339,8 +339,8 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_OPENAI_ENABLED` | Habilitação explícita da integração (`false` por padrão) |
 | `NORTE_OPENAI_API_KEY` | Chave da OpenAI (opcional; somente no ambiente do backend) |
 | `NORTE_OPENAI_MODEL` | Modelo usado pela Responses API (padrão: `gpt-4.1-mini`) |
-| `NORTE_IA_LIMITE_DIARIO` | Máximo de chamadas por usuário/dia (padrão: 10) |
-| `NORTE_IA_LIMITE_MENSAL_GLOBAL` | Máximo de chamadas globais/mês (padrão: 1.000) |
+| `NORTE_IA_LIMITE_DIARIO` | Máximo de chamadas por usuário/dia (padrão: 5) |
+| `NORTE_IA_LIMITE_MENSAL_GLOBAL` | Máximo de chamadas globais/mês (padrão: 100) |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
 
 - O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
