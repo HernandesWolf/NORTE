@@ -1,5 +1,6 @@
 package br.com.norte.conversa;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,12 @@ public class ConversaService {
 
     @Transactional(readOnly = true)
     public List<MensagemConversaResponse> listar(UUID usuarioId) {
-        return mensagens.findTop100ByUsuarioIdOrderByCriadoEmAscIdAsc(usuarioId)
-                .stream().map(MensagemConversaResponse::de).toList();
+        return mensagens.findTop100ByUsuarioIdOrderByCriadoEmDescIdDesc(usuarioId)
+                .stream()
+                .sorted(Comparator.comparing(MensagemConversa::getCriadoEm)
+                        .thenComparing(MensagemConversa::getId))
+                .map(MensagemConversaResponse::de)
+                .toList();
     }
 
     @Transactional
