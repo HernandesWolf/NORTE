@@ -128,7 +128,9 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 - Health check com Spring Boot Actuator
 - Check-in diário persistido por usuário
 - CRUD de objetivos persistido e protegido por usuário
-- Histórico de mensagens da Conversa em implementação, com endpoints autenticados e limite de 100 mensagens.
+- Histórico de mensagens da Conversa persistido por usuário, com endpoints autenticados e limite de 100 mensagens.
+- Cliente server-side preparado para a OpenAI Responses API; sem chave configurada, nenhuma chamada externa é feita.
+- Contexto enviado à IA limitado às 12 mensagens mais recentes, com limite de caracteres por mensagem e resposta limitada a 400 tokens.
 
 **Limite conhecido:** o limitador de tentativas é mantido em memória. É adequado apenas ao cenário simples de uma única instância e precisa ser substituído por uma solução compartilhada antes de escalar horizontalmente.
 
@@ -149,7 +151,7 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 
 ### Ainda demonstrativo ou pendente
 
-- A conversa ainda não está conectada a um modelo de IA; nesta primeira etapa, o envio e o histórico de mensagens são persistidos, sem resposta inteligente.
+- A integração com a OpenAI está implementada no backend, mas permanece desativada até configurar `NORTE_OPENAI_API_KEY`. Sem essa variável, o NORTE apenas persiste as mensagens; com ela, gera e persiste respostas usando a Responses API.
 - Sugestões de conversa ainda não geram respostas da IA.
 - Conversão de uma conversa em objetivo ainda depende de um fluxo explícito de proposta e confirmação.
 - Check-in e objetivos já são persistidos; tarefas independentes ainda não possuem gestão própria.
@@ -269,7 +271,8 @@ No emulador Android padrão, o endereço do computador costuma ser `http://10.0.
 | POST | `/api/v1/auth/logout` | Público + refresh token | Revogar o refresh token |
 | GET | `/api/v1/me` | Access token | Consultar o próprio perfil |
 | GET | `/api/v1/conversa/mensagens` | Access token | Listar até 100 mensagens do usuário |
-| POST | `/api/v1/conversa/mensagens` | Access token | Registrar uma mensagem do usuário |
+| POST | `/api/v1/conversa/mensagens` | Access token | Registrar mensagem e gerar resposta quando a IA estiver configurada |
+| GET | `/api/v1/conversa/ia/status` | Access token | Consultar se a integração de IA está habilitada |
 | GET | `/api/v1/objetivos` | Access token | Listar objetivos do usuário |
 | POST | `/api/v1/objetivos` | Access token | Criar objetivo |
 | PUT | `/api/v1/objetivos/{id}` | Access token | Atualizar objetivo |
@@ -327,6 +330,8 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_DB_PASSWORD` | Senha do banco |
 | `NORTE_JWT_SECRET` | Segredo usado para assinar tokens |
 | `NORTE_CORS_ORIGINS` | Origens permitidas pelo CORS |
+| `NORTE_OPENAI_API_KEY` | Chave da OpenAI (opcional; somente no ambiente do backend) |
+| `NORTE_OPENAI_MODEL` | Modelo usado pela Responses API (padrão: `gpt-4.1-mini`) |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
 
 - O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
@@ -336,6 +341,8 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 - O refresh token é rotacionado a cada renovação e pode ser revogado no logout.
 - O limitador de login atual é local à instância; não substitui uma estratégia distribuída de proteção contra abuso.
 - Não inclua segredos, tokens, senhas reais ou dados pessoais em commits, issues ou logs.
+- `NORTE_OPENAI_API_KEY` deve existir somente como segredo/variável de ambiente do backend; nunca use `--dart-define`, código Flutter, README ou arquivo versionado para armazená-la.
+- A integração envia à OpenAI somente as últimas 12 mensagens da conversa daquele usuário. O contexto de outras áreas do perfil ainda não é enviado.
 
 **Privacidade ainda é uma frente de desenvolvimento:** consentimento, transparência sobre uso de IA, exportação e exclusão de dados precisam estar implementados e testados antes de qualquer piloto com usuários reais.
 
@@ -343,8 +350,9 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 
 1. Executar e corrigir os testes automatizados localmente.
 2. Validar o ciclo completo de cadastro, login, perfil, refresh e logout.
-3. Concluir a validação e integração do histórico da Conversa.
-4. Integrar o serviço de conversa com IA, com contexto consentido, limites de uso e custo.
+3. Validar a persistência e o fluxo completo da Conversa.
+4. Configurar a chave da OpenAI como segredo no ambiente do backend e validar a Responses API.
+5. Implementar consentimento explícito, controles de privacidade, limites de uso e orçamento antes de liberar IA a usuários reais.
 5. Permitir propor objetivos a partir da conversa e persistir somente após confirmação.
 6. Completar controles de privacidade, consentimento, exportação e exclusão.
 7. Reforçar testes de integração, autorização, CORS e segurança.
