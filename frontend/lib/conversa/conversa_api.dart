@@ -44,6 +44,18 @@ class ConversaIaStatus {
   final bool consentimentoUsuario;
 }
 
+class PropostaObjetivo {
+  const PropostaObjetivo({required this.titulo, required this.descricao});
+
+  factory PropostaObjetivo.fromJson(Map<String, dynamic> json) => PropostaObjetivo(
+        titulo: json['titulo'] as String,
+        descricao: json['descricao'] as String? ?? '',
+      );
+
+  final String titulo;
+  final String descricao;
+}
+
 class ConversaApi {
   ConversaApi({required this.baseUrl, http.Client? client})
       : _client = client ?? http.Client();
@@ -80,6 +92,16 @@ class ConversaApi {
       ),
     );
     return MensagemConversa.fromJson(
+      jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
+    );
+  }
+
+  Future<PropostaObjetivo> proporObjetivo(String token) async {
+    final response = await _request(
+      () => _client.post(_uri.replace(path: '${_uri.path.replaceFirst('/mensagens', '/objetivos/proposta')}'),
+          headers: _headers(token)),
+    );
+    return PropostaObjetivo.fromJson(
       jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
     );
   }
