@@ -150,6 +150,7 @@ class OverviewPage extends StatefulWidget {
 class _OverviewPageState extends State<OverviewPage> {
   EstadoCheckin? _estado;
   bool _salvando = false;
+  String? _erroMensagem;
 
   @override
   void initState() {
@@ -179,6 +180,7 @@ class _OverviewPageState extends State<OverviewPage> {
     setState(() {
       _estado = novo;
       _salvando = true;
+      _erroMensagem = null;
     });
     try {
       final salvo = await widget.auth.comSessao((token) => widget.checkinApi.registrar(token, novo));
@@ -190,8 +192,10 @@ class _OverviewPageState extends State<OverviewPage> {
       if (!mounted) {
         return;
       }
-      setState(() => _estado = anterior);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+      setState(() {
+        _estado = anterior;
+        _erroMensagem = e.mensagem;
+      });
     } finally {
       if (mounted) {
         setState(() => _salvando = false);
@@ -239,6 +243,10 @@ class _OverviewPageState extends State<OverviewPage> {
       for (final (estado, rotulo, icone) in _opcoesCheckin)
         MoodChip(label: rotulo, icon: icone, selected: _estado == estado, onTap: () => unawaited(_escolher(estado))),
     ]),
+    if (_erroMensagem != null) ...[
+      const SizedBox(height: 10),
+      Text(_erroMensagem!, style: const TextStyle(color: Color(0xFF9B3D4A), fontSize: 13)),
+    ],
     const SizedBox(height: 24),
     const SectionHeading('Seu foco neste momento', subtitle: 'Pequenas ações também são progresso.'),
     const SizedBox(height: 12),
