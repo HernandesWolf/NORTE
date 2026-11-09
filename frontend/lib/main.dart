@@ -83,7 +83,11 @@ class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
   late final List<Widget> pages = [
     OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
-    ConversationPage(auth: widget.auth, api: widget.conversaApi),
+    ConversationPage(
+      auth: widget.auth,
+      api: widget.conversaApi,
+      objetivosApi: widget.objetivosApi,
+    ),
     GoalsPage(auth: widget.auth, api: widget.objetivosApi),
     ProfilePage(auth: widget.auth),
   ];
@@ -272,10 +276,16 @@ class _OverviewPageState extends State<OverviewPage> {
 }
 
 class ConversationPage extends StatefulWidget {
-  const ConversationPage({required this.auth, required this.api, super.key});
+  const ConversationPage({
+    required this.auth,
+    required this.api,
+    required this.objetivosApi,
+    super.key,
+  });
 
   final AuthController auth;
   final ConversaApi api;
+  final ObjetivosApi objetivosApi;
 
   @override
   State<ConversationPage> createState() => _ConversationPageState();
@@ -363,6 +373,86 @@ class _ConversationPageState extends State<ConversationPage> {
       if (mounted) setState(() => erro = e.mensagem);
     } finally {
       if (mounted) setState(() => alterandoConsentimento = false);
+    }
+  }
+
+  Future<void> _proporObjetivo() async {
+    if (enviando || statusIa?.habilitada != true ||
+        statusIa?.consentimentoUsuario != true) return;
+
+    setState(() {
+      enviando = true;
+      erro = null;
+    });
+
+    try {
+      final proposta = await widget.auth.comSessao(widget.api.proporObjetivo);
+      if (!mounted) return;
+
+      final titulo = TextEditingController(text: proposta.titulo);
+      final descricao = TextEditingController(text: proposta.descricao);
+      final confirmado = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Uma proposta para seu caminho'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'O NORTE organizou uma possibilidade a partir da conversa. Revise e altere o que quiser. Nada será salvo sem sua confirmação.',
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: titulo,
+                  maxLength: 120,
+                  decoration: const InputDecoration(labelText: 'Objetivo'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: descricao,
+                  maxLength: 500,
+                  maxLines: 4,
+                  decoration: const InputDecoration(labelText: 'Descrição'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Ainda não'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirmar e salvar'),
+            ),
+          ],
+        ),
+      );
+
+      final nome = titulo.text.trim();
+      final detalhe = descricao.text.trim();
+      titulo.dispose();
+      descricao.dispose();
+
+      if (confirmado != true || nome.isEmpty) return;
+
+      final objetivo = await widget.auth.comSessao(
+        (token) => widget.objetivosApi.criar(
+          token,
+          nome,
+          detalhe.isEmpty ? null : detalhe,
+        ),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Objetivo "${objetivo.titulo}" salvo em Seus caminhos.')),
+      );
+    } on ApiError catch (e) {
+      if (mounted) setState(() => erro = e.mensagem);
+    } finally {
+      if (mounted) setState(() => enviando = false);
     }
   }
 
@@ -523,6 +613,42 @@ class _ConversationPageState extends State<ConversationPage> {
                         : NorteColors.ink,
                     height: 1.4,
                   ),
+                ),
+              ),
+            ),
+          ],
+          if (statusIa?.habilitada == true &&
+              statusIa?.consentimentoUsuario == true) ...[
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Transformar conversa em objetivo',
+                      style: TextStyle(
+                        color: NorteColors.wine,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'O NORTE pode organizar uma proposta com base no que você contou. Você revisa e confirma antes de salvar.',
+                      style: TextStyle(
+                        color: NorteColors.muted,
+                        height: 1.4,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      onPressed: enviando ? null : _proporObjetivo,
+                      icon: const Icon(Icons.flag_outlined),
+                      label: const Text('Criar proposta de objetivo'),
+                    ),
+                  ],
                 ),
               ),
             ),
