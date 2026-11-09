@@ -93,7 +93,7 @@ A visão de longo prazo inclui conversa contextual, organização de objetivos, 
 ### Recorte inicial do MVP
 
 - Cadastro, autenticação e gestão da sessão.
-- Conversa com IA por texto (em desenvolvimento; ainda sem provedor conectado).
+- Conversa por texto com histórico persistido e integração opcional com OpenAI, protegida por habilitação global e consentimento individual.
 - Síntese do contexto compreendido, sujeita à confirmação da pessoa.
 - Perfil progressivo e memória básica sob controle do usuário.
 - Objetivos, plano de 7 dias, tarefas e lembretes.
@@ -129,8 +129,11 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 - Check-in diário persistido por usuário
 - CRUD de objetivos persistido e protegido por usuário
 - Histórico de mensagens da Conversa persistido por usuário, com endpoints autenticados e limite de 100 mensagens.
-- Cliente server-side preparado para a OpenAI Responses API; sem chave configurada, nenhuma chamada externa é feita.
-- Contexto enviado à IA limitado às 12 mensagens mais recentes, com limite de caracteres por mensagem e resposta limitada a 400 tokens.
+- Integração server-side com OpenAI Responses API, desligada por padrão e dependente de chave no backend.
+- Consentimento individual versionado e revogável antes do envio de mensagens à OpenAI.
+- Limite de 10 chamadas por usuário/dia e 1.000 chamadas globais/mês por padrão; limites configuráveis no backend.
+- Contexto limitado às 12 mensagens mais recentes, com limite de 1.500 caracteres por mensagem e respostas de até 400 tokens.
+- Proposta de objetivo estruturada a partir da conversa, apresentada para revisão e confirmação antes de persistir.
 
 **Limite conhecido:** o limitador de tentativas é mantido em memória. É adequado apenas ao cenário simples de uma única instância e precisa ser substituído por uma solução compartilhada antes de escalar horizontalmente.
 
@@ -139,7 +142,7 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 - Fluxos de cadastro e login conectados à API.
 - Check-in diário conectado ao backend.
 - Listagem, criação, conclusão e exclusão de objetivos conectadas ao backend.
-- Tela Conversa conectada ao histórico persistido; integração com IA ainda pendente.
+- Tela Conversa conectada ao histórico, com consulta de disponibilidade da IA, gestão de consentimento e fluxo de proposta de objetivo com confirmação.
 - Restauração da sessão ao abrir o aplicativo.
 - Armazenamento e renovação de tokens.
 - Renovação coordenada para evitar chamadas simultâneas com o mesmo refresh token.
@@ -151,9 +154,10 @@ O NORTE já possui autenticação, check-in diário e objetivos persistidos no b
 
 ### Ainda demonstrativo ou pendente
 
-- A integração com a OpenAI está preparada no backend e permanece desativada por padrão. Para ativá-la, são necessárias duas configurações explícitas no ambiente do backend: `NORTE_OPENAI_ENABLED=true` e `NORTE_OPENAI_API_KEY`. Sem ambas, o NORTE apenas persiste as mensagens e não envia conteúdo para serviços externos.
-- Sugestões de conversa ainda não geram respostas da IA.
-- Conversão de uma conversa em objetivo ainda depende de um fluxo explícito de proposta e confirmação.
+- A integração com a OpenAI permanece desativada por padrão. Exige `NORTE_OPENAI_ENABLED=true`, `NORTE_OPENAI_API_KEY` e consentimento individual. Sem as três condições, nenhuma mensagem é enviada à OpenAI.
+- A chave ainda não existe neste ambiente; portanto, respostas reais da OpenAI ainda não foram testadas.
+- Os limites implementados são limites de chamadas, não um teto financeiro em reais ou dólares. A conta OpenAI ainda precisa de um orçamento/limite financeiro configurado pelo proprietário.
+- Consentimento cobre o envio das mensagens da conversa para a OpenAI; gestão completa de privacidade, exportação e exclusão de conta ainda está pendente.
 - Check-in e objetivos já são persistidos; tarefas independentes ainda não possuem gestão própria.
 - Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
 - Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
@@ -271,8 +275,10 @@ No emulador Android padrão, o endereço do computador costuma ser `http://10.0.
 | POST | `/api/v1/auth/logout` | Público + refresh token | Revogar o refresh token |
 | GET | `/api/v1/me` | Access token | Consultar o próprio perfil |
 | GET | `/api/v1/conversa/mensagens` | Access token | Listar até 100 mensagens do usuário |
-| POST | `/api/v1/conversa/mensagens` | Access token | Registrar mensagem e gerar resposta quando a IA estiver configurada |
-| GET | `/api/v1/conversa/ia/status` | Access token | Consultar se a integração de IA está habilitada |
+| POST | `/api/v1/conversa/mensagens` | Access token | Registrar mensagem e gerar resposta se IA e consentimento estiverem habilitados |
+| GET | `/api/v1/conversa/ia/status` | Access token | Consultar estado da IA e consentimento individual |
+| PUT | `/api/v1/conversa/ia/consentimento` | Access token | Conceder ou retirar consentimento para envio de mensagens à IA |
+| POST | `/api/v1/conversa/objetivos/proposta` | Access token + consentimento | Gerar uma proposta de objetivo sem salvá-la |
 | GET | `/api/v1/objetivos` | Access token | Listar objetivos do usuário |
 | POST | `/api/v1/objetivos` | Access token | Criar objetivo |
 | PUT | `/api/v1/objetivos/{id}` | Access token | Atualizar objetivo |
@@ -333,6 +339,8 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_OPENAI_ENABLED` | Habilitação explícita da integração (`false` por padrão) |
 | `NORTE_OPENAI_API_KEY` | Chave da OpenAI (opcional; somente no ambiente do backend) |
 | `NORTE_OPENAI_MODEL` | Modelo usado pela Responses API (padrão: `gpt-4.1-mini`) |
+| `NORTE_IA_LIMITE_DIARIO` | Máximo de chamadas por usuário/dia (padrão: 10) |
+| `NORTE_IA_LIMITE_MENSAL_GLOBAL` | Máximo de chamadas globais/mês (padrão: 1.000) |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
 
 - O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
@@ -344,7 +352,8 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 - Não inclua segredos, tokens, senhas reais ou dados pessoais em commits, issues ou logs.
 - A integração só é ativada quando `NORTE_OPENAI_ENABLED=true` e `NORTE_OPENAI_API_KEY` estão configuradas no backend.
 - `NORTE_OPENAI_API_KEY` deve existir somente como segredo/variável de ambiente do backend; nunca use `--dart-define`, código Flutter, README ou arquivo versionado para armazená-la.
-- A integração envia à OpenAI somente as últimas 12 mensagens da conversa daquele usuário. O contexto de outras áreas do perfil ainda não é enviado.
+- Quando IA e consentimento individual estão ativos, somente as últimas 12 mensagens da conversa daquele usuário são enviadas à OpenAI, com até 1.500 caracteres por mensagem. O contexto de outras áreas do perfil não é enviado.
+- Os limites diário por usuário e mensal global são aplicados atomicamente no PostgreSQL. Eles limitam quantidade de chamadas, mas não substituem um teto financeiro na plataforma OpenAI.
 
 **Privacidade ainda é uma frente de desenvolvimento:** consentimento, transparência sobre uso de IA, exportação e exclusão de dados precisam estar implementados e testados antes de qualquer piloto com usuários reais.
 
@@ -353,12 +362,12 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 1. Executar e corrigir os testes automatizados localmente.
 2. Validar o ciclo completo de cadastro, login, perfil, refresh e logout.
 3. Validar a persistência e o fluxo completo da Conversa.
-4. Configurar a chave da OpenAI como segredo no ambiente do backend e validar a Responses API.
-5. Implementar consentimento explícito, controles de privacidade, limites de uso e orçamento antes de liberar IA a usuários reais.
-5. Permitir propor objetivos a partir da conversa e persistir somente após confirmação.
-6. Completar controles de privacidade, consentimento, exportação e exclusão.
-7. Reforçar testes de integração, autorização, CORS e segurança.
-8. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
+4. Validar consentimento, revogação e limites de chamadas em testes de integração.
+5. Configurar a chave da OpenAI como segredo no ambiente do backend e validar a Responses API.
+6. Configurar orçamento financeiro na plataforma OpenAI antes de habilitar chamadas em produção.
+7. Completar exportação e exclusão de dados/conta e rever a política de retenção.
+8. Reforçar testes de integração, autorização, CORS e segurança.
+9. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
 
 ## Documentação
 
