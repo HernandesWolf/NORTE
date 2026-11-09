@@ -5,5 +5,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MensagemConversaRepository extends JpaRepository<MensagemConversa, UUID> {
-    List<MensagemConversa> findTop100ByUsuarioIdOrderByCriadoEmAscIdAsc(UUID usuarioId);
+    List<MensagemConversa> findTop100ByUsuarioIdOrderByCriadoEmDescIdDesc(UUID usuarioId);
 }
