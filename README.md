@@ -371,6 +371,7 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 
 ## Documentação
 
+- [Configurar a OpenAI com segurança](docs/CONFIGURAR-OPENAI.md)
 - [Escopo do MVP](docs/MVP-ESCOPO.md)
 - [Experiência mobile — Rose Edition](docs/norte-experiencia-rose.svg)
 - [Momento humano](docs/norte-momento-humano.svg)
