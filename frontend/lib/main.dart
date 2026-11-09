@@ -330,12 +330,17 @@ class _ConversationPageState extends State<ConversationPage> {
       erro = null;
     });
     try {
-      final mensagem = await widget.auth.comSessao(
+      await widget.auth.comSessao(
         (token) => widget.api.enviar(token, texto),
       );
+      // Recarrega o histórico para mostrar a mensagem do usuário e, quando
+      // configurada, a resposta do NORTE persistida pelo backend.
+      final historico = await widget.auth.comSessao(widget.api.listar);
       if (!mounted) return;
       setState(() {
-        messages.add(mensagem);
+        messages
+          ..clear()
+          ..addAll(historico);
         controller.clear();
       });
       _irParaFim();
