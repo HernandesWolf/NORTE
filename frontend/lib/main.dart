@@ -7,6 +7,7 @@ import 'package:norte_app/auth/auth_gate.dart';
 import 'package:norte_app/auth/auth_models.dart';
 import 'package:norte_app/checkin/checkin_api.dart';
 import 'package:norte_app/checkin/checkin_models.dart';
+import 'package:norte_app/conversa/conversa_api.dart';
 import 'package:norte_app/core/api_config.dart';
 import 'package:norte_app/core/token_storage.dart';
 import 'package:norte_app/objetivos/objetivos_api.dart';
@@ -17,7 +18,7 @@ void main() {
     api: HttpAuthApi(baseUrl: apiBaseUrl),
     storage: SecureTokenStorage(),
   );
-  runApp(NorteApp(auth: auth, checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl), objetivosApi: ObjetivosApi(baseUrl: apiBaseUrl)));
+  runApp(NorteApp(auth: auth, checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl), objetivosApi: ObjetivosApi(baseUrl: apiBaseUrl), conversaApi: ConversaApi(baseUrl: apiBaseUrl)));
 }
 
 class NorteColors {
@@ -32,11 +33,12 @@ class NorteColors {
 }
 
 class NorteApp extends StatelessWidget {
-  const NorteApp({required this.auth, required this.checkinApi, required this.objetivosApi, super.key});
+  const NorteApp({required this.auth, required this.checkinApi, required this.objetivosApi, required this.conversaApi, super.key});
 
   final AuthController auth;
   final CheckinApi checkinApi;
   final ObjetivosApi objetivosApi;
+  final ConversaApi conversaApi;
 
   @override
   Widget build(BuildContext context) {
@@ -61,17 +63,18 @@ class NorteApp extends StatelessWidget {
         cardTheme: CardThemeData(color: NorteColors.surface, elevation: 0, margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFFEFE5E1)))),
       ),
-      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi)),
+      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi, conversaApi: conversaApi)),
     );
   }
 }
 
 class NorteHome extends StatefulWidget {
-  const NorteHome({required this.auth, required this.checkinApi, required this.objetivosApi, super.key});
+  const NorteHome({required this.auth, required this.checkinApi, required this.objetivosApi, required this.conversaApi, super.key});
 
   final AuthController auth;
   final CheckinApi checkinApi;
   final ObjetivosApi objetivosApi;
+  final ConversaApi conversaApi;
 
   @override
   State<NorteHome> createState() => _NorteHomeState();
@@ -80,7 +83,7 @@ class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
   late final List<Widget> pages = [
     OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
-    const ConversationPage(),
+    ConversationPage(auth: widget.auth, api: widget.conversaApi),
     GoalsPage(auth: widget.auth, api: widget.objetivosApi),
     ProfilePage(auth: widget.auth),
   ];
@@ -269,46 +272,228 @@ class _OverviewPageState extends State<OverviewPage> {
 }
 
 class ConversationPage extends StatefulWidget {
-  const ConversationPage({super.key});
+  const ConversationPage({required this.auth, required this.api, super.key});
+
+  final AuthController auth;
+  final ConversaApi api;
+
   @override
   State<ConversationPage> createState() => _ConversationPageState();
 }
+
 class _ConversationPageState extends State<ConversationPage> {
   final controller = TextEditingController();
-  final messages = <String>[];
+  final scrollController = ScrollController();
+  final messages = <MensagemConversa>[];
+  bool carregando = true;
+  bool enviando = false;
+  String? erro;
+
   @override
-  void dispose() { controller.dispose(); super.dispose(); }
+  void initState() {
+    super.initState();
+    unawaited(_carregar());
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _carregar() async {
+    try {
+      final historico = await widget.auth.comSessao(widget.api.listar);
+      if (!mounted) return;
+      setState(() {
+        messages
+          ..clear()
+          ..addAll(historico);
+        carregando = false;
+      });
+      _irParaFim();
+    } on ApiError catch (e) {
+      if (!mounted) return;
+      setState(() {
+        erro = e.mensagem;
+        carregando = false;
+      });
+    }
+  }
+
+  Future<void> _enviar([String? sugestao]) async {
+    final texto = (sugestao ?? controller.text).trim();
+    if (texto.isEmpty || enviando) return;
+    setState(() {
+      enviando = true;
+      erro = null;
+    });
+    try {
+      final mensagem = await widget.auth.comSessao(
+        (token) => widget.api.enviar(token, texto),
+      );
+      if (!mounted) return;
+      setState(() {
+        messages.add(mensagem);
+        controller.clear();
+      });
+      _irParaFim();
+    } on ApiError catch (e) {
+      if (mounted) setState(() => erro = e.mensagem);
+    } finally {
+      if (mounted) setState(() => enviando = false);
+    }
+  }
+
+  void _irParaFim() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) => Column(children: [
-    Expanded(child: ListView(padding: const EdgeInsets.all(20), children: [
-      Container(padding: const EdgeInsets.all(18), decoration: BoxDecoration(color: NorteColors.blush, borderRadius: BorderRadius.circular(20)),
-        child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('NORTE', style: TextStyle(color: NorteColors.wine, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-          SizedBox(height: 8),
-          Text('Estou aqui para ajudar você a organizar as ideias, sem pressa e sem julgamento. O que seria importante olhar hoje?', style: TextStyle(color: NorteColors.ink, height: 1.5)),
-        ])),
-      for (final message in messages) ...[
-        const SizedBox(height: 14),
-        Align(alignment: Alignment.centerRight, child: Container(constraints: const BoxConstraints(maxWidth: 300), padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(color: NorteColors.wine, borderRadius: BorderRadius.circular(18)),
-          child: Text(message, style: const TextStyle(color: Colors.white, height: 1.4)))),
-      ],
-      const SizedBox(height: 14),
-      const Text('Você pode começar por:', style: TextStyle(color: NorteColors.muted, fontSize: 13)),
-      const SizedBox(height: 9),
-      const Wrap(spacing: 8, runSpacing: 8, children: [
-        SuggestionChip(label: 'Estou sobrecarregado(a)'), SuggestionChip(label: 'Quero mudar de carreira'), SuggestionChip(label: 'Preciso encontrar direção'),
-      ]),
-    ])),
-    Container(padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-      decoration: const BoxDecoration(color: NorteColors.surface, border: Border(top: BorderSide(color: NorteColors.nude))),
+    Expanded(
+      child: ListView(
+        controller: scrollController,
+        padding: const EdgeInsets.all(20),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: NorteColors.blush,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('NORTE', style: TextStyle(
+                  color: NorteColors.wine,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                )),
+                SizedBox(height: 8),
+                Text(
+                  'Estou aqui para ajudar você a organizar as ideias, sem pressa e sem julgamento. O que seria importante olhar hoje?',
+                  style: TextStyle(color: NorteColors.ink, height: 1.5),
+                ),
+              ],
+            ),
+          ),
+          if (carregando)
+            const Padding(
+              padding: EdgeInsets.all(24),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          for (final message in messages) ...[
+            const SizedBox(height: 14),
+            Align(
+              alignment: message.enviadaPeloUsuario
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 320),
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: message.enviadaPeloUsuario
+                      ? NorteColors.wine
+                      : NorteColors.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: message.enviadaPeloUsuario
+                      ? null
+                      : Border.all(color: NorteColors.nude),
+                ),
+                child: Text(
+                  message.conteudo,
+                  style: TextStyle(
+                    color: message.enviadaPeloUsuario
+                        ? Colors.white
+                        : NorteColors.ink,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          if (erro != null) ...[
+            const SizedBox(height: 12),
+            Text(erro!, style: const TextStyle(
+              color: Color(0xFF9B3D4A), fontSize: 13,
+            )),
+          ],
+          if (messages.isEmpty && !carregando) ...[
+            const SizedBox(height: 14),
+            const Text('Você pode começar por:',
+              style: TextStyle(color: NorteColors.muted, fontSize: 13)),
+            const SizedBox(height: 9),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ActionChip(
+                  onPressed: enviando ? null : () => _enviar('Estou sobrecarregado(a)'),
+                  label: const Text('Estou sobrecarregado(a)'),
+                ),
+                ActionChip(
+                  onPressed: enviando ? null : () => _enviar('Quero mudar de carreira'),
+                  label: const Text('Quero mudar de carreira'),
+                ),
+                ActionChip(
+                  onPressed: enviando ? null : () => _enviar('Preciso encontrar direção'),
+                  label: const Text('Preciso encontrar direção'),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    ),
+    Container(
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+      decoration: const BoxDecoration(
+        color: NorteColors.surface,
+        border: Border(top: BorderSide(color: NorteColors.nude)),
+      ),
       child: Row(children: [
-        Expanded(child: TextField(controller: controller, minLines: 1, maxLines: 4, decoration: const InputDecoration(hintText: 'Escreva no seu tempo...', isDense: true))),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            minLines: 1,
+            maxLines: 4,
+            enabled: !enviando,
+            onSubmitted: (_) => _enviar(),
+            decoration: const InputDecoration(
+              hintText: 'Escreva no seu tempo...',
+              isDense: true,
+            ),
+          ),
+        ),
         const SizedBox(width: 9),
-        IconButton.filled(style: IconButton.styleFrom(backgroundColor: NorteColors.rose, foregroundColor: Colors.white, padding: const EdgeInsets.all(15)),
-          onPressed: () { final value = controller.text.trim(); if (value.isEmpty) return; setState(() { messages.add(value); controller.clear(); }); },
-          icon: const Icon(Icons.arrow_upward_rounded)),
-      ])),
+        IconButton.filled(
+          style: IconButton.styleFrom(
+            backgroundColor: NorteColors.rose,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.all(15),
+          ),
+          onPressed: enviando ? null : () => _enviar(),
+          icon: enviando
+              ? const SizedBox(
+                  width: 18, height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white,
+                  ),
+                )
+              : const Icon(Icons.arrow_upward_rounded),
+        ),
+      ]),
+    ),
   ]);
 }
 
