@@ -64,6 +64,7 @@ class ConversaApi {
   final http.Client _client;
 
   Uri get _uri => Uri.parse('$baseUrl/api/v1/conversa/mensagens');
+  Uri get _propostaUri => Uri.parse('$baseUrl/api/v1/conversa/objetivos/proposta');
   Uri get _statusUri => Uri.parse('$baseUrl/api/v1/conversa/ia/status');
   Uri get _consentimentoUri => Uri.parse('$baseUrl/api/v1/conversa/ia/consentimento');
 
@@ -98,8 +99,7 @@ class ConversaApi {
 
   Future<PropostaObjetivo> proporObjetivo(String token) async {
     final response = await _request(
-      () => _client.post(_uri.replace(path: '${_uri.path.replaceFirst('/mensagens', '/objetivos/proposta')}'),
-          headers: _headers(token)),
+      () => _client.post(_propostaUri, headers: _headers(token)),
     );
     return PropostaObjetivo.fromJson(
       jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
