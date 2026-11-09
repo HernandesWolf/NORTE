@@ -26,6 +26,24 @@ class MensagemConversa {
   bool get enviadaPeloUsuario => papel == 'USUARIO';
 }
 
+class ConversaIaStatus {
+  const ConversaIaStatus({
+    required this.habilitada,
+    required this.provedor,
+    required this.consentimentoUsuario,
+  });
+
+  factory ConversaIaStatus.fromJson(Map<String, dynamic> json) => ConversaIaStatus(
+        habilitada: json['habilitada'] as bool? ?? false,
+        provedor: json['provedor'] as String? ?? 'desativada',
+        consentimentoUsuario: json['consentimentoUsuario'] as bool? ?? false,
+      );
+
+  final bool habilitada;
+  final String provedor;
+  final bool consentimentoUsuario;
+}
+
 class ConversaApi {
   ConversaApi({required this.baseUrl, http.Client? client})
       : _client = client ?? http.Client();
@@ -34,6 +52,8 @@ class ConversaApi {
   final http.Client _client;
 
   Uri get _uri => Uri.parse('$baseUrl/api/v1/conversa/mensagens');
+  Uri get _statusUri => Uri.parse('$baseUrl/api/v1/conversa/ia/status');
+  Uri get _consentimentoUri => Uri.parse('$baseUrl/api/v1/conversa/ia/consentimento');
 
   Map<String, String> _headers(String token) => {
         'Accept': 'application/json',
@@ -60,6 +80,28 @@ class ConversaApi {
       ),
     );
     return MensagemConversa.fromJson(
+      jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
+    );
+  }
+
+  Future<ConversaIaStatus> statusIa(String token) async {
+    final response = await _request(
+      () => _client.get(_statusUri, headers: _headers(token)),
+    );
+    return ConversaIaStatus.fromJson(
+      jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
+    );
+  }
+
+  Future<ConversaIaStatus> atualizarConsentimento(String token, bool consentido) async {
+    final response = await _request(
+      () => _client.put(
+        _consentimentoUri,
+        headers: _headers(token),
+        body: jsonEncode({'consentido': consentido}),
+      ),
+    );
+    return ConversaIaStatus.fromJson(
       jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
     );
   }
