@@ -1,14 +1,21 @@
 package br.com.norte.objetivos;
 
+import br.com.norte.shared.error.ApiException;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Regras dos objetivos. Toda consulta e alteração é filtrada pelo dono: se o objetivo existe mas é de outra
+ * pessoa, a resposta é a mesma de "não existe" (404), para não revelar a existência de dados alheios.
+ */
 @Service
 public class ObjetivoService {
+
+    private static final String MSG_NAO_ENCONTRADO = "Objetivo não encontrado.";
+
     private final ObjetivoRepository repositorio;
 
     public ObjetivoService(ObjetivoRepository repositorio) {
@@ -16,27 +23,38 @@ public class ObjetivoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Objetivo> listar(UUID usuarioId) {
-        return repositorio.findAllByUsuarioIdOrderByCriadoEmDesc(usuarioId);
+    public List<ObjetivoResponse> listar(UUID usuarioId) {
+        return repositorio.findAllByUsuarioIdOrderByCriadoEmDesc(usuarioId).stream()
+                .map(ObjetivoResponse::de)
+                .toList();
     }
 
     @Transactional
-    public Objetivo criar(UUID usuarioId, ObjetivoRequest req) {
-        return repositorio.save(new Objetivo(usuarioId, req.titulo().trim(), limpar(req.descricao())));
+    public ObjetivoResponse criar(UUID usuarioId, ObjetivoRequest req) {
+        Objetivo novo = new Objetivo(usuarioId, req.titulo().trim(), limpar(req.descricao()));
+        try {
+            return ObjetivoResponse.de(repositorio.saveAndFlush(novo));
+        } catch (DataIntegrityViolationException e) {
+            // Token válido de um usuário que já não existe (conta excluída): a sessão não vale mais.
+            throw ApiException.naoAutorizado("Sessão inválida.");
+        }
     }
 
     @Transactional
-    public Objetivo atualizar(UUID usuarioId, UUID id, ObjetivoRequest req) {
+    public ObjetivoResponse atualizar(UUID usuarioId, UUID id, ObjetivoRequest req) {
         Objetivo objetivo = obterDoUsuario(usuarioId, id);
         objetivo.atualizar(req.titulo().trim(), limpar(req.descricao()));
-        return objetivo;
+        // Grava agora para que o @PreUpdate (atualizadoEm) já valha na resposta.
+        repositorio.flush();
+        return ObjetivoResponse.de(objetivo);
     }
 
     @Transactional
-    public Objetivo concluir(UUID usuarioId, UUID id, boolean concluido) {
+    public ObjetivoResponse concluir(UUID usuarioId, UUID id, boolean concluido) {
         Objetivo objetivo = obterDoUsuario(usuarioId, id);
         objetivo.definirConclusao(concluido);
-        return objetivo;
+        repositorio.flush();
+        return ObjetivoResponse.de(objetivo);
     }
 
     @Transactional
@@ -46,7 +64,7 @@ public class ObjetivoService {
 
     private Objetivo obterDoUsuario(UUID usuarioId, UUID id) {
         return repositorio.findByIdAndUsuarioId(id, usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objetivo não encontrado."));
+                .orElseThrow(() -> ApiException.naoEncontrado(MSG_NAO_ENCONTRADO));
     }
 
     private static String limpar(String descricao) {

@@ -27,25 +27,25 @@ public class ObjetivoController {
     }
 
     @GetMapping
-    public List<Objetivo> listar(@AuthenticationPrincipal Jwt jwt) {
+    public List<ObjetivoResponse> listar(@AuthenticationPrincipal Jwt jwt) {
         return objetivos.listar(usuarioId(jwt));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Objetivo criar(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ObjetivoRequest req) {
+    public ObjetivoResponse criar(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ObjetivoRequest req) {
         return objetivos.criar(usuarioId(jwt), req);
     }
 
     @PutMapping("/{id}")
-    public Objetivo atualizar(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id,
-                              @Valid @RequestBody ObjetivoRequest req) {
+    public ObjetivoResponse atualizar(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id,
+                                      @Valid @RequestBody ObjetivoRequest req) {
         return objetivos.atualizar(usuarioId(jwt), id, req);
     }
 
     @PatchMapping("/{id}/conclusao")
-    public Objetivo concluir(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id,
-                             @Valid @RequestBody ConclusaoRequest req) {
+    public ObjetivoResponse concluir(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id,
+                                     @Valid @RequestBody ConclusaoRequest req) {
         return objetivos.concluir(usuarioId(jwt), id, req.concluido());
     }
 
