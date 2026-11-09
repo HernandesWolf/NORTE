@@ -24,18 +24,21 @@ public class OpenAiResponsesClient {
     private final RestClient client;
     private final String apiKey;
     private final String model;
+    private final boolean explicitamenteHabilitada;
 
     public OpenAiResponsesClient(
             RestClient.Builder builder,
             @Value("${norte.ia.openai.api-key:}") String apiKey,
-            @Value("${norte.ia.openai.model:gpt-4.1-mini}") String model) {
+            @Value("${norte.ia.openai.model:gpt-4.1-mini}") String model,
+            @Value("${norte.ia.openai.enabled:false}") boolean explicitamenteHabilitada) {
         this.client = builder.baseUrl("https://api.openai.com/v1").build();
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         this.model = model;
+        this.explicitamenteHabilitada = explicitamenteHabilitada;
     }
 
     public boolean habilitado() {
-        return !apiKey.isBlank();
+        return explicitamenteHabilitada && !apiKey.isBlank();
     }
 
     public String responder(List<MensagemConversa> historico) {
