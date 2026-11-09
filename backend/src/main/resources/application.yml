@@ -44,6 +44,8 @@ norte:
 
   ia:
     openai:
-      # Opcional: sem chave, o histórico continua funcionando sem chamadas externas.
+      # Segurança: integração desligada por padrão, mesmo que a chave exista.
+      enabled: ${NORTE_OPENAI_ENABLED:false}
+      # Sem chave, o histórico continua funcionando sem chamadas externas.
       api-key: ${NORTE_OPENAI_API_KEY:}
       model: ${NORTE_OPENAI_MODEL:gpt-4.1-mini}
