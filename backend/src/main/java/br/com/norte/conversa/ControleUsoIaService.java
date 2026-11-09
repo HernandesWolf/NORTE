@@ -17,8 +17,8 @@ public class ControleUsoIaService {
 
     public ControleUsoIaService(
             JdbcTemplate jdbc,
-            @Value("${norte.ia.limites.diario-usuario:10}") int limiteDiarioUsuario,
-            @Value("${norte.ia.limites.mensal-global:1000}") int limiteMensalGlobal) {
+            @Value("${norte.ia.limites.diario-usuario:5}") int limiteDiarioUsuario,
+            @Value("${norte.ia.limites.mensal-global:100}") int limiteMensalGlobal) {
         this.jdbc = jdbc;
         this.limiteDiarioUsuario = Math.max(1, limiteDiarioUsuario);
         this.limiteMensalGlobal = Math.max(1, limiteMensalGlobal);
@@ -32,7 +32,7 @@ public class ControleUsoIaService {
     public void reservar(UUID usuarioId) {
         int usuario = jdbc.update("""
                 INSERT INTO ia_uso_diario_usuario (usuario_id, dia, chamadas)
-                VALUES (?, CURRENT_DATE, 1)
+                VALUES (?, (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date, 1)
                 ON CONFLICT (usuario_id, dia)
                 DO UPDATE SET chamadas = ia_uso_diario_usuario.chamadas + 1
                 WHERE ia_uso_diario_usuario.chamadas < ?
@@ -46,7 +46,7 @@ public class ControleUsoIaService {
 
         int global = jdbc.update("""
                 INSERT INTO ia_uso_mensal_global (mes, chamadas)
-                VALUES (date_trunc('month', CURRENT_DATE)::date, 1)
+                VALUES (date_trunc('month', CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date, 1)
                 ON CONFLICT (mes)
                 DO UPDATE SET chamadas = ia_uso_mensal_global.chamadas + 1
                 WHERE ia_uso_mensal_global.chamadas < ?
