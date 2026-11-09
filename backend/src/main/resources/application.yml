@@ -51,5 +51,5 @@ norte:
       model: ${NORTE_OPENAI_MODEL:gpt-4.1-mini}
     limites:
       # Limites de chamadas, não equivalem a um teto financeiro da conta OpenAI.
-      diario-usuario: ${NORTE_IA_LIMITE_DIARIO:10}
-      mensal-global: ${NORTE_IA_LIMITE_MENSAL_GLOBAL:1000}
+      diario-usuario: ${NORTE_IA_LIMITE_DIARIO:5}
+      mensal-global: ${NORTE_IA_LIMITE_MENSAL_GLOBAL:100}
