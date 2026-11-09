@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:norte_app/auth/auth_controller.dart';
 import 'package:norte_app/checkin/checkin_models.dart';
+import 'package:norte_app/conversa/conversa_api.dart';
 import 'package:norte_app/core/token_storage.dart';
 import 'package:norte_app/main.dart';
 import 'package:norte_app/objetivos/objetivos_api.dart';
@@ -31,6 +32,7 @@ Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> 
     auth: auth,
     checkinApi: checkin,
     objetivosApi: ObjetivosApi(baseUrl: 'http://localhost'),
+    conversaApi: ConversaApi(baseUrl: 'http://localhost'),
   ));
   await tester.pumpAndSettle();
   return (api: api, storage: storage, checkin: checkin);
