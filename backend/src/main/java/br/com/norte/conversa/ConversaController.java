@@ -35,6 +35,11 @@ public class ConversaController {
         return conversa.registrar(usuarioId(jwt), request.conteudo());
     }
 
+    @GetMapping("/ia/status")
+    public ConversaIaStatusResponse statusIa() {
+        return conversa.statusIa();
+    }
+
     private static UUID usuarioId(Jwt jwt) {
         return UUID.fromString(jwt.getSubject());
     }
