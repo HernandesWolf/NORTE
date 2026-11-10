@@ -41,3 +41,13 @@ norte:
     allowed-origin-patterns: ${NORTE_CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*}
   # Fuso que define "hoje" para o check-in diário (padrão: horário de Brasília).
   fuso-horario: ${NORTE_FUSO_HORARIO:America/Sao_Paulo}
+  ia:
+    # Conversa com IA. Padrão "desligado": a API sobe normalmente e a conversa avisa que não está ativada.
+    # Opções: desligado | groq | gemini. A chave NUNCA vai no código: só por variável de ambiente.
+    provedor: ${NORTE_IA_PROVEDOR:desligado}
+    chave: ${NORTE_IA_CHAVE:}
+    # Groq já tem modelo padrão. No Gemini é obrigatório (copie o nome do modelo no Google AI Studio).
+    modelo: ${NORTE_IA_MODELO:}
+    # Mensagens por pessoa. A cota gratuita do provedor é da organização inteira: mantenha valores baixos.
+    limite-por-minuto: ${NORTE_IA_LIMITE_MINUTO:5}
+    limite-por-dia: ${NORTE_IA_LIMITE_DIA:30}
