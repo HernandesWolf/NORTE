@@ -111,7 +111,7 @@ Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, com
 
 ## Estado real do desenvolvimento
 
-O NORTE já possui uma fundação de backend com autenticação, check-in diário e objetivos persistidos, e um aplicativo Flutter conectado a esses três fluxos. A conversa com IA, o plano de 7 dias e a gestão de privacidade ainda não existem. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
+O NORTE já possui um backend com autenticação, check-in diário, objetivos, tarefas com plano de 7 dias e conversa com IA (com limite de uso por pessoa), e um aplicativo Flutter conectado a todos esses fluxos. A conversa com IA vem **desligada por padrão** e, para o desenvolvimento, pode usar um plano gratuito de provedor (veja "Ativar a conversa com IA"). Perfil/memória e a gestão de privacidade ainda não existem. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
 
 ### Backend — implementado
 
@@ -127,10 +127,13 @@ O NORTE já possui uma fundação de backend com autenticação, check-in diári
 - Migrações de banco com Flyway.
 - Validação de entrada e respostas de erro no formato Problem Details.
 - CORS configurável por variável de ambiente.
+- Tarefas por objetivo e plano de 7 dias (cada tarefa pode ser posicionada em um dos 7 dias ou ficar sem dia); o progresso é calculado pelo servidor. Mesma regra de dono do token: tarefa de outra pessoa responde 404.
+- Conversa com IA por texto atrás de uma interface própria (`AiGateway`), com provedores Groq e Gemini intercambiáveis por configuração. O servidor **não guarda a conversa** nem a registra em log; o app envia o histórico recente a cada mensagem.
+- Limite de mensagens por pessoa (por minuto e por dia) para proteger a cota do provedor, tamanho máximo de mensagem e de histórico, tempos limite curtos e erros com mensagens seguras (a chave e o corpo de erro do provedor nunca chegam ao app).
 - Limitação de tentativas de login em memória.
 - Health check com Spring Boot Actuator.
 
-**Limite conhecido:** o limitador de tentativas é mantido em memória. É adequado apenas ao cenário simples de uma única instância e precisa ser substituído por uma solução compartilhada antes de escalar horizontalmente.
+**Limite conhecido:** os limitadores (de login e de uso da IA) são mantidos em memória. São adequados apenas ao cenário simples de uma única instância e precisam ser substituídos por uma solução compartilhada antes de escalar horizontalmente.
 
 ### Aplicativo Flutter — implementado parcialmente
 
@@ -141,20 +144,23 @@ O NORTE já possui uma fundação de backend com autenticação, check-in diári
 - Logout local e solicitação de revogação ao backend.
 - Consulta do perfil autenticado.
 - Check-in diário gravado na API (a escolha do dia é restaurada ao abrir o app).
-- Tela de Objetivos conectada à API: listar, criar, concluir e excluir (a edição ainda não tem tela, embora a API já exista).
+- Tela de Objetivos conectada à API: listar, criar, editar, concluir e excluir.
+- Plano de 7 dias de cada objetivo: tarefas por dia, criar, editar, concluir e excluir, com o progresso.
+- Conversa conectada à IA: mensagens, respostas, estado "pensando", sugestões de início, aviso de que é uma IA, tratamento de limite de uso e de IA indisponível.
 - Tratamento de erros de conexão, validação e respostas HTTP.
 - Navegação pelas áreas Início, Conversa, Objetivos e Perfil.
 - Primeira aplicação da identidade Rose Edition.
 
 ### Ainda demonstrativo ou pendente
 
-- A conversa ainda não está conectada a um modelo de IA; as mensagens são locais.
-- Tarefas, plano de 7 dias e lembretes ainda não existem (os objetivos já são reais, mas ainda sem tarefas).
+- A conversa funciona, mas **não guarda histórico**: ao fechar o app, ela some. A IA ainda não conhece os objetivos nem o check-in da pessoa (não há memória nem perfil progressivo).
+- A IA não sugere nem cria tarefas sozinha; o plano de 7 dias é montado pela própria pessoa.
+- Lembretes ainda não existem.
 - O card "Seu foco neste momento" da tela inicial e o atalho "Quer conversar um pouco?" ainda são demonstrativos.
 - Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
 - Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
-- O AI Gateway, limites de custo e proteção contra abuso ainda não existem.
-- Testes de integração e validação de segurança precisam ser ampliados antes de um piloto.
+- Os planos gratuitos dos provedores de IA servem para desenvolvimento com **dados fictícios**: o conteúdo pode ser usado pelo provedor. Antes de um piloto com pessoas reais, é preciso um plano pago com termos de privacidade adequados e o consentimento implementado.
+- Testes de integração com banco real e validação de segurança precisam ser ampliados antes de um piloto.
 
 ### Atenção ao Flutter Web
 
@@ -288,6 +294,40 @@ Todos exigem o access token (`Authorization: Bearer ...`). O usuário é sempre 
 
 Um objetivo de outra pessoa responde `404`, igual a um que não existe.
 
+## Endpoints de tarefas, plano e conversa
+
+Também exigem o access token, e o usuário é sempre o do token.
+
+| Método | Rota | Finalidade |
+|---|---|---|
+| GET | `/api/v1/objetivos/{objetivoId}/tarefas` | Listar as tarefas do objetivo |
+| POST | `/api/v1/objetivos/{objetivoId}/tarefas` | Criar uma tarefa (`titulo` até 120 e `dia` de 1 a 7, opcional; no máximo 50 tarefas por objetivo) |
+| GET | `/api/v1/objetivos/{objetivoId}/plano` | Plano de 7 dias: tarefas por dia, tarefas sem dia e progresso |
+| PUT | `/api/v1/tarefas/{id}` | Editar título e dia |
+| PATCH | `/api/v1/tarefas/{id}/conclusao` | Marcar ou desmarcar como concluída |
+| DELETE | `/api/v1/tarefas/{id}` | Excluir |
+| POST | `/api/v1/conversa` | Enviar uma mensagem à IA (`mensagem` até 2000 caracteres e `historico` com até 20 mensagens) e receber `resposta` |
+
+Respostas da conversa: `429` (limite de uso, com `Retry-After`), `502` (IA não respondeu) e `503` (conversa com IA desligada neste ambiente).
+
+## Ativar a conversa com IA (desenvolvimento)
+
+Sem configuração, a API sobe normalmente e a conversa avisa que a IA não está ativada. Para ativar, escolha um provedor com plano gratuito e use **somente dados fictícios**:
+
+1. **Groq** (console.groq.com): crie uma chave de API. O modelo padrão já está definido.
+2. **Gemini** (aistudio.google.com): crie uma chave e informe o nome de um modelo com plano gratuito em `NORTE_IA_MODELO` (os nomes e as cotas mudam com o tempo).
+
+No PowerShell, **no mesmo terminal** em que a API será iniciada (a chave fica só naquela sessão e nunca vai para um arquivo do repositório):
+
+```
+cd backend
+$env:NORTE_IA_PROVEDOR = "groq"
+$env:NORTE_IA_CHAVE = "cole-sua-chave-aqui"
+mvn spring-boot:run
+```
+
+Se a configuração estiver incompleta (provedor sem chave, Gemini sem modelo, provedor desconhecido), a API não sobe e a mensagem de erro diz o que falta. As cotas gratuitas valem para a conta do provedor inteira, não por pessoa; por isso os limites por pessoa vêm baixos.
+
 ### Exemplo de uso com PowerShell
 
 Com a API em execução, use dados fictícios:
@@ -338,6 +378,11 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_JWT_SECRET` | Segredo usado para assinar tokens |
 | `NORTE_CORS_ORIGINS` | Origens permitidas pelo CORS |
 | `NORTE_FUSO_HORARIO` | Fuso que define o "hoje" do check-in (padrão: `America/Sao_Paulo`) |
+| `NORTE_IA_PROVEDOR` | Provedor da conversa: `desligado` (padrão), `groq` ou `gemini` |
+| `NORTE_IA_CHAVE` | Chave de API do provedor. Obrigatória quando há provedor. **Nunca vai para o repositório** |
+| `NORTE_IA_MODELO` | Modelo da IA. Opcional no Groq (padrão `openai/gpt-oss-120b`); obrigatório no Gemini |
+| `NORTE_IA_LIMITE_MINUTO` | Mensagens por pessoa por minuto (padrão: 5) |
+| `NORTE_IA_LIMITE_DIA` | Mensagens por pessoa por dia (padrão: 30) |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
 
 - O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
@@ -352,10 +397,10 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 
 ## Próximas etapas técnicas
 
-1. Tarefas e plano de 7 dias ligados aos objetivos, com a edição de objetivos no app.
-2. Perfil progressivo e memória básica, sob controle da pessoa.
-3. Projetar e implementar o serviço de conversa com IA (AI Gateway), com limites de uso e custo.
-4. Completar controles de privacidade, consentimento, exportação e exclusão.
+1. Perfil progressivo e memória básica, sob controle da pessoa; a IA passar a considerar objetivos e check-in (com consentimento).
+2. IA ajudar a montar o plano de 7 dias, sempre com confirmação da pessoa.
+3. Completar controles de privacidade, consentimento, exportação e exclusão (pré-requisito para o piloto).
+4. Lembretes e revisão do progresso.
 5. Testes de integração com PostgreSQL real (por exemplo, Testcontainers) e reforço de testes de autorização e CORS.
 6. Configuração obrigatória de produção (senha do banco, CORS e segredo JWT exigidos no perfil `prod`).
 7. Rever armazenamento de sessão para a estratégia de distribuição escolhida.

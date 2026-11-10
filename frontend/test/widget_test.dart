@@ -8,6 +8,8 @@ import 'package:norte_app/objetivos/objetivos_api.dart';
 
 import 'support/fake_auth_api.dart';
 import 'support/fake_checkin_api.dart';
+import 'support/fake_conversa_api.dart';
+import 'support/fake_tarefas_api.dart';
 
 /// Monta o app com um servidor de mentira e armazenamento em memória.
 Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> _abrirApp(
@@ -31,6 +33,8 @@ Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> 
     auth: auth,
     checkinApi: checkin,
     objetivosApi: ObjetivosApi(baseUrl: 'http://localhost'),
+    tarefasApi: FakeTarefasApi(),
+    conversaApi: FakeConversaApi(),
   ));
   await tester.pumpAndSettle();
   return (api: api, storage: storage, checkin: checkin);
@@ -161,6 +165,21 @@ void main() {
     expect(_chipMarcado(tester, 'Indo devagar'), isFalse);
     expect(_chipMarcado(tester, 'Com energia'), isTrue); // voltou ao que estava
     expect(find.textContaining('Não consegui falar com o servidor'), findsOneWidget);
+  });
+
+  testWidgets('aba Conversa: escrever e enviar mostra a resposta da IA', (tester) async {
+    await _abrirApp(tester, comSessaoSalva: true);
+
+    await tester.tap(find.text('Conversa'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Quero organizar minha semana');
+    // Aciona o botão direto: um aviso (SnackBar) da aba Objetivos, que carrega em segundo plano e falha sem
+    // servidor de verdade, pode estar cobrindo o botão nesta altura da tela e engolir o toque.
+    tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.arrow_upward_rounded)).onPressed!();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Quero organizar minha semana'), findsOneWidget);
+    expect(find.text('Estou aqui com você.'), findsOneWidget);
   });
 
   testWidgets('sair da conta volta para a tela de entrada e apaga a sessão', (tester) async {

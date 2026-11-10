@@ -42,6 +42,12 @@ class ObjetivosApi {
     return Objetivo.fromJson(jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
   }
 
+  Future<Objetivo> atualizar(String token, String id, String titulo, String? descricao) async {
+    final response = await _request(() => _client.put(_uri('/$id'), headers: _headers(token),
+      body: jsonEncode({'titulo': titulo, 'descricao': descricao})));
+    return Objetivo.fromJson(jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
+  }
+
   Future<Objetivo> concluir(String token, String id, bool concluido) async {
     final response = await _request(() => _client.patch(_uri('/$id/conclusao'), headers: _headers(token),
       body: jsonEncode({'concluido': concluido})));
