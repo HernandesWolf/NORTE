@@ -8,8 +8,11 @@ import 'package:norte_app/auth/auth_models.dart';
 import 'package:norte_app/checkin/checkin_api.dart';
 import 'package:norte_app/checkin/checkin_models.dart';
 import 'package:norte_app/core/api_config.dart';
+import 'package:norte_app/core/norte_colors.dart';
 import 'package:norte_app/core/token_storage.dart';
 import 'package:norte_app/objetivos/objetivos_api.dart';
+import 'package:norte_app/tarefas/plano_page.dart';
+import 'package:norte_app/tarefas/tarefas_api.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,26 +20,27 @@ void main() {
     api: HttpAuthApi(baseUrl: apiBaseUrl),
     storage: SecureTokenStorage(),
   );
-  runApp(NorteApp(auth: auth, checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl), objetivosApi: ObjetivosApi(baseUrl: apiBaseUrl)));
-}
-
-class NorteColors {
-  static const rose = Color(0xFFB87583);
-  static const blush = Color(0xFFF3DDDF);
-  static const cream = Color(0xFFFBF7F3);
-  static const nude = Color(0xFFE9DCD3);
-  static const wine = Color(0xFF76505D);
-  static const muted = Color(0xFF88777B);
-  static const surface = Color(0xFFFFFDFC);
-  static const ink = Color(0xFF49363D);
+  runApp(NorteApp(
+    auth: auth,
+    checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl),
+    objetivosApi: ObjetivosApi(baseUrl: apiBaseUrl),
+    tarefasApi: HttpTarefasApi(baseUrl: apiBaseUrl),
+  ));
 }
 
 class NorteApp extends StatelessWidget {
-  const NorteApp({required this.auth, required this.checkinApi, required this.objetivosApi, super.key});
+  const NorteApp({
+    required this.auth,
+    required this.checkinApi,
+    required this.objetivosApi,
+    required this.tarefasApi,
+    super.key,
+  });
 
   final AuthController auth;
   final CheckinApi checkinApi;
   final ObjetivosApi objetivosApi;
+  final TarefasApi tarefasApi;
 
   @override
   Widget build(BuildContext context) {
@@ -61,17 +65,26 @@ class NorteApp extends StatelessWidget {
         cardTheme: CardThemeData(color: NorteColors.surface, elevation: 0, margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFFEFE5E1)))),
       ),
-      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi)),
+      home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(
+        auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi, tarefasApi: tarefasApi,
+      )),
     );
   }
 }
 
 class NorteHome extends StatefulWidget {
-  const NorteHome({required this.auth, required this.checkinApi, required this.objetivosApi, super.key});
+  const NorteHome({
+    required this.auth,
+    required this.checkinApi,
+    required this.objetivosApi,
+    required this.tarefasApi,
+    super.key,
+  });
 
   final AuthController auth;
   final CheckinApi checkinApi;
   final ObjetivosApi objetivosApi;
+  final TarefasApi tarefasApi;
 
   @override
   State<NorteHome> createState() => _NorteHomeState();
@@ -81,7 +94,7 @@ class _NorteHomeState extends State<NorteHome> {
   late final List<Widget> pages = [
     OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
     const ConversationPage(),
-    GoalsPage(auth: widget.auth, api: widget.objetivosApi),
+    GoalsPage(auth: widget.auth, api: widget.objetivosApi, tarefasApi: widget.tarefasApi),
     ProfilePage(auth: widget.auth),
   ];
   final titles = const ['Seu espaço', 'Conversa', 'Seus caminhos', 'Seu perfil'];
@@ -313,9 +326,10 @@ class _ConversationPageState extends State<ConversationPage> {
 }
 
 class GoalsPage extends StatefulWidget {
-  const GoalsPage({required this.auth, required this.api, super.key});
+  const GoalsPage({required this.auth, required this.api, required this.tarefasApi, super.key});
   final AuthController auth;
   final ObjetivosApi api;
+  final TarefasApi tarefasApi;
   @override
   State<GoalsPage> createState() => _GoalsPageState();
 }
@@ -349,35 +363,33 @@ class _GoalsPageState extends State<GoalsPage> {
   }
 
   Future<void> _adicionar() async {
-    final titulo = TextEditingController();
-    final descricao = TextEditingController();
-    final confirmado = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Novo objetivo'),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: titulo, autofocus: true, maxLength: 120,
-            decoration: const InputDecoration(labelText: 'O que você deseja alcançar?')),
-          const SizedBox(height: 10),
-          TextField(controller: descricao, maxLength: 500, maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Detalhes (opcional)')),
-        ]),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Salvar')),
-        ],
-      ),
-    );
-    final nome = titulo.text.trim();
-    final detalhe = descricao.text.trim();
-    titulo.dispose();
-    descricao.dispose();
-    if (confirmado != true || nome.isEmpty || _salvando) return;
+    final dados = await showDialog<_DadosObjetivo>(context: context, builder: (_) => const _ObjetivoDialog());
+    if (dados == null || !mounted || _salvando) return;
     setState(() => _salvando = true);
     try {
-      final novo = await widget.auth.comSessao((token) => widget.api.criar(token, nome, detalhe.isEmpty ? null : detalhe));
+      final novo = await widget.auth.comSessao((token) => widget.api.criar(token, dados.titulo, dados.descricao));
       if (!mounted) return;
       setState(() => _objetivos.insert(0, novo));
+    } on ApiError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
+    } finally {
+      if (mounted) setState(() => _salvando = false);
+    }
+  }
+
+  Future<void> _editar(Objetivo item) async {
+    final dados = await showDialog<_DadosObjetivo>(context: context, builder: (_) => _ObjetivoDialog(existente: item));
+    if (dados == null || !mounted || _salvando) return;
+    setState(() => _salvando = true);
+    try {
+      final atualizado = await widget.auth.comSessao(
+        (token) => widget.api.atualizar(token, item.id, dados.titulo, dados.descricao),
+      );
+      if (!mounted) return;
+      setState(() {
+        final index = _objetivos.indexWhere((o) => o.id == item.id);
+        if (index >= 0) _objetivos[index] = atualizado;
+      });
     } on ApiError catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
     } finally {
@@ -405,6 +417,17 @@ class _GoalsPageState extends State<GoalsPage> {
     } on ApiError catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.mensagem)));
     }
+  }
+
+  void _abrirPlano(Objetivo item) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => PlanoPage(
+        auth: widget.auth,
+        api: widget.tarefasApi,
+        objetivoId: item.id,
+        objetivoTitulo: item.titulo,
+      ),
+    ));
   }
 
   @override
@@ -441,22 +464,107 @@ class _GoalsPageState extends State<GoalsPage> {
         const SizedBox(height: 14),
         ElevatedButton.icon(onPressed: _adicionar, icon: const Icon(Icons.add), label: const Text('Criar meu primeiro objetivo')),
       ])))
-      else ..._objetivos.map((item) => Card(
-        child: CheckboxListTile(
-          value: item.concluido,
-          activeColor: NorteColors.rose,
-          controlAffinity: ListTileControlAffinity.leading,
-          title: Text(item.titulo, style: TextStyle(height: 1.3,
-            decoration: item.concluido ? TextDecoration.lineThrough : null)),
-          subtitle: item.descricao == null ? null : Text(item.descricao!),
-          secondary: IconButton(onPressed: () => _excluir(item), tooltip: 'Excluir objetivo',
-            icon: const Icon(Icons.delete_outline, color: NorteColors.muted)),
-          onChanged: (value) => _alternar(item, value ?? false),
+      else ..._objetivos.map((item) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Card(
+          child: Column(children: [
+            CheckboxListTile(
+              value: item.concluido,
+              activeColor: NorteColors.rose,
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Text(item.titulo, style: TextStyle(height: 1.3,
+                decoration: item.concluido ? TextDecoration.lineThrough : null)),
+              subtitle: item.descricao == null ? null : Text(item.descricao!),
+              secondary: IconButton(onPressed: () => _excluir(item), tooltip: 'Excluir objetivo',
+                icon: const Icon(Icons.delete_outline, color: NorteColors.muted)),
+              onChanged: (value) => _alternar(item, value ?? false),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(spacing: 4, children: [
+                  TextButton.icon(
+                    onPressed: () => _abrirPlano(item),
+                    icon: const Icon(Icons.calendar_view_week_rounded, size: 18),
+                    label: const Text('Plano de 7 dias'),
+                    style: TextButton.styleFrom(foregroundColor: NorteColors.wine),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _editar(item),
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: const Text('Editar'),
+                    style: TextButton.styleFrom(foregroundColor: NorteColors.wine),
+                  ),
+                ]),
+              ),
+            ),
+          ]),
         ),
       )),
       const SizedBox(height: 12),
       const Text('Seus objetivos são privados e vinculados à sua conta.', style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
     ]);
+  }
+}
+
+class _DadosObjetivo {
+  const _DadosObjetivo(this.titulo, this.descricao);
+
+  final String titulo;
+  final String? descricao;
+}
+
+/// Formulário para criar ou editar um objetivo. Widget próprio para os campos serem descartados junto com o diálogo.
+class _ObjetivoDialog extends StatefulWidget {
+  const _ObjetivoDialog({this.existente});
+
+  final Objetivo? existente;
+
+  @override
+  State<_ObjetivoDialog> createState() => _ObjetivoDialogState();
+}
+
+class _ObjetivoDialogState extends State<_ObjetivoDialog> {
+  late final TextEditingController _titulo = TextEditingController(text: widget.existente?.titulo ?? '');
+  late final TextEditingController _descricao = TextEditingController(text: widget.existente?.descricao ?? '');
+  String? _erro;
+
+  @override
+  void dispose() {
+    _titulo.dispose();
+    _descricao.dispose();
+    super.dispose();
+  }
+
+  void _salvar() {
+    final titulo = _titulo.text.trim();
+    if (titulo.isEmpty) {
+      setState(() => _erro = 'Informe o título do objetivo.');
+      return;
+    }
+    final detalhe = _descricao.text.trim();
+    Navigator.pop(context, _DadosObjetivo(titulo, detalhe.isEmpty ? null : detalhe));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.existente == null ? 'Novo objetivo' : 'Editar objetivo'),
+      content: SingleChildScrollView(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextField(controller: _titulo, autofocus: true, maxLength: 120,
+            decoration: InputDecoration(labelText: 'O que você deseja alcançar?', errorText: _erro)),
+          const SizedBox(height: 10),
+          TextField(controller: _descricao, maxLength: 500, maxLines: 3,
+            decoration: const InputDecoration(labelText: 'Detalhes (opcional)')),
+        ]),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+        FilledButton(onPressed: _salvar, child: const Text('Salvar')),
+      ],
+    );
   }
 }
 

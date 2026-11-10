@@ -8,6 +8,7 @@ import 'package:norte_app/objetivos/objetivos_api.dart';
 
 import 'support/fake_auth_api.dart';
 import 'support/fake_checkin_api.dart';
+import 'support/fake_tarefas_api.dart';
 
 /// Monta o app com um servidor de mentira e armazenamento em memória.
 Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> _abrirApp(
@@ -31,6 +32,7 @@ Future<({FakeAuthApi api, MemoryTokenStorage storage, FakeCheckinApi checkin})> 
     auth: auth,
     checkinApi: checkin,
     objetivosApi: ObjetivosApi(baseUrl: 'http://localhost'),
+    tarefasApi: FakeTarefasApi(),
   ));
   await tester.pumpAndSettle();
   return (api: api, storage: storage, checkin: checkin);
