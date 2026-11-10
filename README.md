@@ -1,4 +1,4 @@
-<!-- NORTE • README | atualizado em 09/11/2026 -->
+<!-- NORTE • README | atualizado em 10/11/2026 -->
 
 <p align="center">
   <img src="assets/images/NORTE_%20Seu%20Guia%20para%20uma%20Vida%20com%20Sentido.png" alt="NORTE — Seu tempo. Sua história. Seu caminho." width="100%" />
@@ -110,6 +110,8 @@ Voz, aplicativo web independente em Next.js, pagamentos, gestão financeira, com
 ---
 
 ## Estado real do desenvolvimento
+
+**Atualização de 10/11/2026:** a integração de conversa com IA (Groq e Gemini), tarefas por objetivo e plano de 7 dias foi incorporada à branch `main`. O GitHub Actions executou com sucesso os testes do backend (Maven), a análise estática do Flutter e os testes do Flutter nesta versão integrada. Consulte o [histórico de CI](https://github.com/HernandesWolf/NORTE/actions/workflows/ci.yml) para acompanhar execuções futuras.
 
 O NORTE já possui um backend com autenticação, check-in diário, objetivos, tarefas com plano de 7 dias e conversa com IA (com limite de uso por pessoa), e um aplicativo Flutter conectado a todos esses fluxos. A conversa com IA vem **desligada por padrão** e, para o desenvolvimento, pode usar um plano gratuito de provedor (veja "Ativar a conversa com IA"). Perfil/memória e a gestão de privacidade ainda não existem. **Ainda não é um produto pronto para uso público ou para armazenar dados reais.**
 
