@@ -7,6 +7,8 @@ import 'package:norte_app/auth/auth_gate.dart';
 import 'package:norte_app/auth/auth_models.dart';
 import 'package:norte_app/checkin/checkin_api.dart';
 import 'package:norte_app/checkin/checkin_models.dart';
+import 'package:norte_app/conversa/conversa_api.dart';
+import 'package:norte_app/conversa/conversa_page.dart';
 import 'package:norte_app/core/api_config.dart';
 import 'package:norte_app/core/norte_colors.dart';
 import 'package:norte_app/core/token_storage.dart';
@@ -25,6 +27,7 @@ void main() {
     checkinApi: HttpCheckinApi(baseUrl: apiBaseUrl),
     objetivosApi: ObjetivosApi(baseUrl: apiBaseUrl),
     tarefasApi: HttpTarefasApi(baseUrl: apiBaseUrl),
+    conversaApi: HttpConversaApi(baseUrl: apiBaseUrl),
   ));
 }
 
@@ -34,6 +37,7 @@ class NorteApp extends StatelessWidget {
     required this.checkinApi,
     required this.objetivosApi,
     required this.tarefasApi,
+    required this.conversaApi,
     super.key,
   });
 
@@ -41,6 +45,7 @@ class NorteApp extends StatelessWidget {
   final CheckinApi checkinApi;
   final ObjetivosApi objetivosApi;
   final TarefasApi tarefasApi;
+  final ConversaApi conversaApi;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +71,7 @@ class NorteApp extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFFEFE5E1)))),
       ),
       home: AuthGate(auth: auth, logadoBuilder: (_) => NorteHome(
-        auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi, tarefasApi: tarefasApi,
+        auth: auth, checkinApi: checkinApi, objetivosApi: objetivosApi, tarefasApi: tarefasApi, conversaApi: conversaApi,
       )),
     );
   }
@@ -78,6 +83,7 @@ class NorteHome extends StatefulWidget {
     required this.checkinApi,
     required this.objetivosApi,
     required this.tarefasApi,
+    required this.conversaApi,
     super.key,
   });
 
@@ -85,6 +91,7 @@ class NorteHome extends StatefulWidget {
   final CheckinApi checkinApi;
   final ObjetivosApi objetivosApi;
   final TarefasApi tarefasApi;
+  final ConversaApi conversaApi;
 
   @override
   State<NorteHome> createState() => _NorteHomeState();
@@ -93,7 +100,7 @@ class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
   late final List<Widget> pages = [
     OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
-    const ConversationPage(),
+    ConversationPage(auth: widget.auth, api: widget.conversaApi),
     GoalsPage(auth: widget.auth, api: widget.objetivosApi, tarefasApi: widget.tarefasApi),
     ProfilePage(auth: widget.auth),
   ];
@@ -278,50 +285,6 @@ class _OverviewPageState extends State<OverviewPage> {
       title: Text('Quer conversar um pouco?', style: TextStyle(fontWeight: FontWeight.w700)),
       subtitle: Text('Pode começar pelo que está pesando ou pelo que você deseja mudar.'),
       trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NorteColors.rose))),
-  ]);
-}
-
-class ConversationPage extends StatefulWidget {
-  const ConversationPage({super.key});
-  @override
-  State<ConversationPage> createState() => _ConversationPageState();
-}
-class _ConversationPageState extends State<ConversationPage> {
-  final controller = TextEditingController();
-  final messages = <String>[];
-  @override
-  void dispose() { controller.dispose(); super.dispose(); }
-  @override
-  Widget build(BuildContext context) => Column(children: [
-    Expanded(child: ListView(padding: const EdgeInsets.all(20), children: [
-      Container(padding: const EdgeInsets.all(18), decoration: BoxDecoration(color: NorteColors.blush, borderRadius: BorderRadius.circular(20)),
-        child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('NORTE', style: TextStyle(color: NorteColors.wine, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-          SizedBox(height: 8),
-          Text('Estou aqui para ajudar você a organizar as ideias, sem pressa e sem julgamento. O que seria importante olhar hoje?', style: TextStyle(color: NorteColors.ink, height: 1.5)),
-        ])),
-      for (final message in messages) ...[
-        const SizedBox(height: 14),
-        Align(alignment: Alignment.centerRight, child: Container(constraints: const BoxConstraints(maxWidth: 300), padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(color: NorteColors.wine, borderRadius: BorderRadius.circular(18)),
-          child: Text(message, style: const TextStyle(color: Colors.white, height: 1.4)))),
-      ],
-      const SizedBox(height: 14),
-      const Text('Você pode começar por:', style: TextStyle(color: NorteColors.muted, fontSize: 13)),
-      const SizedBox(height: 9),
-      const Wrap(spacing: 8, runSpacing: 8, children: [
-        SuggestionChip(label: 'Estou sobrecarregado(a)'), SuggestionChip(label: 'Quero mudar de carreira'), SuggestionChip(label: 'Preciso encontrar direção'),
-      ]),
-    ])),
-    Container(padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-      decoration: const BoxDecoration(color: NorteColors.surface, border: Border(top: BorderSide(color: NorteColors.nude))),
-      child: Row(children: [
-        Expanded(child: TextField(controller: controller, minLines: 1, maxLines: 4, decoration: const InputDecoration(hintText: 'Escreva no seu tempo...', isDense: true))),
-        const SizedBox(width: 9),
-        IconButton.filled(style: IconButton.styleFrom(backgroundColor: NorteColors.rose, foregroundColor: Colors.white, padding: const EdgeInsets.all(15)),
-          onPressed: () { final value = controller.text.trim(); if (value.isEmpty) return; setState(() { messages.add(value); controller.clear(); }); },
-          icon: const Icon(Icons.arrow_upward_rounded)),
-      ])),
   ]);
 }
 
@@ -627,11 +590,4 @@ class MoodChip extends StatelessWidget {
     backgroundColor: NorteColors.surface, selectedColor: NorteColors.blush,
     side: BorderSide(color: selected ? NorteColors.rose : NorteColors.nude, width: selected ? 1.5 : 1),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)));
-}
-class SuggestionChip extends StatelessWidget {
-  final String label;
-  const SuggestionChip({required this.label, super.key});
-  @override
-  Widget build(BuildContext context) => ActionChip(onPressed: () {}, label: Text(label), backgroundColor: NorteColors.surface,
-    side: const BorderSide(color: NorteColors.nude), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
 }
