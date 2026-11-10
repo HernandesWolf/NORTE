@@ -173,7 +173,9 @@ void main() {
     await tester.tap(find.text('Conversa'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Quero organizar minha semana');
-    await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+    // Aciona o botão direto: um aviso (SnackBar) da aba Objetivos, que carrega em segundo plano e falha sem
+    // servidor de verdade, pode estar cobrindo o botão nesta altura da tela e engolir o toque.
+    tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.arrow_upward_rounded)).onPressed!();
     await tester.pumpAndSettle();
 
     expect(find.text('Quero organizar minha semana'), findsOneWidget);
