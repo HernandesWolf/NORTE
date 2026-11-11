@@ -283,7 +283,7 @@ class _OverviewPageState extends State<OverviewPage> {
       return;
     }
     await Navigator.of(context).push(NortePageRoute<void>(
-      builder: (_) => PlanoPage(
+      page: PlanoPage(
         auth: widget.auth,
         api: widget.tarefasApi,
         objetivoId: objetivo.id,
@@ -501,7 +501,7 @@ class _GoalsPageState extends State<GoalsPage> {
 
   void _abrirPlano(Objetivo item) {
     Navigator.of(context).push(NortePageRoute<void>(
-      builder: (_) => PlanoPage(
+      page: PlanoPage(
         auth: widget.auth,
         api: widget.tarefasApi,
         objetivoId: item.id,
