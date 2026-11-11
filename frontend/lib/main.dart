@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:norte_app/auth/auth_api.dart';
 import 'package:norte_app/auth/auth_controller.dart';
