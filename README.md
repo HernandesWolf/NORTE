@@ -407,6 +407,17 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 6. Configuração obrigatória de produção (senha do banco, CORS e segredo JWT exigidos no perfil `prod`).
 7. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
 
+## Preparação para implantação gratuita
+
+A transição está sendo preparada para manter custo mensal inicial de **R$ 0**, usando Render Free para a API, Neon Free para PostgreSQL e GitHub Actions para compilar o APK. Os serviços ainda precisam ser criados e validados; plano gratuito tem limites e suspensão por inatividade.
+
+- [Guia de implantação gratuita](docs/IMPLANTACAO_GRATUITA.md)
+- [Assinatura persistente do APK Android](docs/ASSINATURA_ANDROID.md)
+- [Checklist de liberação](docs/CHECKLIST_LIBERACAO.md)
+- [Modelo de key.properties](docs/key.properties.example)
+
+**Importante:** não distribuir como pronto para dados pessoais enquanto os itens bloqueadores de segurança, privacidade, backup e testes do checklist estiverem pendentes. O APK de pré-lançamento deve ser assinado com uma chave release persistente; a IA permanece desligada por padrão.
+
 ## Documentação
 
 - [Escopo do MVP](docs/MVP-ESCOPO.md)
