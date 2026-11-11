@@ -207,6 +207,7 @@ class _NorteHomeState extends State<NorteHome> {
     ),
     bottomNavigationBar: _NorteBottomBar(selected: selected, onSelect: _irPara),
   );
+}
 
 /// Opções do check-in, na ordem em que aparecem na tela.
 const _opcoesCheckin = <(EstadoCheckin, String, IconData)>[
