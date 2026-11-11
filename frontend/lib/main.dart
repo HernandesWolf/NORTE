@@ -12,6 +12,7 @@ import 'package:norte_app/conversa/conversa_api.dart';
 import 'package:norte_app/conversa/conversa_page.dart';
 import 'package:norte_app/core/api_config.dart';
 import 'package:norte_app/core/norte_colors.dart';
+import 'package:norte_app/core/norte_animations.dart';
 import 'package:norte_app/core/token_storage.dart';
 import 'package:norte_app/inicio/foco.dart';
 import 'package:norte_app/inicio/foco_card.dart';
@@ -281,7 +282,7 @@ class _OverviewPageState extends State<OverviewPage> {
     if (objetivo == null) {
       return;
     }
-    await Navigator.of(context).push(MaterialPageRoute<void>(
+    await Navigator.of(context).push(NortePageRoute<void>(
       builder: (_) => PlanoPage(
         auth: widget.auth,
         api: widget.tarefasApi,
@@ -393,7 +394,7 @@ class _OverviewPageState extends State<OverviewPage> {
       onAbrirPlano: () => unawaited(_abrirPlano()),
       onAbrirObjetivos: widget.onAbrirObjetivos,
       onTentarDeNovo: () => unawaited(_recarregarFoco()),
-    ),
+    ).fadeRapido(),
     const SizedBox(height: 24),
     Card(child: ListTile(contentPadding: const EdgeInsets.all(16),
       onTap: widget.onAbrirConversa,
@@ -499,7 +500,7 @@ class _GoalsPageState extends State<GoalsPage> {
   }
 
   void _abrirPlano(Objetivo item) {
-    Navigator.of(context).push(MaterialPageRoute<void>(
+    Navigator.of(context).push(NortePageRoute<void>(
       builder: (_) => PlanoPage(
         auth: widget.auth,
         api: widget.tarefasApi,
