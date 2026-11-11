@@ -17,7 +17,7 @@ abstract class AuthApi {
 class HttpAuthApi implements AuthApi {
   HttpAuthApi({required this.baseUrl, http.Client? client}) : _client = client ?? http.Client();
 
-  static const _tempoLimite = Duration(seconds: 15);
+  static const _tempoLimite = Duration(seconds: 60);
   static const _cabecalhosJson = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

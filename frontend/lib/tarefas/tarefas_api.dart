@@ -22,7 +22,7 @@ abstract class TarefasApi {
 class HttpTarefasApi implements TarefasApi {
   HttpTarefasApi({required this.baseUrl, http.Client? client}) : _client = client ?? http.Client();
 
-  static const _tempoLimite = Duration(seconds: 15);
+  static const _tempoLimite = Duration(seconds: 60);
 
   final String baseUrl;
   final http.Client _client;
