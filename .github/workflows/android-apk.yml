@@ -129,7 +129,9 @@ jobs:
           set -euo pipefail
           APK=build/app/outputs/flutter-apk/app-release.apk
           test -s "$APK"
-          jarsigner -verify -verbose -certs "$APK" >/dev/null
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$APKSIGNER"
+          "$APKSIGNER" verify --verbose "$APK"
           cp "$APK" "build/NORTE-piloto-${{ github.run_number }}.apk"
 
       - name: Publicar Release de pré-lançamento
