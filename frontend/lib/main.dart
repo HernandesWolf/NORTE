@@ -220,6 +220,9 @@ class _OverviewPageState extends State<OverviewPage> {
   bool _carregandoFoco = true;
   String? _erroFoco;
 
+  /// Identifica a consulta mais recente para impedir que respostas antigas sobrescrevam dados novos.
+  int _geracaoFoco = 0;
+
   @override
   void initState() {
     super.initState();
@@ -247,13 +250,14 @@ class _OverviewPageState extends State<OverviewPage> {
 
   /// Busca os objetivos e escolhe o que destacar.
   Future<void> _carregarFoco() async {
+    final geracao = ++_geracaoFoco;
     try {
       final objetivos = await widget.auth.comSessao(widget.objetivosApi.listar);
       final foco = await calcularFoco(
         objetivos: objetivos,
         buscarPlano: (id) => widget.auth.comSessao((token) => widget.tarefasApi.plano(token, id)),
       );
-      if (!mounted) {
+      if (!mounted || geracao != _geracaoFoco) {
         return;
       }
       setState(() {
@@ -261,7 +265,7 @@ class _OverviewPageState extends State<OverviewPage> {
         _carregandoFoco = false;
       });
     } on ApiError catch (e) {
-      if (!mounted) {
+      if (!mounted || geracao != _geracaoFoco) {
         return;
       }
       setState(() {
