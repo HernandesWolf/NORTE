@@ -144,36 +144,46 @@ class _CartaoDeBoasVindas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: NorteColors.blush,
-        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF713B50), Color(0xFF9D526B), Color(0xFFC77D8C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(27),
+        boxShadow: const [BoxShadow(color: Color(0x28713B50), blurRadius: 24, offset: Offset(0, 11))],
       ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'NORTE',
-            style: TextStyle(
-              color: NorteColors.wine,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
+      child: Stack(children: [
+        Positioned(right: -24, top: -36, child: Container(
+          width: 150, height: 150,
+          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: .10), width: 22)),
+        )),
+        Padding(
+          padding: const EdgeInsets.all(21),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Container(width: 39, height: 39, decoration: BoxDecoration(color: Colors.white.withValues(alpha: .16), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 21)),
+              const SizedBox(width: 10),
+              const Text('UM ESPAÇO DE ESCUTA', style: TextStyle(color: Color(0xFFFFE8ED), fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+            ]),
+            const SizedBox(height: 20),
+            const Text('Pode chegar\ncomo você está.', style: TextStyle(color: Colors.white, fontFamily: 'Georgia', fontSize: 29, height: 1.12, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            Text(
+              'Estou aqui para ajudar você a organizar as ideias, sem pressa e sem julgamento. O que seria importante olhar hoje?',
+              style: TextStyle(color: Colors.white.withValues(alpha: .9), height: 1.5, fontSize: 13),
             ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Estou aqui para ajudar você a organizar as ideias, sem pressa e sem julgamento. '
-            'O que seria importante olhar hoje?',
-            style: TextStyle(color: NorteColors.ink, height: 1.5),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'O NORTE usa inteligência artificial e pode errar. Ele não substitui um profissional, '
-            'e é melhor não compartilhar documentos, senhas ou dados bancários aqui.',
-            style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.4),
-          ),
-        ],
-      ),
+            const SizedBox(height: 17),
+            Container(height: 1, color: Colors.white.withValues(alpha: .22)),
+            const SizedBox(height: 12),
+            const Text(
+              'O NORTE usa inteligência artificial e pode errar. Não compartilhe senhas, documentos ou dados bancários.',
+              style: TextStyle(color: Color(0xFFFFE8ED), fontSize: 10.5, height: 1.45),
+            ),
+          ]),
+        ),
+      ]),
     ).entrada(delayMs: 80);
   }
 }
