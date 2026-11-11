@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:norte_app/auth/auth_controller.dart';
 import 'package:norte_app/auth/auth_models.dart';
 import 'package:norte_app/conversa/conversa_api.dart';
 import 'package:norte_app/core/norte_colors.dart';
+import 'package:norte_app/core/norte_animations.dart';
 
 /// Aba de conversa com a IA. A conversa vive só nesta tela (o servidor não a guarda): ao fechar o app, ela some.
 class ConversationPage extends StatefulWidget {
@@ -140,11 +142,24 @@ class _CartaoDeBoasVindas extends StatelessWidget {
   const _CartaoDeBoasVindas();
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(color: NorteColors.blush, borderRadius: BorderRadius.circular(20)),
-        child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('NORTE', style: TextStyle(color: NorteColors.wine, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: NorteColors.blush,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'NORTE',
+            style: TextStyle(
+              color: NorteColors.wine,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
           SizedBox(height: 8),
           Text(
             'Estou aqui para ajudar você a organizar as ideias, sem pressa e sem julgamento. '
@@ -157,8 +172,10 @@ class _CartaoDeBoasVindas extends StatelessWidget {
             'e é melhor não compartilhar documentos, senhas ou dados bancários aqui.',
             style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.4),
           ),
-        ]),
-      );
+        ],
+      ),
+    ).entrada(delayMs: 80);
+  }
 }
 
 class _Balao extends StatelessWidget {
@@ -183,7 +200,21 @@ class _Balao extends StatelessWidget {
           style: TextStyle(color: daPessoa ? Colors.white : NorteColors.ink, height: 1.4),
         ),
       ),
-    );
+    )
+        .animate()
+        .fadeIn(duration: 280.ms, curve: Curves.easeOut)
+        .slideY(
+          begin: 0.12,
+          end: 0,
+          duration: 320.ms,
+          curve: Curves.easeOutCubic,
+        )
+        .scale(
+          begin: const Offset(0.96, 0.96),
+          end: const Offset(1, 1),
+          duration: 320.ms,
+          curve: Curves.easeOutCubic,
+        );
   }
 }
 
@@ -191,16 +222,39 @@ class _Digitando extends StatelessWidget {
   const _Digitando();
 
   @override
-  Widget build(BuildContext context) => Align(
-        alignment: Alignment.centerLeft,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
-          decoration: BoxDecoration(color: NorteColors.blush, borderRadius: BorderRadius.circular(18)),
-          child: const Row(mainAxisSize: MainAxisSize.min, children: [
-            SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: NorteColors.wine)),
-            SizedBox(width: 10),
-            Text('NORTE está pensando…', style: TextStyle(color: NorteColors.wine, fontSize: 13)),
-          ]),
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+        decoration: BoxDecoration(
+          color: NorteColors.blush,
+          borderRadius: BorderRadius.circular(18),
         ),
-      );
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: NorteColors.wine,
+              ),
+            )
+                .animate(onPlay: (c) => c.repeat())
+                .rotate(duration: 1200.ms),
+            const SizedBox(width: 10),
+            const Text(
+              'NORTE está pensando…',
+              style: TextStyle(color: NorteColors.wine, fontSize: 13),
+            ),
+          ],
+        ),
+      ),
+    )
+        .animate()
+        .fadeIn(duration: 220.ms)
+        .slideY(begin: 0.1, end: 0, duration: 280.ms, curve: Curves.easeOutCubic);
+  }
 }
