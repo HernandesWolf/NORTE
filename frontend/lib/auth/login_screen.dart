@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:norte_app/auth/auth_controller.dart';
+import 'package:norte_app/core/norte_animations.dart';
 
 // Mesmas cores do tema do app (definidas em main.dart); repetidas aqui para esta tela não depender dele.
 const _vinho = Color(0xFF76505D);
@@ -261,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
-    );
+    ).entrada();
   }
 }
 
