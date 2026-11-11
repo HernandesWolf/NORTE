@@ -1,14 +1,11 @@
 name: APK Android (piloto)
 
-# Gera o APK do NORTE e publica em "Releases", com link de download direto (sem login no GitHub).
-# Como usar: aba Actions > "APK Android (piloto)" > Run workflow.
-# A URL da API vem do campo abaixo ou da variável de repositório NORTE_API_URL.
-
+# O APK só é publicado quando API HTTPS e assinatura release permanente estiverem configuradas.
 on:
   workflow_dispatch:
     inputs:
       api_url:
-        description: "URL da API em produção (https://...). Se vazio, usa a variável NORTE_API_URL."
+        description: "URL HTTPS da API. Se vazio, usa a variável NORTE_API_URL."
         required: false
         type: string
 
@@ -17,7 +14,7 @@ permissions:
 
 jobs:
   apk:
-    name: Build do APK
+    name: Build e assinatura do APK
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,16 +24,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validar a URL da API
+      - name: Validar API e secrets de assinatura
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -z "$API_URL" ]; then
-            echo "::error::Informe a URL da API no campo do workflow ou crie a variável de repositório NORTE_API_URL."
+          set -euo pipefail
+          [[ "$API_URL" == https://* ]] || { echo "::error::Configure NORTE_API_URL com uma URL HTTPS válida."; exit 1; }
+          [[ -n "$KEYSTORE_B64" && -n "$STORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]] || {
+            echo "::error::Configure os quatro secrets ANDROID_* descritos em docs/ASSINATURA_ANDROID.md."
             exit 1
-          fi
-          case "$API_URL" in
-            https://*) ;;
-            *) echo "::error::A URL da API precisa começar com https://"; exit 1 ;;
-          esac
+          }
 
       - uses: actions/setup-java@v4
         with:
@@ -48,53 +48,98 @@ jobs:
           channel: stable
           cache: true
 
-      # O projeto foi criado só com Web; geramos a pasta android no build.
-      # Depois restauramos qualquer arquivo versionado que o "flutter create" possa ter tocado.
+      # O repositório ainda não versiona a plataforma Android. Geramos no runner.
       - name: Gerar plataforma Android
         run: |
-          if [ ! -d android ]; then
-            flutter create --platforms=android --org br.com.norte --project-name norte_app .
-            git checkout -- lib test pubspec.yaml
-          fi
+          flutter create --platforms=android --org br.com.norte --project-name norte_app .
+          git checkout -- lib test pubspec.yaml
 
-      - name: Permissão de internet e nome do app
-        run: |
-          MANIFEST=android/app/src/main/AndroidManifest.xml
-          if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
-            sed -i '0,/<application/s//<uses-permission android:name="android.permission.INTERNET"\/>\n    <application/' "$MANIFEST"
-          fi
-          sed -i 's/android:label="[^"]*"/android:label="NORTE"/' "$MANIFEST"
-          grep -n -E "INTERNET|android:label" "$MANIFEST"
-
-      # Opcional: com uma chave fixa, o APK novo instala por cima do antigo sem desinstalar.
-      # Segredo de repositório DEBUG_KEYSTORE_BASE64 = arquivo debug.keystore em base64.
-      - name: Chave de assinatura fixa (opcional)
+      - name: Configurar manifesto e assinatura release
         env:
-          KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            mkdir -p ~/.android
-            echo "$KEYSTORE_B64" | base64 -d > ~/.android/debug.keystore
-            echo "Chave fixa aplicada."
-          else
-            echo "::warning::Sem DEBUG_KEYSTORE_BASE64: cada APK sai com uma chave nova e, para atualizar, será preciso desinstalar o app antes."
-          fi
+          set -euo pipefail
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.INTERNET' "$MANIFEST" || sed -i '0,/<application/s//<uses-permission android:name="android.permission.INTERNET"\/>\n    <application/' "$MANIFEST"
+          sed -i 's/android:label="[^"]*"/android:label="NORTE"/' "$MANIFEST"
+
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > android/app/norte-release.jks
+          cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=norte-release.jks
+          EOF
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle.kts")
+          s = p.read_text()
+          if 'signingConfig = signingConfigs.getByName("debug")' not in s:
+              raise SystemExit("Modelo Gradle Flutter inesperado: não foi possível substituir assinatura debug.")
+          s = s.replace(
+              'plugins {',
+              'import java.util.Properties\n\nplugins {',
+              1
+          )
+          marker = '}\n\nandroid {'
+          if marker not in s:
+              raise SystemExit("Bloco android não encontrado no Gradle.")
+          s = s.replace(
+              marker,
+              '}\n\nval keystoreProperties = Properties().apply {\n'
+              '    load(rootProject.file("key.properties").inputStream())\n'
+              '}\n\nandroid {',
+              1
+          )
+          s = s.replace(
+              '    buildTypes {',
+              '    signingConfigs {\n'
+              '        create("release") {\n'
+              '            keyAlias = keystoreProperties["keyAlias"] as String\n'
+              '            keyPassword = keystoreProperties["keyPassword"] as String\n'
+              '            storeFile = file(keystoreProperties["storeFile"] as String)\n'
+              '            storePassword = keystoreProperties["storePassword"] as String\n'
+              '        }\n'
+              '    }\n\n'
+              '    buildTypes {',
+              1
+          )
+          s = s.replace(
+              'signingConfig = signingConfigs.getByName("debug")',
+              'signingConfig = signingConfigs.getByName("release")',
+              1
+          )
+          p.write_text(s)
+          PY
+
+          test -s android/app/norte-release.jks
+          grep -q 'signingConfigs.getByName("release")' android/app/build.gradle.kts
 
       - run: flutter pub get
 
-      - name: Compilar o APK
+      - name: Compilar APK release assinado
         run: flutter build apk --release --dart-define=NORTE_API_URL="$API_URL"
 
-      - name: Nomear o arquivo
-        run: cp build/app/outputs/flutter-apk/app-release.apk "build/NORTE-piloto-${{ github.run_number }}.apk"
+      - name: Verificar assinatura e preparar artefato
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          test -s "$APK"
+          jarsigner -verify -verbose -certs "$APK" >/dev/null
+          cp "$APK" "build/NORTE-piloto-${{ github.run_number }}.apk"
 
-      - name: Publicar em Releases
+      - name: Publicar Release de pré-lançamento
         uses: softprops/action-gh-release@v2
         with:
           tag_name: piloto-${{ github.run_number }}
           name: NORTE piloto ${{ github.run_number }}
+          prerelease: true
+          make_latest: false
           body: |
-            APK de teste do NORTE para Android.
-            Baixe o arquivo .apk abaixo, abra no celular e permita "instalar apps desconhecidos" quando o Android pedir.
+            APK de pré-lançamento do NORTE para teste controlado.
+            Não usar com dados pessoais até a aprovação do checklist de liberação.
           files: frontend/build/NORTE-piloto-${{ github.run_number }}.apk
-          make_latest: true
