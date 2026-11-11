@@ -135,49 +135,78 @@ class _NorteHomeState extends State<NorteHome> {
     ProfilePage(auth: widget.auth),
   ];
   final titles = const ['Seu espaço', 'Conversa', 'Seus caminhos', 'Seu perfil'];
-  @override
+    @override
   Widget build(BuildContext context) => Scaffold(
+    backgroundColor: NorteColors.cream,
     appBar: AppBar(
-      toolbarHeight: 76,
+      toolbarHeight: 88,
+      backgroundColor: NorteColors.cream,
+      surfaceTintColor: Colors.transparent,
       titleSpacing: 20,
       title: Row(children: [
         Container(
-          width: 42, height: 42,
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [NorteColors.blush, NorteColors.nude]),
-            borderRadius: BorderRadius.circular(15),
+            gradient: const LinearGradient(
+              colors: [NorteColors.wine, NorteColors.rose],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(17),
+            boxShadow: const [
+              BoxShadow(color: Color(0x33A34D68), blurRadius: 18, offset: Offset(0, 8)),
+            ],
           ),
-          child: const Icon(Icons.explore_rounded, color: NorteColors.wine, size: 25),
+          child: const Icon(Icons.explore_rounded, color: Colors.white, size: 28),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 13),
         Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-          const Text('NORTE', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: 2, color: NorteColors.wine)),
-          Text(titles[selected], style: const TextStyle(fontSize: 12, color: NorteColors.muted, fontWeight: FontWeight.w500)),
+          const Text('NORTE', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2.4, color: NorteColors.wine)),
+          Text(titles[selected].toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1.5, color: NorteColors.muted, fontWeight: FontWeight.w700)),
         ]),
       ]),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.only(right: 18),
           child: IconButton.filledTonal(
             tooltip: 'Notificações',
             onPressed: () {},
-            style: IconButton.styleFrom(backgroundColor: NorteColors.blush, foregroundColor: NorteColors.wine),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: NorteColors.wine,
+              fixedSize: const Size(46, 46),
+            ),
             icon: const Icon(Icons.notifications_none_rounded),
           ),
         ),
       ],
     ),
-    body: SafeArea(child: IndexedStack(index: selected, children: pages)),
-    bottomNavigationBar: NavigationBar(selectedIndex: selected, onDestinationSelected: _irPara,
-      backgroundColor: NorteColors.surface, indicatorColor: NorteColors.blush,
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Início'),
-        NavigationDestination(icon: Icon(Icons.chat_bubble_outline), selectedIcon: Icon(Icons.chat_bubble), label: 'Conversa'),
-        NavigationDestination(icon: Icon(Icons.flag_outlined), selectedIcon: Icon(Icons.flag), label: 'Objetivos'),
-        NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Perfil'),
-      ]),
+    body: SafeArea(
+      top: false,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 420),
+        reverseDuration: const Duration(milliseconds: 260),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (child, animation) {
+          final slide = Tween<Offset>(
+            begin: const Offset(0.035, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(position: slide, child: child),
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey<int>(selected),
+          child: pages[selected],
+        ),
+      ),
+    ),
+    bottomNavigationBar: _NorteBottomBar(selected: selected, onSelect: _irPara),
   );
-}
 
 /// Opções do check-in, na ordem em que aparecem na tela.
 const _opcoesCheckin = <(EstadoCheckin, String, IconData)>[
@@ -344,42 +373,93 @@ class _OverviewPageState extends State<OverviewPage> {
   @override
   Widget build(BuildContext context) => ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 28), children: [
     Container(
-      padding: const EdgeInsets.all(24),
+      height: 286,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFF1DDE0), Color(0xFFFFFBF8), Color(0xFFEFE1DC)],
-          begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [Color(0xFF713B50), Color(0xFF9D526B), Color(0xFFC77D8C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0xFFEAD8D8)),
-        boxShadow: const [BoxShadow(color: Color(0x18A96D7B), blurRadius: 24, offset: Offset(0, 10))],
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: const [
+          BoxShadow(color: Color(0x33713B50), blurRadius: 30, offset: Offset(0, 16)),
+        ],
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Container(
-            width: 38, height: 38,
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: .72), borderRadius: BorderRadius.circular(14)),
-            child: const Icon(Icons.explore_rounded, color: NorteColors.wine, size: 22),
-          ),
-          const SizedBox(width: 10),
-          const Text('UM PASSO DE CADA VEZ', style: TextStyle(color: NorteColors.wine, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
-          const Spacer(),
-          const Icon(Icons.auto_awesome_rounded, color: NorteColors.rose, size: 19)
-              .animate(onPlay: (c) => c.repeat(reverse: true))
-              .scale(
-                begin: const Offset(1, 1),
-                end: const Offset(1.12, 1.12),
-                duration: 1800.ms,
-                curve: Curves.easeInOut,
+      child: Stack(
+        children: [
+          Positioned(
+            right: -48,
+            top: -66,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withValues(alpha: .10), width: 30),
               ),
-        ]),
-        const SizedBox(height: 20),
-        const Text('Você não precisa\nresolver tudo hoje.', style: TextStyle(color: NorteColors.ink, fontFamily: 'Georgia', fontSize: 30, height: 1.16, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 13),
-        const Text('Vamos entender o que importa agora e escolher um próximo passo que caiba na sua realidade.', style: TextStyle(color: NorteColors.wine, height: 1.55, fontSize: 14)),
-        const SizedBox(height: 18),
-        Container(height: 3, width: 58, decoration: BoxDecoration(color: NorteColors.rose, borderRadius: BorderRadius.circular(8))),
-      ]),
+            ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+              .scale(begin: const Offset(.96, .96), end: const Offset(1.05, 1.05), duration: 5.seconds),
+          ),
+          Positioned(
+            right: 26,
+            bottom: 26,
+            child: Icon(Icons.spa_rounded, size: 104, color: Colors.white.withValues(alpha: .10))
+              .animate(onPlay: (controller) => controller.repeat(reverse: true))
+              .rotate(begin: -.035, end: .035, duration: 7.seconds),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 23, 24, 22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: .15),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.white.withValues(alpha: .18)),
+                    ),
+                    child: const Text('ROSE EDITION  ·  SEU ESPAÇO', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.4)),
+                  ),
+                  const Spacer(),
+                  const Icon(Icons.auto_awesome_rounded, color: Color(0xFFFFDCE4), size: 22)
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(begin: const Offset(.9, .9), end: const Offset(1.16, 1.16), duration: 1.8.seconds),
+                ]),
+                const Spacer(),
+                const Text(
+                  'Respire.\nVocê pode recomeçar\num passo de cada vez.',
+                  style: TextStyle(color: Colors.white, fontFamily: 'Georgia', fontSize: 27, height: 1.13, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Um lugar para organizar o que sente, reconhecer o que importa e encontrar seu próximo passo.',
+                  style: TextStyle(color: Colors.white.withValues(alpha: .88), height: 1.45, fontSize: 12.5),
+                ),
+                const SizedBox(height: 17),
+                Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  child: InkWell(
+                    onTap: widget.onAbrirConversa,
+                    borderRadius: BorderRadius.circular(15),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 11),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Text('Começar por uma conversa', style: TextStyle(color: NorteColors.wine, fontWeight: FontWeight.w800, fontSize: 12)),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, color: NorteColors.wine, size: 17),
+                      ]),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     ).entrada(delayMs: 40),
     const SizedBox(height: 24),
     const SectionHeading('Como você está chegando hoje?', subtitle: 'Não existe resposta certa. É só um ponto de partida.')
@@ -545,14 +625,37 @@ class _GoalsPageState extends State<GoalsPage> {
           icon: const Icon(Icons.add), tooltip: 'Adicionar objetivo'),
       ]),
       const SizedBox(height: 22),
-      Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Seu progresso', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        Text('$concluidos de ${_objetivos.length} objetivos concluídos', style: const TextStyle(color: NorteColors.muted)),
-        const SizedBox(height: 12),
-        LinearProgressIndicator(value: _objetivos.isEmpty ? 0 : concluidos / _objetivos.length,
-          minHeight: 7, borderRadius: BorderRadius.circular(10), backgroundColor: NorteColors.blush, color: NorteColors.rose),
-      ]))),
+      Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0xFF713B50), Color(0xFFA75D75)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: const [BoxShadow(color: Color(0x26713B50), blurRadius: 22, offset: Offset(0, 10))],
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            const Expanded(child: Text('SEU PROGRESSO', style: TextStyle(color: Color(0xFFFFE8ED), fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.8))),
+            const Icon(Icons.trending_up_rounded, color: Color(0xFFFFE8ED), size: 22),
+          ]),
+          const SizedBox(height: 9),
+          Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            Text('$concluidos', style: const TextStyle(color: Colors.white, fontSize: 42, height: 1, fontWeight: FontWeight.w800)),
+            Padding(padding: const EdgeInsets.only(left: 8, bottom: 5), child: Text('de ${_objetivos.length} objetivos concluídos', style: const TextStyle(color: Color(0xFFFFE8ED), fontSize: 12))),
+          ]),
+          const SizedBox(height: 17),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: _objetivos.isEmpty ? 0 : concluidos / _objetivos.length),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, _) => LinearProgressIndicator(value: value, minHeight: 9, backgroundColor: Colors.white.withValues(alpha: .22), color: const Color(0xFFFFD9E2)),
+            ),
+          ),
+          const SizedBox(height: 9),
+          Text(_objetivos.isEmpty ? 'Todo caminho começa com uma escolha.' : '${((_objetivos.isEmpty ? 0 : concluidos / _objetivos.length) * 100).round()}% do caminho concluído', style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600)),
+        ]),
+      ).entrada(delayMs: 120),
       const SizedBox(height: 20),
       if (_carregando) const Center(child: Padding(padding: EdgeInsets.all(28), child: CircularProgressIndicator()))
       else if (_objetivos.isEmpty) Card(child: Padding(padding: const EdgeInsets.all(22), child: Column(children: [
@@ -677,35 +780,128 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final usuario = auth.usuario;
-    return ListView(padding: const EdgeInsets.all(20), children: [
-      const Text('Seu espaço, suas escolhas', style: TextStyle(fontFamily: 'Georgia', fontSize: 27, color: NorteColors.ink)),
-      const SizedBox(height: 8),
-      const Text('Você terá controle sobre suas informações e sobre o que deseja compartilhar.', style: TextStyle(color: NorteColors.muted, height: 1.5)),
+    return ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 30), children: [
+      Container(
+        padding: const EdgeInsets.all(23),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0xFF713B50), Color(0xFFB66B80)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(width: 58, height: 58, decoration: BoxDecoration(color: Colors.white.withValues(alpha: .16), borderRadius: BorderRadius.circular(20)), child: const Icon(Icons.person_rounded, color: Colors.white, size: 31)),
+          const SizedBox(height: 18),
+          const Text('SEU ESPAÇO, SUAS ESCOLHAS', style: TextStyle(color: Color(0xFFFFE8ED), fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+          const SizedBox(height: 7),
+          Text(usuario?.nomeOuEmail ?? 'Sua conta', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 5),
+          Text(usuario?.email ?? '', style: const TextStyle(color: Color(0xFFFFE8ED), fontSize: 13)),
+        ]),
+      ).entrada(delayMs: 50),
       const SizedBox(height: 22),
-      Card(child: ListTile(
-        leading: const CircleAvatar(backgroundColor: NorteColors.blush, child: Icon(Icons.person_outline, color: NorteColors.wine)),
-        title: Text(usuario?.nomeOuEmail ?? '', style: const TextStyle(fontWeight: FontWeight.w700)),
-        subtitle: Text(usuario?.email ?? ''),
-      )),
-      const SizedBox(height: 10),
-      const Card(child: ListTile(leading: Icon(Icons.psychology_outlined, color: NorteColors.rose), title: Text('Contexto e memória'), subtitle: Text('Consultar, corrigir ou excluir informações'))),
-      const SizedBox(height: 10),
-      const Card(child: ListTile(leading: Icon(Icons.privacy_tip_outlined, color: NorteColors.rose), title: Text('Privacidade e consentimentos'), subtitle: Text('Entenda como seus dados são utilizados'))),
-      const SizedBox(height: 10),
-      const Card(child: ListTile(leading: Icon(Icons.download_outlined, color: NorteColors.rose), title: Text('Exportar meus dados'))),
-      const SizedBox(height: 10),
-      const Card(child: ListTile(leading: Icon(Icons.delete_outline, color: NorteColors.rose), title: Text('Excluir minha conta'))),
-      const SizedBox(height: 20),
+      const SectionHeading('Cuidado com seus dados', subtitle: 'Você está no controle do que compartilha.').entrada(delayMs: 120),
+      const SizedBox(height: 12),
+      _ProfileTile(icon: Icons.psychology_outlined, title: 'Contexto e memória', subtitle: 'Consultar, corrigir ou excluir informações').entrada(delayMs: 160),
+      const SizedBox(height: 9),
+      _ProfileTile(icon: Icons.privacy_tip_outlined, title: 'Privacidade e consentimentos', subtitle: 'Entenda como seus dados são utilizados').entrada(delayMs: 210),
+      const SizedBox(height: 9),
+      _ProfileTile(icon: Icons.download_outlined, title: 'Exportar meus dados').entrada(delayMs: 260),
+      const SizedBox(height: 9),
+      _ProfileTile(icon: Icons.delete_outline, title: 'Excluir minha conta').entrada(delayMs: 310),
+      const SizedBox(height: 14),
       const Text('Contexto e memória, privacidade, exportação e exclusão ainda são ilustrativos: serão habilitados em uma próxima etapa.', style: TextStyle(color: NorteColors.muted, fontSize: 12, height: 1.5)),
-      const SizedBox(height: 24),
+      const SizedBox(height: 22),
       OutlinedButton.icon(
         onPressed: auth.sair,
         icon: const Icon(Icons.logout_rounded),
         label: const Text('Sair da conta'),
-        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), foregroundColor: NorteColors.wine, side: const BorderSide(color: NorteColors.nude)),
+        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(52), foregroundColor: NorteColors.wine, side: const BorderSide(color: NorteColors.nude), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17))),
       ),
     ]);
   }
+}
+
+class _NorteBottomBar extends StatelessWidget {
+  const _NorteBottomBar({required this.selected, required this.onSelect});
+
+  final int selected;
+  final ValueChanged<int> onSelect;
+
+  static const _items = [
+    (Icons.home_rounded, 'Início'),
+    (Icons.chat_bubble_rounded, 'Conversa'),
+    (Icons.flag_rounded, 'Objetivos'),
+    (Icons.person_rounded, 'Perfil'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: const Border(top: BorderSide(color: Color(0xFFF0E4E6))),
+        boxShadow: const [BoxShadow(color: Color(0x12000000), blurRadius: 18, offset: Offset(0, -5))],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            for (var i = 0; i < _items.length; i++)
+              Expanded(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onTap: () => onSelect(i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeOutCubic,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: selected == i ? const Color(0xFFF8E8EC) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      AnimatedScale(
+                        scale: selected == i ? 1.12 : 1,
+                        duration: const Duration(milliseconds: 240),
+                        curve: Curves.easeOutBack,
+                        child: Icon(_items[i].$1, color: selected == i ? NorteColors.wine : NorteColors.muted, size: 21),
+                      ),
+                      const SizedBox(height: 4),
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 220),
+                        style: TextStyle(fontSize: 10, fontWeight: selected == i ? FontWeight.w800 : FontWeight.w500, color: selected == i ? NorteColors.wine : NorteColors.muted),
+                        child: Text(_items[i].$2),
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileTile extends StatelessWidget {
+  const _ProfileTile({required this.icon, required this.title, this.subtitle});
+
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(19), border: Border.all(color: const Color(0xFFF0E4E6))),
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      leading: Container(width: 42, height: 42, decoration: BoxDecoration(color: NorteColors.blush, borderRadius: BorderRadius.circular(14)), child: Icon(icon, color: NorteColors.wine)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, color: NorteColors.ink, fontSize: 13)),
+      subtitle: subtitle == null ? null : Text(subtitle!, style: const TextStyle(color: NorteColors.muted, fontSize: 11)),
+      trailing: const Icon(Icons.chevron_right_rounded, color: NorteColors.rose),
+    ),
+  );
 }
 
 class SectionHeading extends StatelessWidget {
