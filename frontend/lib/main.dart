@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:norte_app/auth/auth_api.dart';
 import 'package:norte_app/auth/auth_controller.dart';
 import 'package:norte_app/auth/auth_gate.dart';
@@ -363,7 +364,14 @@ class _OverviewPageState extends State<OverviewPage> {
           const SizedBox(width: 10),
           const Text('UM PASSO DE CADA VEZ', style: TextStyle(color: NorteColors.wine, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
           const Spacer(),
-          const Icon(Icons.auto_awesome_rounded, color: NorteColors.rose, size: 19),
+          const Icon(Icons.auto_awesome_rounded, color: NorteColors.rose, size: 19)
+              .animate(onPlay: (c) => c.repeat(reverse: true))
+              .scale(
+                begin: const Offset(1, 1),
+                end: const Offset(1.12, 1.12),
+                duration: 1800.ms,
+                curve: Curves.easeInOut,
+              ),
         ]),
         const SizedBox(height: 20),
         const Text('Você não precisa\nresolver tudo hoje.', style: TextStyle(color: NorteColors.ink, fontFamily: 'Georgia', fontSize: 30, height: 1.16, fontWeight: FontWeight.w600)),
@@ -372,20 +380,32 @@ class _OverviewPageState extends State<OverviewPage> {
         const SizedBox(height: 18),
         Container(height: 3, width: 58, decoration: BoxDecoration(color: NorteColors.rose, borderRadius: BorderRadius.circular(8))),
       ]),
-    ),
+    ).entrada(delayMs: 40),
     const SizedBox(height: 24),
-    const SectionHeading('Como você está chegando hoje?', subtitle: 'Não existe resposta certa. É só um ponto de partida.'),
+    const SectionHeading('Como você está chegando hoje?', subtitle: 'Não existe resposta certa. É só um ponto de partida.')
+        .entrada(delayMs: 120),
     const SizedBox(height: 12),
-    Wrap(spacing: 9, runSpacing: 9, children: [
-      for (final (estado, rotulo, icone) in _opcoesCheckin)
-        MoodChip(label: rotulo, icon: icone, selected: _estado == estado, onTap: () => unawaited(_escolher(estado))),
-    ]),
+    Wrap(
+      spacing: 9,
+      runSpacing: 9,
+      children: [
+        for (var i = 0; i < _opcoesCheckin.length; i++)
+          MoodChip(
+            label: _opcoesCheckin[i].$2,
+            icon: _opcoesCheckin[i].$3,
+            selected: _estado == _opcoesCheckin[i].$1,
+            onTap: () => unawaited(_escolher(_opcoesCheckin[i].$1)),
+            index: i,
+          ).entrada(delayMs: 160 + (i * 55)),
+      ],
+    ),
     if (_erroMensagem != null) ...[
       const SizedBox(height: 10),
       Text(_erroMensagem!, style: const TextStyle(color: Color(0xFF9B3D4A), fontSize: 13)),
     ],
     const SizedBox(height: 24),
-    const SectionHeading('Seu foco neste momento', subtitle: 'Pequenas ações também são progresso.'),
+    const SectionHeading('Seu foco neste momento', subtitle: 'Pequenas ações também são progresso.')
+        .entrada(delayMs: 280),
     const SizedBox(height: 12),
     FocoCard(
       carregando: _carregandoFoco,
@@ -394,14 +414,15 @@ class _OverviewPageState extends State<OverviewPage> {
       onAbrirPlano: () => unawaited(_abrirPlano()),
       onAbrirObjetivos: widget.onAbrirObjetivos,
       onTentarDeNovo: () => unawaited(_recarregarFoco()),
-    ).fadeRapido(),
+    ).entrada(delayMs: 340),
     const SizedBox(height: 24),
     Card(child: ListTile(contentPadding: const EdgeInsets.all(16),
       onTap: widget.onAbrirConversa,
       leading: const CircleAvatar(backgroundColor: NorteColors.blush, child: Icon(Icons.chat_outlined, color: NorteColors.wine)),
       title: const Text('Quer conversar um pouco?', style: TextStyle(fontWeight: FontWeight.w700)),
       subtitle: const Text('Pode começar pelo que está pesando ou pelo que você deseja mudar.'),
-      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NorteColors.rose))),
+      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NorteColors.rose)))
+        .entrada(delayMs: 400),
   ]);
 }
 
@@ -699,12 +720,52 @@ class SectionHeading extends StatelessWidget {
 }
 
 class MoodChip extends StatelessWidget {
-  final String label; final IconData icon; final bool selected; final VoidCallback onTap;
-  const MoodChip({required this.label, required this.icon, required this.selected, required this.onTap, super.key});
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+  final int index;
+
+  const MoodChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+    this.index = 0,
+    super.key,
+  });
+
   @override
-  Widget build(BuildContext context) => ChoiceChip(selected: selected, onSelected: (_) => onTap(), showCheckmark: false,
-    avatar: Icon(icon, size: 17, color: NorteColors.wine), label: Text(label),
-    backgroundColor: NorteColors.surface, selectedColor: NorteColors.blush,
-    side: BorderSide(color: selected ? NorteColors.rose : NorteColors.nude, width: selected ? 1.5 : 1),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)));
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      selected: selected,
+      onSelected: (_) => onTap(),
+      showCheckmark: false,
+      avatar: Icon(icon, size: 17, color: selected ? NorteColors.wine : NorteColors.muted),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+          color: selected ? NorteColors.ink : NorteColors.muted,
+        ),
+      ),
+      backgroundColor: NorteColors.surface,
+      selectedColor: NorteColors.blush,
+      side: BorderSide(
+        color: selected ? NorteColors.rose : NorteColors.nude,
+        width: selected ? 1.6 : 1,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      elevation: selected ? 1 : 0,
+      pressElevation: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+    )
+        .animate(target: selected ? 1 : 0)
+        .scale(
+          begin: const Offset(1, 1),
+          end: const Offset(1.035, 1.035),
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+        );
+  }
 }
