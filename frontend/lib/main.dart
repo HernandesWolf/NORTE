@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:norte_app/auth/auth_api.dart';
 import 'package:norte_app/auth/auth_controller.dart';
@@ -12,6 +13,8 @@ import 'package:norte_app/conversa/conversa_page.dart';
 import 'package:norte_app/core/api_config.dart';
 import 'package:norte_app/core/norte_colors.dart';
 import 'package:norte_app/core/token_storage.dart';
+import 'package:norte_app/inicio/foco.dart';
+import 'package:norte_app/inicio/foco_card.dart';
 import 'package:norte_app/objetivos/objetivos_api.dart';
 import 'package:norte_app/tarefas/plano_page.dart';
 import 'package:norte_app/tarefas/tarefas_api.dart';
@@ -98,8 +101,33 @@ class NorteHome extends StatefulWidget {
 }
 class _NorteHomeState extends State<NorteHome> {
   int selected = 0;
+
+  /// Avisa a aba Início para recarregar o foco sempre que a pessoa volta para ela.
+  final _recarregarInicio = ValueNotifier<int>(0);
+
+  void _irPara(int aba) {
+    if (aba == 0 && selected != 0) {
+      _recarregarInicio.value++;
+    }
+    setState(() => selected = aba);
+  }
+
+  @override
+  void dispose() {
+    _recarregarInicio.dispose();
+    super.dispose();
+  }
+
   late final List<Widget> pages = [
-    OverviewPage(auth: widget.auth, checkinApi: widget.checkinApi),
+    OverviewPage(
+      auth: widget.auth,
+      checkinApi: widget.checkinApi,
+      objetivosApi: widget.objetivosApi,
+      tarefasApi: widget.tarefasApi,
+      recarregar: _recarregarInicio,
+      onAbrirConversa: () => _irPara(1),
+      onAbrirObjetivos: () => _irPara(2),
+    ),
     ConversationPage(auth: widget.auth, api: widget.conversaApi),
     GoalsPage(auth: widget.auth, api: widget.objetivosApi, tarefasApi: widget.tarefasApi),
     ProfilePage(auth: widget.auth),
@@ -138,7 +166,7 @@ class _NorteHomeState extends State<NorteHome> {
       ],
     ),
     body: SafeArea(child: IndexedStack(index: selected, children: pages)),
-    bottomNavigationBar: NavigationBar(selectedIndex: selected, onDestinationSelected: (v) => setState(() => selected = v),
+    bottomNavigationBar: NavigationBar(selectedIndex: selected, onDestinationSelected: _irPara,
       backgroundColor: NorteColors.surface, indicatorColor: NorteColors.blush,
       destinations: const [
         NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Início'),
@@ -158,10 +186,26 @@ const _opcoesCheckin = <(EstadoCheckin, String, IconData)>[
 ];
 
 class OverviewPage extends StatefulWidget {
-  const OverviewPage({required this.auth, required this.checkinApi, super.key});
+  const OverviewPage({
+    required this.auth,
+    required this.checkinApi,
+    required this.objetivosApi,
+    required this.tarefasApi,
+    required this.recarregar,
+    required this.onAbrirConversa,
+    required this.onAbrirObjetivos,
+    super.key,
+  });
 
   final AuthController auth;
   final CheckinApi checkinApi;
+  final ObjetivosApi objetivosApi;
+  final TarefasApi tarefasApi;
+
+  /// Muda de valor sempre que a pessoa volta para a aba Início, para o foco ser recalculado.
+  final ValueListenable<int> recarregar;
+  final VoidCallback onAbrirConversa;
+  final VoidCallback onAbrirObjetivos;
 
   @override
   State<OverviewPage> createState() => _OverviewPageState();
@@ -172,10 +216,82 @@ class _OverviewPageState extends State<OverviewPage> {
   bool _salvando = false;
   String? _erroMensagem;
 
+  ResultadoFoco? _foco;
+  bool _carregandoFoco = true;
+  String? _erroFoco;
+
+  /// Identifica a consulta mais recente para impedir que respostas antigas sobrescrevam dados novos.
+  int _geracaoFoco = 0;
+
   @override
   void initState() {
     super.initState();
+    widget.recarregar.addListener(_aoVoltarParaInicio);
     unawaited(_carregar());
+    unawaited(_carregarFoco());
+  }
+
+  @override
+  void dispose() {
+    widget.recarregar.removeListener(_aoVoltarParaInicio);
+    super.dispose();
+  }
+
+  void _aoVoltarParaInicio() => unawaited(_recarregarFoco());
+
+  /// Recarrega o foco. Enquanto isso, o card antigo continua na tela.
+  Future<void> _recarregarFoco() {
+    setState(() {
+      _carregandoFoco = true;
+      _erroFoco = null;
+    });
+    return _carregarFoco();
+  }
+
+  /// Busca os objetivos e escolhe o que destacar.
+  Future<void> _carregarFoco() async {
+    final geracao = ++_geracaoFoco;
+    try {
+      final objetivos = await widget.auth.comSessao(widget.objetivosApi.listar);
+      final foco = await calcularFoco(
+        objetivos: objetivos,
+        buscarPlano: (id) => widget.auth.comSessao((token) => widget.tarefasApi.plano(token, id)),
+      );
+      if (!mounted || geracao != _geracaoFoco) {
+        return;
+      }
+      setState(() {
+        _foco = foco;
+        _carregandoFoco = false;
+      });
+    } on ApiError catch (e) {
+      if (!mounted || geracao != _geracaoFoco) {
+        return;
+      }
+      setState(() {
+        _carregandoFoco = false;
+        // Se já havia um foco na tela, ele continua valendo; só avisamos quando não há nada para mostrar.
+        _erroFoco = _foco == null ? e.mensagem : null;
+      });
+    }
+  }
+
+  Future<void> _abrirPlano() async {
+    final objetivo = _foco?.objetivo;
+    if (objetivo == null) {
+      return;
+    }
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => PlanoPage(
+        auth: widget.auth,
+        api: widget.tarefasApi,
+        objetivoId: objetivo.id,
+        objetivoTitulo: objetivo.titulo,
+      ),
+    ));
+    if (mounted) {
+      unawaited(_recarregarFoco());
+    }
   }
 
   Future<void> _carregar() async {
@@ -270,21 +386,21 @@ class _OverviewPageState extends State<OverviewPage> {
     const SizedBox(height: 24),
     const SectionHeading('Seu foco neste momento', subtitle: 'Pequenas ações também são progresso.'),
     const SizedBox(height: 12),
-    Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Row(children: [Icon(Icons.flag_outlined, color: NorteColors.rose), SizedBox(width: 9), Text('Um caminho em construção', style: TextStyle(fontWeight: FontWeight.w700, color: NorteColors.ink))]),
-      const SizedBox(height: 12),
-      const Text('Organizar o próximo passo', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 8),
-      ClipRRect(borderRadius: BorderRadius.circular(20), child: const LinearProgressIndicator(value: .25, minHeight: 7, backgroundColor: NorteColors.blush, color: NorteColors.rose)),
-      const SizedBox(height: 8),
-      const Text('O plano será construído junto com você.', style: TextStyle(color: NorteColors.muted, fontSize: 13)),
-    ]))),
+    FocoCard(
+      carregando: _carregandoFoco,
+      resultado: _foco,
+      erro: _erroFoco,
+      onAbrirPlano: () => unawaited(_abrirPlano()),
+      onAbrirObjetivos: widget.onAbrirObjetivos,
+      onTentarDeNovo: () => unawaited(_recarregarFoco()),
+    ),
     const SizedBox(height: 24),
-    const Card(child: ListTile(contentPadding: EdgeInsets.all(16),
-      leading: CircleAvatar(backgroundColor: NorteColors.blush, child: Icon(Icons.chat_outlined, color: NorteColors.wine)),
-      title: Text('Quer conversar um pouco?', style: TextStyle(fontWeight: FontWeight.w700)),
-      subtitle: Text('Pode começar pelo que está pesando ou pelo que você deseja mudar.'),
-      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NorteColors.rose))),
+    Card(child: ListTile(contentPadding: const EdgeInsets.all(16),
+      onTap: widget.onAbrirConversa,
+      leading: const CircleAvatar(backgroundColor: NorteColors.blush, child: Icon(Icons.chat_outlined, color: NorteColors.wine)),
+      title: const Text('Quer conversar um pouco?', style: TextStyle(fontWeight: FontWeight.w700)),
+      subtitle: const Text('Pode começar pelo que está pesando ou pelo que você deseja mudar.'),
+      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NorteColors.rose))),
   ]);
 }
 
