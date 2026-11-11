@@ -1,0 +1,147 @@
+name: APK Android (piloto)
+
+# O APK só é publicado quando API HTTPS e assinatura release permanente estiverem configuradas.
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: "URL HTTPS da API. Se vazio, usa a variável NORTE_API_URL."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    name: Build e assinatura do APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      API_URL: ${{ inputs.api_url || vars.NORTE_API_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validar API e secrets de assinatura
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          [[ "$API_URL" == https://* ]] || { echo "::error::Configure NORTE_API_URL com uma URL HTTPS válida."; exit 1; }
+          [[ -n "$KEYSTORE_B64" && -n "$STORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]] || {
+            echo "::error::Configure os quatro secrets ANDROID_* descritos em docs/ASSINATURA_ANDROID.md."
+            exit 1
+          }
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # O repositório ainda não versiona a plataforma Android. Geramos no runner.
+      - name: Gerar plataforma Android
+        run: |
+          flutter create --platforms=android --org br.com.norte --project-name norte_app .
+          git checkout -- lib test pubspec.yaml
+
+      - name: Configurar manifesto e assinatura release
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.INTERNET' "$MANIFEST" || sed -i '0,/<application/s//<uses-permission android:name="android.permission.INTERNET"\/>\n    <application/' "$MANIFEST"
+          sed -i 's/android:label="[^"]*"/android:label="NORTE"/' "$MANIFEST"
+
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > android/app/norte-release.jks
+          cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=norte-release.jks
+          EOF
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle.kts")
+          s = p.read_text()
+          if 'signingConfig = signingConfigs.getByName("debug")' not in s:
+              raise SystemExit("Modelo Gradle Flutter inesperado: não foi possível substituir assinatura debug.")
+          s = s.replace(
+              'plugins {',
+              'import java.util.Properties\n\nplugins {',
+              1
+          )
+          marker = '}\n\nandroid {'
+          if marker not in s:
+              raise SystemExit("Bloco android não encontrado no Gradle.")
+          s = s.replace(
+              marker,
+              '}\n\nval keystoreProperties = Properties().apply {\n'
+              '    load(rootProject.file("key.properties").inputStream())\n'
+              '}\n\nandroid {',
+              1
+          )
+          s = s.replace(
+              '    buildTypes {',
+              '    signingConfigs {\n'
+              '        create("release") {\n'
+              '            keyAlias = keystoreProperties["keyAlias"] as String\n'
+              '            keyPassword = keystoreProperties["keyPassword"] as String\n'
+              '            storeFile = file(keystoreProperties["storeFile"] as String)\n'
+              '            storePassword = keystoreProperties["storePassword"] as String\n'
+              '        }\n'
+              '    }\n\n'
+              '    buildTypes {',
+              1
+          )
+          s = s.replace(
+              'signingConfig = signingConfigs.getByName("debug")',
+              'signingConfig = signingConfigs.getByName("release")',
+              1
+          )
+          p.write_text(s)
+          PY
+
+          test -s android/app/norte-release.jks
+          grep -q 'signingConfigs.getByName("release")' android/app/build.gradle.kts
+
+      - run: flutter pub get
+
+      - name: Compilar APK release assinado
+        run: flutter build apk --release --dart-define=NORTE_API_URL="$API_URL"
+
+      - name: Verificar assinatura e preparar artefato
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          test -s "$APK"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$APKSIGNER"
+          "$APKSIGNER" verify --verbose "$APK"
+          cp "$APK" "build/NORTE-piloto-${{ github.run_number }}.apk"
+
+      - name: Publicar Release de pré-lançamento
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: piloto-${{ github.run_number }}
+          name: NORTE piloto ${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          body: |
+            APK de pré-lançamento do NORTE para teste controlado.
+            Não usar com dados pessoais até a aprovação do checklist de liberação.
+          files: frontend/build/NORTE-piloto-${{ github.run_number }}.apk

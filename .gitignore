@@ -5,3 +5,8 @@ target/
 .env
 *.log
 .DS_Store
+
+# Android: nunca versionar credenciais ou chaves privadas
+**/key.properties
+**/*.jks
+**/*.keystore

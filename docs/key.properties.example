@@ -1,0 +1,6 @@
+# Modelo de key.properties. Copie para android/key.properties localmente.
+# Nunca versione key.properties nem o keystore privado.
+storePassword=COLOQUE_A_SENHA_DO_KEYSTORE
+keyPassword=COLOQUE_A_SENHA_DA_CHAVE
+keyAlias=norte
+storeFile=norte-release.jks

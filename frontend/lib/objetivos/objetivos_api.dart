@@ -60,7 +60,7 @@ class ObjetivosApi {
 
   Future<http.Response> _request(Future<http.Response> Function() call) async {
     try {
-      final response = await call().timeout(const Duration(seconds: 15));
+      final response = await call().timeout(const Duration(seconds: 60));
       if (response.statusCode >= 200 && response.statusCode < 300) return response;
       var message = 'Não foi possível salvar seus objetivos.';
       try {
