@@ -1,0 +1,30 @@
+# Blueprint da Render para a API do NORTE (plano gratuito).
+# O banco PostgreSQL fica na Neon (o banco gratuito da Render expira em 30 dias).
+# Os valores marcados com "sync: false" são preenchidos no painel da Render, nunca no repositório.
+
+services:
+  - type: web
+    name: norte-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    autoDeploy: true
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # Segredo de assinatura dos tokens: a Render gera um valor aleatório e forte.
+      - key: NORTE_JWT_SECRET
+        generateValue: true
+      # Dados da Neon (use a conexão direta, sem "-pooler"). Formato da URL:
+      # jdbc:postgresql://HOST/NOME_DO_BANCO?sslmode=require
+      - key: NORTE_DB_URL
+        sync: false
+      - key: NORTE_DB_USER
+        sync: false
+      - key: NORTE_DB_PASSWORD
+        sync: false
+      # Conversa com IA desligada no piloto. Para ligar: groq ou gemini + NORTE_IA_CHAVE.
+      - key: NORTE_IA_PROVEDOR
+        value: desligado
