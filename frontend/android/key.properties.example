@@ -1,6 +1,0 @@
-# Modelo de key.properties. Copie para key.properties localmente.
-# Nunca versione key.properties nem o keystore privado.
-storePassword=COLOQUE_A_SENHA_DO_KEYSTORE
-keyPassword=COLOQUE_A_SENHA_DA_CHAVE
-keyAlias=norte
-storeFile=C:/caminho/seguro/norte-release.jks
