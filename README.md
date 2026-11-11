@@ -148,6 +148,7 @@ O NORTE já possui um backend com autenticação, check-in diário, objetivos, t
 - Check-in diário gravado na API (a escolha do dia é restaurada ao abrir o app).
 - Tela de Objetivos conectada à API: listar, criar, editar, concluir e excluir.
 - Plano de 7 dias de cada objetivo: tarefas por dia, criar, editar, concluir e excluir, com o progresso.
+- Tela inicial com o foco real: o card "Seu foco neste momento" destaca o objetivo em andamento, o próximo passo do plano de 7 dias e o progresso, e o atalho "Quer conversar um pouco?" abre a conversa.
 - Conversa conectada à IA: mensagens, respostas, estado "pensando", sugestões de início, aviso de que é uma IA, tratamento de limite de uso e de IA indisponível.
 - Tratamento de erros de conexão, validação e respostas HTTP.
 - Navegação pelas áreas Início, Conversa, Objetivos e Perfil.
@@ -158,7 +159,6 @@ O NORTE já possui um backend com autenticação, check-in diário, objetivos, t
 - A conversa funciona, mas **não guarda histórico**: ao fechar o app, ela some. A IA ainda não conhece os objetivos nem o check-in da pessoa (não há memória nem perfil progressivo).
 - A IA não sugere nem cria tarefas sozinha; o plano de 7 dias é montado pela própria pessoa.
 - Lembretes ainda não existem.
-- O card "Seu foco neste momento" da tela inicial e o atalho "Quer conversar um pouco?" ainda são demonstrativos.
 - Opções de privacidade, memória, exportação e exclusão de conta são ilustrativas.
 - Recuperação de senha, consentimentos e gestão de dados precisam ser implementados.
 - Os planos gratuitos dos provedores de IA servem para desenvolvimento com **dados fictícios**: o conteúdo pode ser usado pelo provedor. Antes de um piloto com pessoas reais, é preciso um plano pago com termos de privacidade adequados e o consentimento implementado.
