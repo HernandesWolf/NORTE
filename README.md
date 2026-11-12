@@ -131,11 +131,12 @@ O NORTE já possui um backend com autenticação, check-in diário, objetivos, t
 - CORS configurável por variável de ambiente.
 - Tarefas por objetivo e plano de 7 dias (cada tarefa pode ser posicionada em um dos 7 dias ou ficar sem dia); o progresso é calculado pelo servidor. Mesma regra de dono do token: tarefa de outra pessoa responde 404.
 - Conversa com IA por texto atrás de uma interface própria (`AiGateway`), com provedores Groq e Gemini intercambiáveis por configuração. O servidor **não guarda a conversa** nem a registra em log; o app envia o histórico recente a cada mensagem.
-- Limite de mensagens por pessoa (por minuto e por dia) para proteger a cota do provedor, tamanho máximo de mensagem e de histórico, tempos limite curtos e erros com mensagens seguras (a chave e o corpo de erro do provedor nunca chegam ao app).
-- Limitação de tentativas de login em memória.
+- Limite de mensagens por pessoa (por minuto e por dia) e um teto global por dia somando todas as pessoas, para proteger a cota do provedor (que é da organização inteira, não de cada conta); tamanho máximo de mensagem e de histórico, tempos limite curtos e erros com mensagens seguras (a chave e o corpo de erro do provedor nunca chegam ao app).
+- Limitação de tentativas de login (por e-mail + IP) e de cadastros por IP por hora, em memória. O limite de cadastros impede a criação de contas em massa, que gastaria CPU (BCrypt) e a cota de IA de todo mundo.
+- Com o perfil `prod`, a aplicação se recusa a subir com a senha de banco de desenvolvimento, com CORS apontando para `localhost` ou aberto para qualquer origem, ou com o segredo JWT de desenvolvimento, e a mensagem de erro diz qual variável de ambiente ajustar.
 - Health check com Spring Boot Actuator.
 
-**Limite conhecido:** os limitadores (de login e de uso da IA) são mantidos em memória. São adequados apenas ao cenário simples de uma única instância e precisam ser substituídos por uma solução compartilhada antes de escalar horizontalmente.
+**Limite conhecido:** os limitadores (de login, de cadastro e de uso da IA) são mantidos em memória. São adequados apenas ao cenário simples de uma única instância e precisam ser substituídos por uma solução compartilhada antes de escalar horizontalmente.
 
 ### Aplicativo Flutter — implementado parcialmente
 
@@ -385,11 +386,15 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 | `NORTE_IA_MODELO` | Modelo da IA. Opcional no Groq (padrão `openai/gpt-oss-120b`); obrigatório no Gemini |
 | `NORTE_IA_LIMITE_MINUTO` | Mensagens por pessoa por minuto (padrão: 5) |
 | `NORTE_IA_LIMITE_DIA` | Mensagens por pessoa por dia (padrão: 30) |
+| `NORTE_IA_LIMITE_GLOBAL_DIA` | Mensagens por dia somando todas as pessoas (padrão: 300). Ajuste conforme a cota real do seu plano no provedor |
+| `NORTE_CADASTROS_POR_HORA` | Cadastros por IP por hora (padrão: 5) |
+| `NORTE_FORWARD_HEADERS` | Como descobrir o IP do cliente: `none` (padrão), `framework` ou `native`. Use `framework` **somente** atrás de um proxy/balanceador confiável; com a API exposta direto na internet, o cabeçalho `X-Forwarded-For` poderia ser forjado para burlar os limites |
 | `NORTE_API_URL` | URL da API no Flutter, via `--dart-define` |
 
 - O schema do banco é controlado pelo Flyway; o Hibernate usa validação, não criação automática.
 - O segredo JWT padrão existe somente para desenvolvimento local. Em produção, configure um segredo forte e exclusivo.
-- O perfil `prod` deve ser usado com as configurações de produção devidamente definidas.
+- Em produção, ative o perfil `prod` (`SPRING_PROFILES_ACTIVE=prod`) e defina `NORTE_DB_PASSWORD`, `NORTE_CORS_ORIGINS` e `NORTE_JWT_SECRET`: sem isso a aplicação não inicia.
+- Atrás de proxy ou balanceador, configure `NORTE_FORWARD_HEADERS`. Sem isso, todas as pessoas parecem ter o mesmo IP (o do proxy) e os limites de login e de cadastro passam a valer para todo mundo junto.
 - O endpoint de perfil identifica o usuário pelo token autenticado, não por um ID recebido livremente do cliente.
 - O refresh token é rotacionado a cada renovação e pode ser revogado no logout.
 - O limitador de login atual é local à instância; não substitui uma estratégia distribuída de proteção contra abuso.
@@ -404,8 +409,7 @@ As principais configurações podem ser fornecidas por variáveis de ambiente:
 3. Completar controles de privacidade, consentimento, exportação e exclusão (pré-requisito para o piloto).
 4. Lembretes e revisão do progresso.
 5. Testes de integração com PostgreSQL real (por exemplo, Testcontainers) e reforço de testes de autorização e CORS.
-6. Configuração obrigatória de produção (senha do banco, CORS e segredo JWT exigidos no perfil `prod`).
-7. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
+6. Rever armazenamento de sessão para a estratégia de distribuição escolhida.
 
 ## Documentação
 

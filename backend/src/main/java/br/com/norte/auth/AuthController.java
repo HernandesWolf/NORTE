@@ -19,14 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService auth;
+    private final LimitadorDeCadastro limitadorDeCadastro;
 
-    public AuthController(AuthService auth) {
+    public AuthController(AuthService auth, LimitadorDeCadastro limitadorDeCadastro) {
         this.auth = auth;
+        this.limitadorDeCadastro = limitadorDeCadastro;
     }
 
     @PostMapping("/registro")
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioResponse registro(@Valid @RequestBody RegistroRequest req) {
+    public UsuarioResponse registro(@Valid @RequestBody RegistroRequest req, HttpServletRequest http) {
+        // Conta a tentativa antes do BCrypt (caro): sem isso, criar contas em massa gasta CPU e a cota de IA de todos.
+        // Atrás de proxy/balanceador, configure server.forward-headers-strategy para o IP real chegar aqui.
+        limitadorDeCadastro.registrar(http.getRemoteAddr());
         return auth.registrar(req);
     }
 

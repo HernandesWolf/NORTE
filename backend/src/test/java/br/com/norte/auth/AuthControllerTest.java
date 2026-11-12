@@ -1,7 +1,9 @@
 package br.com.norte.auth;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -43,6 +45,9 @@ class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
+    @MockitoBean
+    private LimitadorDeCadastro limitadorDeCadastro;
+
     @Test
     void registro_valido_retorna201SemExporSenha() throws Exception {
         UUID id = UUID.randomUUID();
@@ -55,6 +60,22 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.email").value("ana@exemplo.com"))
                 .andExpect(jsonPath("$.senha").doesNotExist())
                 .andExpect(jsonPath("$.senhaHash").doesNotExist());
+
+        // O MockMvc simula o cliente em 127.0.0.1: é essa chave que o limitador deve receber.
+        verify(limitadorDeCadastro).registrar("127.0.0.1");
+    }
+
+    @Test
+    void registro_comMuitosCadastrosDoMesmoIp_retorna429ComRetryAfterSemChamarOService() throws Exception {
+        doThrow(ApiException.muitasTentativas("Muitos cadastros.", 600)).when(limitadorDeCadastro).registrar(any());
+
+        mockMvc.perform(post("/api/v1/auth/registro")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"ana@exemplo.com\",\"senha\":\"senhaforte123\"}"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string("Retry-After", "600"));
+
+        verifyNoInteractions(authService);
     }
 
     @Test
@@ -64,6 +85,9 @@ class AuthControllerTest {
                         .content("{\"email\":\"ana@exemplo.com\",\"senha\":\"123\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erros.senha").exists());
+
+        // Pedido inválido é barrado antes de custar BCrypt: não gasta o limite do IP.
+        verifyNoInteractions(limitadorDeCadastro);
     }
 
     @Test

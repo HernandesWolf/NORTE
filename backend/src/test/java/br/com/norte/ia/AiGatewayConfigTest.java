@@ -15,7 +15,7 @@ import org.springframework.web.client.RestClient;
 class AiGatewayConfigTest {
 
     private static AiGateway montar(String provedor, String chave, String modelo) {
-        IaProperties props = new IaProperties(provedor, chave, modelo, null, null);
+        IaProperties props = new IaProperties(provedor, chave, modelo, null, null, null);
         return new AiGatewayConfig().aiGateway(props, RestClient.builder());
     }
 
@@ -59,15 +59,16 @@ class AiGatewayConfigTest {
 
     @Test
     void limitesInvalidosCaemNosPadroes() {
-        IaProperties props = new IaProperties("desligado", "", "", 0, -3);
+        IaProperties props = new IaProperties("desligado", "", "", 0, -3, 0);
 
         assertEquals(IaProperties.PADRAO_POR_MINUTO, props.limitePorMinuto());
         assertEquals(IaProperties.PADRAO_POR_DIA, props.limitePorDia());
+        assertEquals(IaProperties.PADRAO_GLOBAL_POR_DIA, props.limiteGlobalPorDia());
     }
 
     @Test
     void aChaveNuncaApareceNoToString() {
-        IaProperties props = new IaProperties("groq", "gsk_chave_super_secreta", "modelo", 5, 30);
+        IaProperties props = new IaProperties("groq", "gsk_chave_super_secreta", "modelo", 5, 30, 300);
 
         assertFalse(props.toString().contains("gsk_chave_super_secreta"));
     }
