@@ -49,8 +49,13 @@ class LimitadorDeUsoIaTest {
         relogio = new RelogioMutavel();
     }
 
+    /** Teto global folgado (1000), para os testes por pessoa não esbarrarem nele. */
     private LimitadorDeUsoIa limitador(int porMinuto, int porDia) {
-        return new LimitadorDeUsoIa(relogio, new IaProperties("desligado", "", "", porMinuto, porDia));
+        return limitador(porMinuto, porDia, 1000);
+    }
+
+    private LimitadorDeUsoIa limitador(int porMinuto, int porDia, int globalPorDia) {
+        return new LimitadorDeUsoIa(relogio, new IaProperties("desligado", "", "", porMinuto, porDia, globalPorDia));
     }
 
     @Test
@@ -133,5 +138,60 @@ class LimitadorDeUsoIaTest {
 
         ApiException e = assertThrows(ApiException.class, () -> limitador.registrar(pessoa));
         assertTrue(e.getMessage().contains("hoje"));
+    }
+
+    @Test
+    void tetoGlobal_recusaQuandoPessoasDiferentesJuntasEsgotamACota() {
+        LimitadorDeUsoIa limitador = limitador(100, 100, 3);
+        for (int i = 0; i < 3; i++) {
+            limitador.registrar(UUID.randomUUID()); // três pessoas diferentes, uma mensagem cada
+        }
+
+        ApiException e = assertThrows(ApiException.class, () -> limitador.registrar(UUID.randomUUID()));
+
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS, e.getStatus());
+        assertTrue(e.getMessage().contains("hoje"));
+        assertEquals(Duration.ofHours(24).toSeconds(), e.getRetryAfterSegundos());
+    }
+
+    @Test
+    void tetoGlobal_voltaAoZeroDepoisDe24Horas() {
+        LimitadorDeUsoIa limitador = limitador(100, 100, 1);
+        limitador.registrar(UUID.randomUUID());
+        assertThrows(ApiException.class, () -> limitador.registrar(UUID.randomUUID()));
+
+        relogio.avancar(Duration.ofHours(24));
+
+        assertDoesNotThrow(() -> limitador.registrar(UUID.randomUUID()));
+    }
+
+    @Test
+    void recusaPeloTetoGlobalNaoGastaACotaPessoal() {
+        LimitadorDeUsoIa limitador = limitador(100, 1, 1);
+        UUID ana = UUID.randomUUID();
+        UUID bia = UUID.randomUUID();
+        limitador.registrar(ana); // global: 1 de 1, a partir de T0
+        relogio.avancar(Duration.ofHours(12));
+        assertThrows(ApiException.class, () -> limitador.registrar(bia)); // recusada pelo teto global
+
+        relogio.avancar(Duration.ofHours(12)); // T0 + 24h: o global zerou, a janela pessoal da Bia ainda vale
+
+        // Só passa se a recusa anterior não gastou a única mensagem diária da Bia.
+        assertDoesNotThrow(() -> limitador.registrar(bia));
+    }
+
+    @Test
+    void recusaPessoalNaoGastaOTetoGlobal() {
+        LimitadorDeUsoIa limitador = limitador(1, 100, 2);
+        UUID ana = UUID.randomUUID();
+        UUID bia = UUID.randomUUID();
+        UUID cris = UUID.randomUUID();
+        limitador.registrar(ana); // global: 1 de 2
+        assertThrows(ApiException.class, () -> limitador.registrar(ana)); // recusada pelo minuto: não conta no global
+
+        assertDoesNotThrow(() -> limitador.registrar(bia)); // global: 2 de 2 (só passa se a recusa da Ana não contou)
+
+        ApiException e = assertThrows(ApiException.class, () -> limitador.registrar(cris));
+        assertTrue(e.getMessage().contains("procura"));
     }
 }

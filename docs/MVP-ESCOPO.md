@@ -36,7 +36,7 @@ Pessoas no Brasil que desejam entrar ou migrar para a área de tecnologia. Esse 
 
 Voz, aplicativo web independente em Next.js, pagamentos, Redis/filas, busca vetorial, oportunidades externas, gestão financeira, comunidade, gamificação e integrações externas.
 
-## 4. Estado de implementação em 09/11/2026
+## 4. Estado de implementação em 12/11/2026
 
 ### Entregue no repositório
 
@@ -49,14 +49,17 @@ Voz, aplicativo web independente em Next.js, pagamentos, Redis/filas, busca veto
 | Refresh token com rotação | Implementado |
 | Logout com revogação de refresh token | Implementado |
 | Consulta autenticada do próprio perfil | Implementada |
-| Limitação de tentativas de login | Implementada em memória |
+| Limitação de tentativas de login e de cadastros por IP | Implementada em memória |
 | CORS configurável | Implementado |
 | Check-in diário de estado (um por pessoa por dia, fuso configurável) | Implementado (backend + Flutter) |
 | Objetivos: listar, criar, editar, concluir e excluir, sempre filtrados pelo dono do token | Implementado no backend, com testes de isolamento entre usuários |
-| Flutter com navegação Início, Conversa, Objetivos e Perfil | Implementado; Início (check-in), Objetivos e autenticação usam a API, Conversa e Perfil seguem demonstrativos |
+| Flutter com navegação Início, Conversa, Objetivos e Perfil | Implementado; Início, Conversa, Objetivos e autenticação usam a API; Perfil segue demonstrativo |
 | Cadastro/login Flutter integrado à API | Implementado |
 | Restauração de sessão, renovação e logout no Flutter | Implementados |
-| Objetivos no Flutter | Listar, criar, concluir e excluir integrados à API; edição ainda sem tela |
+| Objetivos no Flutter | Listar, criar, editar, concluir e excluir integrados à API |
+| Tarefas por objetivo e plano de 7 dias | Implementado (backend + Flutter), filtrado pelo dono do token |
+| Conversa com IA (AI Gateway, Groq e Gemini) | Implementada; desligada por padrão; limites por pessoa (minuto e dia) e teto global por dia |
+| Validação do perfil `prod` | Implementada: exige senha do banco, CORS e segredo JWT próprios; recusa os valores de desenvolvimento |
 | Integração contínua (GitHub Actions) | Testes do backend e análise/testes do Flutter a cada push e pull request |
 
 ### Ainda não entregue
@@ -64,19 +67,17 @@ Voz, aplicativo web independente em Next.js, pagamentos, Redis/filas, busca veto
 | Área | Próximo trabalho |
 |---|---|
 | Perfil progressivo | Modelagem, API e telas |
-| Tarefas e plano de 7 dias | Tarefas ligadas aos objetivos, plano editável e edição de objetivos no app |
-| Testes de integração com banco real | Cobrir isolamento entre usuários e migrações com PostgreSQL (por exemplo, Testcontainers) |
-| Configuração de produção | Exigir senha do banco, CORS e segredo JWT no perfil `prod` (hoje só o segredo JWT é verificado) |
-| Conversa com IA | AI Gateway, provedor, contexto e avaliações |
+| Testes de integração com banco real | Cobrir isolamento entre usuários, o refresh token atômico e as migrações com PostgreSQL (por exemplo, Testcontainers) |
+| Conversa orientada | Contexto (objetivos e check-in), memória e avaliação de segurança com temas sensíveis; a conversa atual não guarda histórico |
 | Plano adaptável | Geração, edição, revisão e histórico |
 | Lembretes | Definir mecanismo e preferências |
 | Privacidade | Consentimento, exportação e exclusão reais |
 | Segurança operacional | Limite distribuído, observabilidade e revisão de produção |
 | Flutter Web | Rever estratégia de armazenamento de tokens antes de uso com dados reais |
 
-**Importante:** as mensagens da conversa são demonstrativas e locais, e não há tarefas nem plano ainda. No Início, o card "Seu foco neste momento" também é ilustrativo. A tela de perfil apresenta opções ilustrativas ainda sem operação de gestão de dados. Estar autenticado e ter check-in e objetivos integrados não significa que todos os módulos do aplicativo já estejam conectados à API.
+**Importante:** a conversa com IA funciona, mas não guarda histórico e ainda não conhece os objetivos nem o check-in da pessoa. A tela de perfil apresenta opções ilustrativas ainda sem operação de gestão de dados (memória, privacidade, exportação e exclusão de conta). Os planos gratuitos dos provedores de IA servem apenas para desenvolvimento com dados fictícios. Estar autenticado e ter os módulos integrados não significa que o produto esteja pronto para uso público.
 
-O limitador de login atual mantém estado em memória e atende apenas a uma instância. Para múltiplas instâncias, será necessário armazenamento compartilhado.
+Os limitadores (login, cadastro por IP e uso da IA) mantêm estado em memória e atendem apenas a uma instância. Para múltiplas instâncias, será necessário armazenamento compartilhado. Atrás de proxy, configure `NORTE_FORWARD_HEADERS`; sem isso o IP visto pela API é o do proxy.
 
 No Flutter Web, o armazenamento de tokens tem proteção inferior à oferecida por Keychain/Keystore nos dispositivos móveis. A versão Web atual deve ser tratada como ambiente de desenvolvimento/demonstração até que a estratégia seja revista.
 

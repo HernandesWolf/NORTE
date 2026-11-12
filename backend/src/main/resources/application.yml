@@ -16,6 +16,11 @@ spring:
 
 server:
   port: 8080
+  # Como o IP do cliente é descoberto (usado pelos limitadores de login e de cadastro).
+  # "none" (padrão): usa o IP da conexão direta. Atrás de um proxy/balanceador CONFIÁVEL, use "framework"
+  # (ou "native" se o servidor de aplicação já tratar os cabeçalhos). Nunca use "framework" com a API exposta
+  # direto na internet: qualquer pessoa poderia forjar o cabeçalho X-Forwarded-For e burlar os limites.
+  forward-headers-strategy: ${NORTE_FORWARD_HEADERS:none}
 
 management:
   endpoints:
@@ -35,6 +40,8 @@ norte:
       secret: ${NORTE_JWT_SECRET:dev-only-troque-em-producao-0123456789abcdef}
       access-token-ttl: 15m
       refresh-token-ttl: 30d
+    # Cadastros por IP por hora. Protege a CPU (BCrypt) e a cota de IA contra criação de contas em massa.
+    cadastros-por-hora: ${NORTE_CADASTROS_POR_HORA:5}
   cors:
     # Origens permitidas para o app rodando no navegador (Flutter Web usa uma porta aleatória em dev).
     # Em produção, defina NORTE_CORS_ORIGINS com o domínio real, ex.: https://app.exemplo.com.br
@@ -51,3 +58,6 @@ norte:
     # Mensagens por pessoa. A cota gratuita do provedor é da organização inteira: mantenha valores baixos.
     limite-por-minuto: ${NORTE_IA_LIMITE_MINUTO:5}
     limite-por-dia: ${NORTE_IA_LIMITE_DIA:30}
+    # Teto por dia somando todas as pessoas: impede que várias contas juntas esgotem a cota do provedor.
+    # Ajuste conforme a cota real do seu plano no provedor.
+    limite-global-por-dia: ${NORTE_IA_LIMITE_GLOBAL_DIA:300}
